@@ -3,7 +3,11 @@ import type { BranchRow } from "@/lib/database.types";
 import { toBranchPayload, type BranchFormValues } from "./schema";
 
 export async function listBranches(includeInactive = false): Promise<BranchRow[]> {
-  let query = db.from("branches").select("*").order("is_head_office", { ascending: false }).order("name");
+  let query = db
+    .from("branches")
+    .select("*")
+    .order("is_head_office", { ascending: false })
+    .order("name");
   if (!includeInactive) {
     query = query.eq("status", "active");
   }
@@ -11,7 +15,9 @@ export async function listBranches(includeInactive = false): Promise<BranchRow[]
 }
 
 export async function getBranch(id: string): Promise<BranchRow | null> {
-  return unwrapMaybe(await db.from("branches").select("*").eq("id", id).maybeSingle()) as BranchRow | null;
+  return unwrapMaybe(
+    await db.from("branches").select("*").eq("id", id).maybeSingle(),
+  ) as BranchRow | null;
 }
 
 export async function createBranch(values: BranchFormValues): Promise<BranchRow> {

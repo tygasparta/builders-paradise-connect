@@ -53,10 +53,13 @@ function SalesPage() {
         description="Full order-to-cash cycle: quote, confirm, deliver, invoice and collect — with receivables aging per customer."
         actions={
           <>
-            <Button variant="outline" className="rounded-lg" onClick={() => toast.info("Quotation builder")}>
+            <Button
+              variant="outline"
+              className="rounded-lg"
+              onClick={() => toast.info("Quotation builder")}
+            >
               <FileText className="size-4" />
-
-      <DemoDataNotice phase={3} module="Sales" /> New quotation
+              <DemoDataNotice phase={3} module="Sales" /> New quotation
             </Button>
             <Button className="rounded-lg" onClick={() => toast.info("Invoice builder")}>
               <Plus className="size-4" /> New invoice
@@ -186,7 +189,11 @@ function SalesPage() {
           </Table>
         </SectionCard>
 
-        <SectionCard title="Credit utilisation" description="Exposure against approved limits" bodyClassName="space-y-4">
+        <SectionCard
+          title="Credit utilisation"
+          description="Exposure against approved limits"
+          bodyClassName="space-y-4"
+        >
           {CUSTOMERS.filter((c) => c.limit > 0).map((c) => {
             const pct = (c.balance / c.limit) * 100;
             return (

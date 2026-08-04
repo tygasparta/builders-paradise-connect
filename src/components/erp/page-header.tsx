@@ -40,7 +40,10 @@ export function PageHeader({
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span aria-current={last ? "page" : undefined} className={cn(last && "text-foreground")}>
+                    <span
+                      aria-current={last ? "page" : undefined}
+                      className={cn(last && "text-foreground")}
+                    >
                       {crumb.label}
                     </span>
                   )}
@@ -55,9 +58,7 @@ export function PageHeader({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="text-xl font-semibold tracking-tight md:text-[22px]">{title}</h1>
-          {description && (
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-          )}
+          {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>

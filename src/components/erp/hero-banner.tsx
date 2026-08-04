@@ -40,9 +40,7 @@ export function HeroBanner({
             {eyebrow}
           </p>
           <h1 className="mt-2 text-xl font-semibold tracking-tight md:text-2xl">{title}</h1>
-          {shown.length > 0 && (
-            <p className="mt-1.5 text-sm text-white/85">{shown.join(" · ")}</p>
-          )}
+          {shown.length > 0 && <p className="mt-1.5 text-sm text-white/85">{shown.join(" · ")}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>

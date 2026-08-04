@@ -145,7 +145,13 @@ export function BranchFormDialog({
 
           <form onSubmit={onSubmit} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Code" htmlFor="code" required error={errors.code?.message} hint="e.g. HQ, BYO">
+              <Field
+                label="Code"
+                htmlFor="code"
+                required
+                error={errors.code?.message}
+                hint="e.g. HQ, BYO"
+              >
                 <Input
                   id="code"
                   autoFocus={!isEdit}
@@ -162,10 +168,18 @@ export function BranchFormDialog({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Address line 1" htmlFor="address_line1" error={errors.address_line1?.message}>
+              <Field
+                label="Address line 1"
+                htmlFor="address_line1"
+                error={errors.address_line1?.message}
+              >
                 <Input id="address_line1" {...form.register("address_line1")} />
               </Field>
-              <Field label="Address line 2" htmlFor="address_line2" error={errors.address_line2?.message}>
+              <Field
+                label="Address line 2"
+                htmlFor="address_line2"
+                error={errors.address_line2?.message}
+              >
                 <Input id="address_line2" {...form.register("address_line2")} />
               </Field>
               <Field label="City" htmlFor="city" error={errors.city?.message}>
@@ -207,7 +221,9 @@ export function BranchFormDialog({
               <div className="flex items-center justify-between rounded-lg border border-border p-3">
                 <div className="pr-3">
                   <p className="text-sm font-medium">Head office</p>
-                  <p className="text-xs text-muted-foreground">Only one branch can be head office.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Only one branch can be head office.
+                  </p>
                 </div>
                 <Switch
                   checked={form.watch("is_head_office")}

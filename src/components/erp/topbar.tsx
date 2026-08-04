@@ -322,10 +322,18 @@ function useOnlineStatus(): boolean {
  */
 function QuickActions({ can }: { can: (code: PermissionCode) => boolean }) {
   const actions: { label: string; to: string; require: PermissionCode }[] = [
-    { label: "New branch", to: "/settings/branches", require: PERMISSIONS.SETTINGS_BRANCHES_MANAGE },
+    {
+      label: "New branch",
+      to: "/settings/branches",
+      require: PERMISSIONS.SETTINGS_BRANCHES_MANAGE,
+    },
     { label: "New warehouse", to: "/warehouses", require: PERMISSIONS.WAREHOUSES_MANAGE },
     { label: "Manage users & roles", to: "/users", require: PERMISSIONS.USERS_VIEW },
-    { label: "Company settings", to: "/settings/company", require: PERMISSIONS.SETTINGS_COMPANY_MANAGE },
+    {
+      label: "Company settings",
+      to: "/settings/company",
+      require: PERMISSIONS.SETTINGS_COMPANY_MANAGE,
+    },
     { label: "Audit trail", to: "/audit-trail", require: PERMISSIONS.AUDIT_VIEW },
   ].filter((action) => can(action.require));
 

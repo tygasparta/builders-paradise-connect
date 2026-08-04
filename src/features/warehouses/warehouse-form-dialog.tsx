@@ -38,7 +38,12 @@ import { useUsers } from "@/features/users/hooks";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
 import type { WarehouseRow } from "@/lib/database.types";
-import { WAREHOUSE_TYPES, warehouseDefaults, warehouseSchema, type WarehouseFormValues } from "./schema";
+import {
+  WAREHOUSE_TYPES,
+  warehouseDefaults,
+  warehouseSchema,
+  type WarehouseFormValues,
+} from "./schema";
 import { useCreateWarehouse, useUpdateWarehouse } from "./hooks";
 
 export function WarehouseFormDialog({
@@ -121,8 +126,19 @@ export function WarehouseFormDialog({
 
           <form onSubmit={onSubmit} noValidate className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-3">
-              <Field label="Code" htmlFor="code" required error={errors.code?.message} hint="e.g. HQ-MAIN">
-                <Input id="code" autoFocus={!isEdit} className="uppercase" {...form.register("code")} />
+              <Field
+                label="Code"
+                htmlFor="code"
+                required
+                error={errors.code?.message}
+                hint="e.g. HQ-MAIN"
+              >
+                <Input
+                  id="code"
+                  autoFocus={!isEdit}
+                  className="uppercase"
+                  {...form.register("code")}
+                />
               </Field>
               <div className="sm:col-span-2">
                 <Field label="Warehouse name" htmlFor="name" required error={errors.name?.message}>
@@ -135,7 +151,9 @@ export function WarehouseFormDialog({
               <Field label="Branch" htmlFor="branch_id" required error={errors.branch_id?.message}>
                 <Select
                   value={form.watch("branch_id")}
-                  onValueChange={(value) => form.setValue("branch_id", value, { shouldDirty: true })}
+                  onValueChange={(value) =>
+                    form.setValue("branch_id", value, { shouldDirty: true })
+                  }
                 >
                   <SelectTrigger id="branch_id">
                     <SelectValue placeholder="Choose a branch" />
@@ -150,11 +168,19 @@ export function WarehouseFormDialog({
                 </Select>
               </Field>
 
-              <Field label="Type" htmlFor="type" required error={errors.type?.message} hint={typeHint}>
+              <Field
+                label="Type"
+                htmlFor="type"
+                required
+                error={errors.type?.message}
+                hint={typeHint}
+              >
                 <Select
                   value={selectedType}
                   onValueChange={(value) =>
-                    form.setValue("type", value as WarehouseFormValues["type"], { shouldDirty: true })
+                    form.setValue("type", value as WarehouseFormValues["type"], {
+                      shouldDirty: true,
+                    })
                   }
                 >
                   <SelectTrigger id="type">
@@ -174,7 +200,9 @@ export function WarehouseFormDialog({
                 <Select
                   value={form.watch("manager_id") ?? "none"}
                   onValueChange={(value) =>
-                    form.setValue("manager_id", value === "none" ? null : value, { shouldDirty: true })
+                    form.setValue("manager_id", value === "none" ? null : value, {
+                      shouldDirty: true,
+                    })
                   }
                 >
                   <SelectTrigger id="manager_id">
@@ -238,8 +266,8 @@ export function WarehouseFormDialog({
                 <div>
                   <p className="text-sm font-medium">Allow negative stock</p>
                   <p className="text-xs text-muted-foreground">
-                    Off by default. Even when on, the acting user still needs the
-                    &ldquo;Allow negative stock&rdquo; permission.
+                    Off by default. Even when on, the acting user still needs the &ldquo;Allow
+                    negative stock&rdquo; permission.
                   </p>
                 </div>
                 <Switch

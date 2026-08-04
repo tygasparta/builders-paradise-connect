@@ -11,7 +11,12 @@ export const companySettingsSchema = z.object({
   country: z.string().trim().min(2, "Country is required").max(80),
   phone: z.string().trim().max(40).optional().or(z.literal("")),
   email: z.string().trim().email("Enter a valid email address").optional().or(z.literal("")),
-  website: z.string().trim().url("Enter a full URL, e.g. https://example.com").optional().or(z.literal("")),
+  website: z
+    .string()
+    .trim()
+    .url("Enter a full URL, e.g. https://example.com")
+    .optional()
+    .or(z.literal("")),
   logo_url: z.string().trim().url("Enter a full URL").optional().or(z.literal("")),
   base_currency: z
     .string()
@@ -38,8 +43,18 @@ export const companySettingsSchema = z.object({
 export type CompanySettingsFormValues = z.infer<typeof companySettingsSchema>;
 
 export const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ] as const;
 
 export function toCompanyPayload(values: CompanySettingsFormValues) {

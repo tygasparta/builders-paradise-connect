@@ -122,11 +122,16 @@ function Accounting() {
                     <TableCell className="num pl-5 text-muted-foreground">{a.code}</TableCell>
                     <TableCell className="font-medium">{a.name}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="border-border text-[11px] text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className="border-border text-[11px] text-muted-foreground"
+                      >
                         {a.type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="num text-right">{a.debit ? money(a.debit) : "—"}</TableCell>
+                    <TableCell className="num text-right">
+                      {a.debit ? money(a.debit) : "—"}
+                    </TableCell>
                     <TableCell className="num pr-5 text-right">
                       {a.credit ? money(a.credit) : "—"}
                     </TableCell>
@@ -136,7 +141,9 @@ function Accounting() {
                   <TableCell colSpan={3} className="pl-5 font-semibold">
                     Totals
                   </TableCell>
-                  <TableCell className="num text-right font-semibold">{money(totalDebit)}</TableCell>
+                  <TableCell className="num text-right font-semibold">
+                    {money(totalDebit)}
+                  </TableCell>
                   <TableCell className="num pr-5 text-right font-semibold">
                     {money(totalCredit)}
                   </TableCell>
@@ -147,7 +154,11 @@ function Accounting() {
         </TabsContent>
 
         <TabsContent value="pl" className="mt-4">
-          <SectionCard title="Income statement" description="Year to date" bodyClassName="max-w-2xl space-y-1">
+          <SectionCard
+            title="Income statement"
+            description="Year to date"
+            bodyClassName="max-w-2xl space-y-1"
+          >
             <StatementHeading>Revenue</StatementHeading>
             {CHART_OF_ACCOUNTS.filter((a) => a.type === "Income").map((a) => (
               <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.credit} />
@@ -169,7 +180,11 @@ function Accounting() {
 
         <TabsContent value="bs" className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
-            <SectionCard title="Assets" description="What the business owns" bodyClassName="space-y-1">
+            <SectionCard
+              title="Assets"
+              description="What the business owns"
+              bodyClassName="space-y-1"
+            >
               {CHART_OF_ACCOUNTS.filter((a) => a.type === "Asset").map((a) => (
                 <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.debit} />
               ))}

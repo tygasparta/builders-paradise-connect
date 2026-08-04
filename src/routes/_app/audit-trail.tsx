@@ -41,8 +41,18 @@ export const Route = createFileRoute("/_app/audit-trail")({
 });
 
 const ACTIONS = [
-  "insert", "update", "delete", "login", "login_failed", "logout",
-  "approve", "reject", "post", "reverse", "export", "print",
+  "insert",
+  "update",
+  "delete",
+  "login",
+  "login_failed",
+  "logout",
+  "approve",
+  "reject",
+  "post",
+  "reverse",
+  "export",
+  "print",
 ] as const;
 
 const PAGE_SIZE = 25;
@@ -164,9 +174,15 @@ function AuditTrailScreen() {
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="h-10 text-[11px] uppercase tracking-wider">When</TableHead>
                   <TableHead className="h-10 text-[11px] uppercase tracking-wider">Who</TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">Action</TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">Module</TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">Record</TableHead>
+                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                    Action
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                    Module
+                  </TableHead>
+                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                    Record
+                  </TableHead>
                   <TableHead className="h-10" />
                 </TableRow>
               </TableHeader>

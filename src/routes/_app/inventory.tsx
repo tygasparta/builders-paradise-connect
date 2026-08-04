@@ -100,8 +100,7 @@ function InventoryPage() {
               onClick={() => toast.success("Inventory export queued (CSV)")}
             >
               <Download className="size-4" />
-
-      <DemoDataNotice phase={2} module="Inventory" /> Export
+              <DemoDataNotice phase={2} module="Inventory" /> Export
             </Button>
             <Button className="rounded-lg" onClick={() => toast.info("Product form opens here")}>
               <Plus className="size-4" /> New product

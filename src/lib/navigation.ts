@@ -71,9 +71,26 @@ export const NAVIGATION: NavSection[] = [
         icon: ReceiptText,
         require: PERMISSIONS.SALES_VIEW,
         children: [
-          { label: "Invoices", to: "/sales", icon: FileText, require: PERMISSIONS.SALES_INVOICES_VIEW },
-          { label: "Quotations", to: "/sales", icon: FileText, require: PERMISSIONS.QUOTATIONS_VIEW, phase: 3 },
-          { label: "Returns", to: "/sales", icon: FileText, require: PERMISSIONS.SALES_RETURNS_VIEW, phase: 3 },
+          {
+            label: "Invoices",
+            to: "/sales",
+            icon: FileText,
+            require: PERMISSIONS.SALES_INVOICES_VIEW,
+          },
+          {
+            label: "Quotations",
+            to: "/sales",
+            icon: FileText,
+            require: PERMISSIONS.QUOTATIONS_VIEW,
+            phase: 3,
+          },
+          {
+            label: "Returns",
+            to: "/sales",
+            icon: FileText,
+            require: PERMISSIONS.SALES_RETURNS_VIEW,
+            phase: 3,
+          },
         ],
       },
       {
@@ -89,9 +106,24 @@ export const NAVIGATION: NavSection[] = [
         require: PERMISSIONS.PURCHASING_VIEW,
         phase: 2,
         children: [
-          { label: "Requisitions", icon: ClipboardList, require: PERMISSIONS.PURCHASE_REQUISITIONS_VIEW, phase: 2 },
-          { label: "Purchase orders", icon: FileText, require: PERMISSIONS.PURCHASE_ORDERS_VIEW, phase: 2 },
-          { label: "Goods receiving", to: "/goods-receiving", icon: PackageCheck, require: PERMISSIONS.GRN_VIEW },
+          {
+            label: "Requisitions",
+            icon: ClipboardList,
+            require: PERMISSIONS.PURCHASE_REQUISITIONS_VIEW,
+            phase: 2,
+          },
+          {
+            label: "Purchase orders",
+            icon: FileText,
+            require: PERMISSIONS.PURCHASE_ORDERS_VIEW,
+            phase: 2,
+          },
+          {
+            label: "Goods receiving",
+            to: "/goods-receiving",
+            icon: PackageCheck,
+            require: PERMISSIONS.GRN_VIEW,
+          },
         ],
       },
     ],
@@ -117,23 +149,64 @@ export const NAVIGATION: NavSection[] = [
   {
     label: "Relationships",
     items: [
-      { label: "Customers", to: "/customers", icon: Users, require: PERMISSIONS.CUSTOMERS_VIEW, phase: 3 },
-      { label: "Suppliers", to: "/suppliers", icon: Truck, require: PERMISSIONS.SUPPLIERS_VIEW, phase: 2 },
+      {
+        label: "Customers",
+        to: "/customers",
+        icon: Users,
+        require: PERMISSIONS.CUSTOMERS_VIEW,
+        phase: 3,
+      },
+      {
+        label: "Suppliers",
+        to: "/suppliers",
+        icon: Truck,
+        require: PERMISSIONS.SUPPLIERS_VIEW,
+        phase: 2,
+      },
     ],
   },
   {
     label: "Finance",
     items: [
-      { label: "Accounting", to: "/accounting", icon: Landmark, require: PERMISSIONS.ACCOUNTING_VIEW },
-      { label: "Banking", to: "/banking", icon: Banknote, require: PERMISSIONS.BANKING_VIEW, phase: 4 },
-      { label: "Expenses", to: "/expenses", icon: CreditCard, require: PERMISSIONS.EXPENSES_VIEW, phase: 4 },
+      {
+        label: "Accounting",
+        to: "/accounting",
+        icon: Landmark,
+        require: PERMISSIONS.ACCOUNTING_VIEW,
+      },
+      {
+        label: "Banking",
+        to: "/banking",
+        icon: Banknote,
+        require: PERMISSIONS.BANKING_VIEW,
+        phase: 4,
+      },
+      {
+        label: "Expenses",
+        to: "/expenses",
+        icon: CreditCard,
+        require: PERMISSIONS.EXPENSES_VIEW,
+        phase: 4,
+      },
     ],
   },
   {
     label: "People",
     items: [
-      { label: "Human Resources", to: "/hr", icon: UsersRound, require: PERMISSIONS.HR_VIEW, phase: 5 },
-      { label: "Payroll", to: "/payroll", icon: Wallet, require: PERMISSIONS.PAYROLL_VIEW, phase: 5 },
+      {
+        label: "Human Resources",
+        to: "/hr",
+        icon: UsersRound,
+        require: PERMISSIONS.HR_VIEW,
+        phase: 5,
+      },
+      {
+        label: "Payroll",
+        to: "/payroll",
+        icon: Wallet,
+        require: PERMISSIONS.PAYROLL_VIEW,
+        phase: 5,
+      },
     ],
   },
   {
@@ -147,14 +220,25 @@ export const NAVIGATION: NavSection[] = [
         badgeKey: "approvals",
         phase: 6,
       },
-      { label: "Reports", to: "/reports", icon: BarChart3, require: PERMISSIONS.REPORTS_VIEW, phase: 6 },
+      {
+        label: "Reports",
+        to: "/reports",
+        icon: BarChart3,
+        require: PERMISSIONS.REPORTS_VIEW,
+        phase: 6,
+      },
       {
         label: "Users & Roles",
         to: "/users",
         icon: ShieldCheck,
         require: [PERMISSIONS.USERS_VIEW, PERMISSIONS.ROLES_VIEW],
       },
-      { label: "Audit Trail", to: "/audit-trail", icon: ScrollText, require: PERMISSIONS.AUDIT_VIEW },
+      {
+        label: "Audit Trail",
+        to: "/audit-trail",
+        icon: ScrollText,
+        require: PERMISSIONS.AUDIT_VIEW,
+      },
       {
         label: "Settings",
         icon: Cog,

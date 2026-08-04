@@ -76,3 +76,84 @@ export function useRecentActivity(limit = 8) {
     retry: false,
   });
 }
+
+export type RoleDistribution = { role: string; count: number };
+export type WarehouseDistribution = { branch: string; warehouses: number; locations: number };
+
+/**
+ * How many users hold each role.
+ *
+ * Aggregated in the browser rather than in SQL because the row count is
+ * bounded by headcount — a few hundred at most. Anything unbounded (stock
+ * movements, invoices) gets a database-side aggregate instead.
+ */
+export function useUsersByRole() {
+  return useQuery({
+    queryKey: ["dashboard", "usersByRole"] as const,
+    queryFn: async (): Promise<RoleDistribution[]> => {
+      const { data, error } = await db.from("user_roles").select("role:roles(name, rank)");
+      if (error) throw new Error(error.message);
+
+      const rows = (data ?? []) as unknown as { role: { name: string; rank: number } | null }[];
+      const counts = new Map<string, { count: number; rank: number }>();
+      for (const row of rows) {
+        if (!row.role) continue;
+        const existing = counts.get(row.role.name);
+        counts.set(row.role.name, {
+          count: (existing?.count ?? 0) + 1,
+          rank: row.role.rank,
+        });
+      }
+      return [...counts.entries()]
+        .map(([role, meta]) => ({ role, count: meta.count, rank: meta.rank }))
+        .sort((a, b) => a.rank - b.rank || b.count - a.count)
+        .map(({ role, count }) => ({ role, count }));
+    },
+    staleTime: 60_000,
+  });
+}
+
+/** Warehouses and storage locations per branch, for the coverage chart. */
+export function useWarehousesByBranch() {
+  return useQuery({
+    queryKey: ["dashboard", "warehousesByBranch"] as const,
+    queryFn: async (): Promise<WarehouseDistribution[]> => {
+      const [warehouseResult, locationResult] = await Promise.all([
+        db.from("warehouses").select("id, branch:branches(name)").eq("status", "active"),
+        db.from("warehouse_locations").select("warehouse_id").eq("status", "active"),
+      ]);
+
+      if (warehouseResult.error) throw new Error(warehouseResult.error.message);
+      if (locationResult.error) throw new Error(locationResult.error.message);
+
+      const warehouses = (warehouseResult.data ?? []) as unknown as {
+        id: string;
+        branch: { name: string } | null;
+      }[];
+      const locations = (locationResult.data ?? []) as { warehouse_id: string }[];
+
+      const locationsPerWarehouse = new Map<string, number>();
+      for (const location of locations) {
+        locationsPerWarehouse.set(
+          location.warehouse_id,
+          (locationsPerWarehouse.get(location.warehouse_id) ?? 0) + 1,
+        );
+      }
+
+      const byBranch = new Map<string, { warehouses: number; locations: number }>();
+      for (const warehouse of warehouses) {
+        const name = warehouse.branch?.name ?? "Unassigned";
+        const existing = byBranch.get(name) ?? { warehouses: 0, locations: 0 };
+        byBranch.set(name, {
+          warehouses: existing.warehouses + 1,
+          locations: existing.locations + (locationsPerWarehouse.get(warehouse.id) ?? 0),
+        });
+      }
+
+      return [...byBranch.entries()]
+        .map(([branch, counts]) => ({ branch, ...counts }))
+        .sort((a, b) => b.warehouses - a.warehouses);
+    },
+    staleTime: 60_000,
+  });
+}

@@ -184,10 +184,18 @@ function CompanySettingsScreen() {
 
         <SectionCard title="Contact" description="Where customers and suppliers reach you">
           <div className="space-y-4">
-            <Field label="Address line 1" htmlFor="address_line1" error={errors.address_line1?.message}>
+            <Field
+              label="Address line 1"
+              htmlFor="address_line1"
+              error={errors.address_line1?.message}
+            >
               <Input id="address_line1" {...form.register("address_line1")} />
             </Field>
-            <Field label="Address line 2" htmlFor="address_line2" error={errors.address_line2?.message}>
+            <Field
+              label="Address line 2"
+              htmlFor="address_line2"
+              error={errors.address_line2?.message}
+            >
               <Input id="address_line2" {...form.register("address_line2")} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -221,7 +229,12 @@ function CompanySettingsScreen() {
               required
               error={errors.base_currency?.message}
             >
-              <Input id="base_currency" maxLength={3} className="uppercase" {...form.register("base_currency")} />
+              <Input
+                id="base_currency"
+                maxLength={3}
+                className="uppercase"
+                {...form.register("base_currency")}
+              />
             </Field>
 
             <Field
@@ -267,7 +280,12 @@ function CompanySettingsScreen() {
               />
             </Field>
 
-            <Field label="Date format" htmlFor="date_format" required error={errors.date_format?.message}>
+            <Field
+              label="Date format"
+              htmlFor="date_format"
+              required
+              error={errors.date_format?.message}
+            >
               <Input id="date_format" {...form.register("date_format")} />
             </Field>
           </div>

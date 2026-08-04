@@ -54,8 +54,8 @@ export function AuthShell({
             One system for stock, the till, the ledger and the people who run them.
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/55">
-            Every movement of stock and every cent is recorded against a document, a warehouse and
-            a person — so the numbers on the dashboard are the numbers in the yard.
+            Every movement of stock and every cent is recorded against a document, a warehouse and a
+            person — so the numbers on the dashboard are the numbers in the yard.
           </p>
         </div>
 

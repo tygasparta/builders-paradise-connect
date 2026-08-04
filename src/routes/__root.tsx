@@ -87,10 +87,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Dashboard — Builders Paradise ERP" },
       { name: "twitter:title", content: "Dashboard — Builders Paradise ERP" },
-      { property: "og:description", content: "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit." },
-      { name: "twitter:description", content: "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png" },
+      {
+        property: "og:description",
+        content:
+          "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

@@ -79,7 +79,9 @@ function UsersScreen() {
       <Tabs defaultValue={can(PERMISSIONS.USERS_VIEW) ? "users" : "roles"}>
         <TabsList>
           {can(PERMISSIONS.USERS_VIEW) && <TabsTrigger value="users">Users</TabsTrigger>}
-          {can(PERMISSIONS.ROLES_VIEW) && <TabsTrigger value="roles">Roles & permissions</TabsTrigger>}
+          {can(PERMISSIONS.ROLES_VIEW) && (
+            <TabsTrigger value="roles">Roles & permissions</TabsTrigger>
+          )}
         </TabsList>
 
         {can(PERMISSIONS.USERS_VIEW) && (
@@ -403,15 +405,16 @@ function RolesTab() {
   const granted = new Set(rolePermissions.data ?? []);
   const activeRole = roles.data?.find((role) => role.id === activeRoleId);
 
+  const permissionRows = permissions.data;
   const byModule = useMemo(() => {
-    const groups = new Map<string, typeof permissions.data>();
-    for (const permission of permissions.data ?? []) {
+    const groups = new Map<string, NonNullable<typeof permissionRows>>();
+    for (const permission of permissionRows ?? []) {
       const list = groups.get(permission.module) ?? [];
       list.push(permission);
       groups.set(permission.module, list);
     }
     return [...groups.entries()];
-  }, [permissions.data]);
+  }, [permissionRows]);
 
   if (roles.isLoading || permissions.isLoading) return <CardsSkeleton count={3} />;
   if (roles.isError) {

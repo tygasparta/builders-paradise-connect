@@ -139,7 +139,11 @@ function ProfilePage() {
               <Input id="full_name" {...form.register("full_name")} />
             </Field>
 
-            <Field label="Email" htmlFor="email" hint="Changing your sign-in email is not self-service.">
+            <Field
+              label="Email"
+              htmlFor="email"
+              hint="Changing your sign-in email is not self-service."
+            >
               <Input id="email" value={profile?.email ?? ""} disabled readOnly />
             </Field>
 

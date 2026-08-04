@@ -16,11 +16,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { useCompanySettings } from "@/features/settings/hooks";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -50,7 +46,8 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
     Boolean(item.to) &&
     (pathname === item.to || (item.to !== "/" && pathname.startsWith(`${item.to}/`)));
 
-  const hasActiveChild = (item: NavItem) => item.children?.some((child) => isActive(child)) ?? false;
+  const hasActiveChild = (item: NavItem) =>
+    item.children?.some((child) => isActive(child)) ?? false;
 
   return (
     <Sidebar collapsible="icon" className="border-sidebar-border">

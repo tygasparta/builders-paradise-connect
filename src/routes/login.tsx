@@ -20,7 +20,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): { redirect?: string } =>
-    typeof search['redirect'] === "string" ? { redirect: search['redirect'] } : {},
+    typeof search["redirect"] === "string" ? { redirect: search["redirect"] } : {},
   component: LoginPage,
 });
 
@@ -111,7 +111,10 @@ function LoginPage() {
             <Label htmlFor="password">
               Password <span className="text-destructive">*</span>
             </Label>
-            <Link to="/forgot-password" className="text-xs text-muted-foreground hover:text-primary">
+            <Link
+              to="/forgot-password"
+              className="text-xs text-muted-foreground hover:text-primary"
+            >
               Forgot?
             </Link>
           </div>

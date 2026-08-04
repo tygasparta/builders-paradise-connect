@@ -30,7 +30,10 @@ export class SupabaseError extends Error {
  * Unwraps a PostgREST result, turning the error branch into a throw so
  * TanStack Query can drive the error state.
  */
-export function unwrap<T>(result: { data: T | null; error: { message: string; code?: string; details?: string } | null }): T {
+export function unwrap<T>(result: {
+  data: T | null;
+  error: { message: string; code?: string; details?: string } | null;
+}): T {
   if (result.error) {
     throw new SupabaseError(
       humaniseError(result.error.message, result.error.code),

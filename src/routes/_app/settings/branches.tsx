@@ -61,9 +61,7 @@ function BranchesScreen() {
       {
         accessorKey: "code",
         header: "Code",
-        cell: ({ row }) => (
-          <span className="num font-medium">{row.original.code}</span>
-        ),
+        cell: ({ row }) => <span className="num font-medium">{row.original.code}</span>,
       },
       {
         accessorKey: "name",
@@ -143,9 +141,7 @@ function BranchesScreen() {
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem
-                      onSelect={() =>
-                        setStatus.mutate({ id: branch.id, status: "active" })
-                      }
+                      onSelect={() => setStatus.mutate({ id: branch.id, status: "active" })}
                     >
                       <Power className="size-4" />
                       Reactivate

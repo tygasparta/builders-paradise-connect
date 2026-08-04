@@ -30,7 +30,8 @@ export const Route = createFileRoute("/_app/goods-receiving")({
       { property: "og:title", content: "Goods Receiving — Builders Paradise ERP" },
       {
         property: "og:description",
-        content: "GRN workflow from purchase order to inspection, posting and supplier balance update.",
+        content:
+          "GRN workflow from purchase order to inspection, posting and supplier balance update.",
       },
     ],
   }),
@@ -58,10 +59,12 @@ function GoodsReceiving() {
         title="Goods Receiving"
         description="Receive against purchase orders, record inspection variances and post the inventory and payable entries automatically."
         actions={
-          <Button className="rounded-lg" onClick={() => toast.info("Select a purchase order to receive")}>
+          <Button
+            className="rounded-lg"
+            onClick={() => toast.info("Select a purchase order to receive")}
+          >
             <PackageCheck className="size-4" />
-
-      <DemoDataNotice phase={2} module="Goods receiving" /> New GRN
+            <DemoDataNotice phase={2} module="Goods receiving" /> New GRN
           </Button>
         }
       />
@@ -90,13 +93,19 @@ function GoodsReceiving() {
         />
         <StatCard
           label="Receipt value (MTD)"
-          value={money(GRNS.reduce((s, g) => s + g.lines.reduce((a, l) => a + l.received * l.cost, 0), 0))}
+          value={money(
+            GRNS.reduce((s, g) => s + g.lines.reduce((a, l) => a + l.received * l.cost, 0), 0),
+          )}
           sub="At supplier cost"
           icon={<PackageCheck className="size-4" />}
         />
       </div>
 
-      <SectionCard title="Receiving workflow" description="Every GRN follows this controlled path" className="mt-6">
+      <SectionCard
+        title="Receiving workflow"
+        description="Every GRN follows this controlled path"
+        className="mt-6"
+      >
         <div className="flex flex-wrap items-center gap-2">
           {STEPS.map((s, i) => (
             <div key={s} className="flex items-center gap-2">
@@ -123,7 +132,12 @@ function GoodsReceiving() {
       </SectionCard>
 
       <div className="mt-6 grid gap-4 xl:grid-cols-3">
-        <SectionCard title="Goods Received Notes" description="Select a GRN to review" bodyClassName="p-0" className="xl:col-span-2">
+        <SectionCard
+          title="Goods Received Notes"
+          description="Select a GRN to review"
+          bodyClassName="p-0"
+          className="xl:col-span-2"
+        >
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -182,7 +196,9 @@ function GoodsReceiving() {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Variance</p>
-                      <p className={variance < 0 ? "font-semibold text-destructive" : "font-medium"}>
+                      <p
+                        className={variance < 0 ? "font-semibold text-destructive" : "font-medium"}
+                      >
                         {variance}
                       </p>
                     </div>
@@ -221,7 +237,11 @@ function GoodsReceiving() {
             >
               {selected.status === "Posted" ? "Already posted" : "Post GRN"}
             </Button>
-            <Button variant="outline" className="rounded-lg" onClick={() => toast.info("Printing GRN…")}>
+            <Button
+              variant="outline"
+              className="rounded-lg"
+              onClick={() => toast.info("Printing GRN…")}
+            >
               Print
             </Button>
           </div>

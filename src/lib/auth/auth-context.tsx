@@ -11,7 +11,11 @@ import {
 
 import { db, humaniseError } from "@/lib/supabase";
 import type { ProfileRow } from "@/lib/database.types";
-import { createPermissionSet, EMPTY_PERMISSIONS, type PermissionSet } from "@/lib/permissions/check";
+import {
+  createPermissionSet,
+  EMPTY_PERMISSIONS,
+  type PermissionSet,
+} from "@/lib/permissions/check";
 
 export type SignedInRole = { code: string; name: string; rank: number };
 
@@ -83,7 +87,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ]);
 
     if (profileResult.error) {
-      return { ...SIGNED_OUT, accessError: humaniseError(profileResult.error.message, profileResult.error.code) };
+      return {
+        ...SIGNED_OUT,
+        accessError: humaniseError(profileResult.error.message, profileResult.error.code),
+      };
     }
 
     const profile = profileResult.data as ProfileRow | null;
@@ -106,7 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const roles = (rolesResult.data ?? []) as SignedInRole[];
-    const permissionCodes = ((permissionsResult.data ?? []) as { code: string }[]).map((r) => r.code);
+    const permissionCodes = ((permissionsResult.data ?? []) as { code: string }[]).map(
+      (r) => r.code,
+    );
 
     if (permissionCodes.length === 0) {
       return {
@@ -187,53 +196,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     writeStored(WAREHOUSE_KEY, id);
   }, []);
 
-  const signIn = useCallback<AuthContextValue["signIn"]>(async (email, password) => {
-    setState((prev) => ({ ...prev, accessError: null }));
+  const signIn = useCallback<AuthContextValue["signIn"]>(
+    async (email, password) => {
+      setState((prev) => ({ ...prev, accessError: null }));
 
-    const { data, error } = await db.auth.signInWithPassword({ email, password });
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
 
-    // Recorded for both outcomes: failed attempts feed the lockout counter
-    // and the audit trail, and this runs before a session exists.
-    await db.rpc("record_login_attempt", { p_email: email, p_succeeded: !error }).then(
-      () => undefined,
-      () => undefined, // never let audit failure block a legitimate sign-in
-    );
+      // Recorded for both outcomes: failed attempts feed the lockout counter
+      // and the audit trail, and this runs before a session exists.
+      await db.rpc("record_login_attempt", { p_email: email, p_succeeded: !error }).then(
+        () => undefined,
+        () => undefined, // never let audit failure block a legitimate sign-in
+      );
 
-    if (error) {
-      return {
-        error:
-          error.message === "Invalid login credentials"
-            ? "That email and password do not match an account."
-            : humaniseError(error.message),
-      };
-    }
-    if (!data.session) {
-      return { error: "Sign-in did not return a session. Try again." };
-    }
+      if (error) {
+        return {
+          error:
+            error.message === "Invalid login credentials"
+              ? "That email and password do not match an account."
+              : humaniseError(error.message),
+        };
+      }
+      if (!data.session) {
+        return { error: "Sign-in did not return a session. Try again." };
+      }
 
-    const next = await loadIdentity(data.session);
-    if (next.status !== "signed-in") {
-      await db.auth.signOut();
+      const next = await loadIdentity(data.session);
+      if (next.status !== "signed-in") {
+        await db.auth.signOut();
+        setState(next);
+        return { error: next.accessError };
+      }
       setState(next);
-      return { error: next.accessError };
-    }
-    setState(next);
-    return { error: null };
-  }, [loadIdentity]);
+      return { error: null };
+    },
+    [loadIdentity],
+  );
 
   const signOut = useCallback(async () => {
     await db.auth.signOut();
     setState({ ...SIGNED_OUT });
   }, []);
 
-  const requestPasswordReset = useCallback<AuthContextValue["requestPasswordReset"]>(async (email) => {
-    const options =
-      typeof window === "undefined"
-        ? {}
-        : { redirectTo: `${window.location.origin}/reset-password` };
-    const { error } = await db.auth.resetPasswordForEmail(email, options);
-    return { error: error ? humaniseError(error.message) : null };
-  }, []);
+  const requestPasswordReset = useCallback<AuthContextValue["requestPasswordReset"]>(
+    async (email) => {
+      const options =
+        typeof window === "undefined"
+          ? {}
+          : { redirectTo: `${window.location.origin}/reset-password` };
+      const { error } = await db.auth.resetPasswordForEmail(email, options);
+      return { error: error ? humaniseError(error.message) : null };
+    },
+    [],
+  );
 
   const updatePassword = useCallback<AuthContextValue["updatePassword"]>(async (password) => {
     const { error } = await db.auth.updateUser({ password });

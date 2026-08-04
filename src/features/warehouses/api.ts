@@ -18,7 +18,9 @@ export async function listWarehouses(
 ): Promise<WarehouseWithBranch[]> {
   let query = db
     .from("warehouses")
-    .select("*, branch:branches!warehouses_branch_id_fkey(id, code, name), manager:profiles!warehouses_manager_id_fkey(id, full_name)")
+    .select(
+      "*, branch:branches!warehouses_branch_id_fkey(id, code, name), manager:profiles!warehouses_manager_id_fkey(id, full_name)",
+    )
     .order("code");
 
   if (branchId) query = query.eq("branch_id", branchId);
@@ -50,16 +52,11 @@ export async function updateWarehouse(
   return updated;
 }
 
-export async function setWarehouseStatus(
-  id: string,
-  status: "active" | "inactive",
-): Promise<void> {
+export async function setWarehouseStatus(id: string, status: "active" | "inactive"): Promise<void> {
   unwrap(await db.from("warehouses").update({ status }).eq("id", id).select("id"));
 }
 
-export async function listWarehouseLocations(
-  warehouseId: string,
-): Promise<WarehouseLocationRow[]> {
+export async function listWarehouseLocations(warehouseId: string): Promise<WarehouseLocationRow[]> {
   return unwrap(
     await db.from("warehouse_locations").select("*").eq("warehouse_id", warehouseId).order("code"),
   ) as WarehouseLocationRow[];

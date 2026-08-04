@@ -28,7 +28,8 @@ export function useCreateBranch() {
 export function useUpdateBranch() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, values }: { id: string; values: BranchFormValues }) => updateBranch(id, values),
+    mutationFn: ({ id, values }: { id: string; values: BranchFormValues }) =>
+      updateBranch(id, values),
     onSuccess: (branch) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.branches.all });
       toast.success(`Branch "${branch.name}" updated`);

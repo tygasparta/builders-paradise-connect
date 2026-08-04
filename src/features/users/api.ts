@@ -57,7 +57,9 @@ export async function updateUserProfile(
     default_warehouse_id: string | null;
   },
 ): Promise<ProfileRow> {
-  const rows = unwrap(await db.from("profiles").update(values).eq("id", id).select("*")) as ProfileRow[];
+  const rows = unwrap(
+    await db.from("profiles").update(values).eq("id", id).select("*"),
+  ) as ProfileRow[];
   const updated = rows[0];
   if (!updated) {
     throw new Error("The user could not be updated. You may not have permission.");
@@ -71,9 +73,7 @@ export async function setUserStatus(id: string, status: UserStatus): Promise<voi
       .from("profiles")
       // Reactivating clears the lockout counters so the user can sign in again.
       .update(
-        status === "active"
-          ? { status, failed_login_count: 0, locked_until: null }
-          : { status },
+        status === "active" ? { status, failed_login_count: 0, locked_until: null } : { status },
       )
       .eq("id", id)
       .select("id"),

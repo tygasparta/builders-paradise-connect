@@ -25,7 +25,11 @@ export function useUpdateCompanySettings() {
   return useMutation({
     mutationFn: async (values: CompanySettingsFormValues) => {
       const rows = unwrap(
-        await db.from("system_settings").update(toCompanyPayload(values)).eq("id", true).select("*"),
+        await db
+          .from("system_settings")
+          .update(toCompanyPayload(values))
+          .eq("id", true)
+          .select("*"),
       ) as SystemSettingsRow[];
       const saved = rows[0];
       if (!saved) {

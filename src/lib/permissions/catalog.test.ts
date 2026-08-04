@@ -125,7 +125,9 @@ describe("core migration integrity", () => {
       resolve(here, "../../../supabase/migrations/20260804090100_phase1_rls.sql"),
       "utf8",
     );
-    const auditPolicies = [...rls.matchAll(/create policy (audit_logs_\w+) on public\.audit_logs\s+for (\w+)/g)];
+    const auditPolicies = [
+      ...rls.matchAll(/create policy (audit_logs_\w+) on public\.audit_logs\s+for (\w+)/g),
+    ];
     expect(auditPolicies.length).toBeGreaterThan(0);
     for (const [, name, command] of auditPolicies) {
       expect(command, `${name} must be read-only`).toBe("select");

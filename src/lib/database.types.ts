@@ -11,13 +11,7 @@
 export type UserStatus = "invited" | "active" | "suspended" | "locked";
 export type RecordStatus = "active" | "inactive";
 export type WarehouseType =
-  | "main"
-  | "shop_floor"
-  | "branch"
-  | "virtual_employee"
-  | "damaged"
-  | "returns"
-  | "in_transit";
+  "main" | "shop_floor" | "branch" | "virtual_employee" | "damaged" | "returns" | "in_transit";
 export type LocationType = "storage" | "picking" | "receiving" | "dispatch" | "quarantine";
 export type NotificationSeverity = "info" | "success" | "warning" | "danger";
 
@@ -198,12 +192,17 @@ export type Database = {
       >;
       warehouse_locations: TableDef<
         WarehouseLocationRow,
-        Writable<WarehouseLocationRow> & Pick<WarehouseLocationRow, "code" | "name" | "warehouse_id">
+        Writable<WarehouseLocationRow> &
+          Pick<WarehouseLocationRow, "code" | "name" | "warehouse_id">
       >;
       profiles: TableDef<ProfileRow>;
       roles: TableDef<RoleRow, Writable<RoleRow> & Pick<RoleRow, "code" | "name">>;
       permissions: TableDef<PermissionRow, never, never>;
-      role_permissions: TableDef<RolePermissionRow, Pick<RolePermissionRow, "role_id" | "permission_id">, never>;
+      role_permissions: TableDef<
+        RolePermissionRow,
+        Pick<RolePermissionRow, "role_id" | "permission_id">,
+        never
+      >;
       user_roles: TableDef<
         UserRoleRow,
         Pick<UserRoleRow, "user_id" | "role_id"> & Partial<Pick<UserRoleRow, "branch_id">>,
@@ -219,7 +218,10 @@ export type Database = {
       has_any_permission: { Args: { p_codes: string[] }; Returns: boolean };
       is_active_user: { Args: Record<string, never>; Returns: boolean };
       my_permissions: { Args: Record<string, never>; Returns: { code: string }[] };
-      my_roles: { Args: Record<string, never>; Returns: { code: string; name: string; rank: number }[] };
+      my_roles: {
+        Args: Record<string, never>;
+        Returns: { code: string; name: string; rank: number }[];
+      };
       record_login_attempt: { Args: { p_email: string; p_succeeded: boolean }; Returns: void };
     };
     Enums: Record<never, never>;
