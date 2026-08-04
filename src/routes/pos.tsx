@@ -85,7 +85,10 @@ function POS() {
   const cost = lines.reduce((s, l) => s + l.qty * l.cost, 0);
 
   const checkout = () => {
-    if (!lines.length) return toast.error("Add items before completing the sale");
+    if (!lines.length) {
+      toast.error("Add items before completing the sale");
+      return;
+    }
     toast.success(`Sale completed — ${money(net)} (${tender})`, {
       description: "Stock deducted, VAT and cost of sales posted to the ledger.",
     });

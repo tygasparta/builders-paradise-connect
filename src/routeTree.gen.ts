@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GoodsReceivingRouteImport } from './routes/goods-receiving'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as PosRouteImport } from './routes/pos'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const InventoryRoute = InventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PosRoute = PosRouteImport.update({
+  id: '/pos',
+  path: '/pos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
+  '/pos': typeof PosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
+  '/pos': typeof PosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
+  '/pos': typeof PosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/goods-receiving' | '/inventory'
+  fullPaths: '/' | '/goods-receiving' | '/inventory' | '/pos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/goods-receiving' | '/inventory'
-  id: '__root__' | '/' | '/goods-receiving' | '/inventory'
+  to: '/' | '/goods-receiving' | '/inventory' | '/pos'
+  id: '__root__' | '/' | '/goods-receiving' | '/inventory' | '/pos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GoodsReceivingRoute: typeof GoodsReceivingRoute
   InventoryRoute: typeof InventoryRoute
+  PosRoute: typeof PosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pos': {
+      id: '/pos'
+      path: '/pos'
+      fullPath: '/pos'
+      preLoaderRoute: typeof PosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GoodsReceivingRoute: GoodsReceivingRoute,
   InventoryRoute: InventoryRoute,
+  PosRoute: PosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
