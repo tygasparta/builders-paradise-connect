@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOrganisationStats, useRecentActivity } from "@/features/dashboard/hooks";
 import { useCompanySettings } from "@/features/settings/hooks";
+import { plural, readableRecord } from "@/lib/format";
 import { useAuth } from "@/lib/auth/auth-context";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
@@ -47,8 +48,8 @@ function DashboardPage() {
         stats={[
           `Good day, ${firstName}`,
           today,
-          stats.data ? `${stats.data.activeUsers} active users` : null,
-          stats.data ? `${stats.data.branches} branches` : null,
+          stats.data ? `${plural(stats.data.activeUsers, "active user")}` : null,
+          stats.data ? `${plural(stats.data.branches, "branch", "branches")}` : null,
         ]}
         actions={
           <div className="flex flex-wrap gap-1.5">
@@ -86,14 +87,14 @@ function DashboardPage() {
           <StatCard
             label="Active warehouses"
             value={String(stats.data?.warehouses ?? 0)}
-            sub={`${stats.data?.locations ?? 0} storage locations`}
+            sub={plural(stats.data?.locations ?? 0, "storage location")}
             icon={<WarehouseIcon className="size-4" />}
             tone="primary"
           />
           <StatCard
             label="Active users"
             value={String(stats.data?.activeUsers ?? 0)}
-            sub={`${stats.data?.users ?? 0} accounts in total`}
+            sub={`${plural(stats.data?.users ?? 0, "account")} in total`}
             icon={<UserCheck className="size-4" />}
             tone="success"
           />
@@ -140,7 +141,7 @@ function DashboardPage() {
                       <p className="text-sm">
                         <span className="font-medium">{entry.user_email ?? "System"}</span>{" "}
                         <span className="text-muted-foreground">
-                          {actionVerb(entry.action)} {readableTable(entry.table_name)}
+                          {actionVerb(entry.action)} {readableRecord(entry.table_name)}
                         </span>
                       </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
@@ -215,9 +216,4 @@ function actionVerb(action: string): string {
     reverse: "reversed",
   };
   return map[action] ?? action;
-}
-
-function readableTable(table: string | null): string {
-  if (!table) return "";
-  return `a ${table.replace(/_/g, " ").replace(/s$/, "")} record`;
 }
