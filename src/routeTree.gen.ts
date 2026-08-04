@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GoodsReceivingRouteImport } from './routes/goods-receiving'
 import { Route as InventoryRouteImport } from './routes/inventory'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GoodsReceivingRoute = GoodsReceivingRouteImport.update({
+  id: '/goods-receiving',
+  path: '/goods-receiving',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryRoute = InventoryRouteImport.update({
@@ -25,27 +31,31 @@ const InventoryRoute = InventoryRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/goods-receiving': typeof GoodsReceivingRoute
   '/inventory': typeof InventoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventory'
+  fullPaths: '/' | '/goods-receiving' | '/inventory'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventory'
-  id: '__root__' | '/' | '/inventory'
+  to: '/' | '/goods-receiving' | '/inventory'
+  id: '__root__' | '/' | '/goods-receiving' | '/inventory'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GoodsReceivingRoute: typeof GoodsReceivingRoute
   InventoryRoute: typeof InventoryRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/goods-receiving': {
+      id: '/goods-receiving'
+      path: '/goods-receiving'
+      fullPath: '/goods-receiving'
+      preLoaderRoute: typeof GoodsReceivingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GoodsReceivingRoute: GoodsReceivingRoute,
   InventoryRoute: InventoryRoute,
 }
 export const routeTree = rootRouteImport
