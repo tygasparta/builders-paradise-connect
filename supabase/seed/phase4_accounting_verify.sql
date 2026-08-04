@@ -30,6 +30,7 @@ declare
   v_before     numeric;
   v_after      numeric;
   v_stamp      text := to_char(clock_timestamp(), 'HH24MISSMS');
+  v_stranded   record;
 begin
   ------------------------------------------------------------------
   -- 0. Preconditions
@@ -49,6 +50,18 @@ begin
     insert into _v4 values ('ABORTED', 'a period covering today', 'none', false);
     return;
   end if;
+
+  ------------------------------------------------------------------
+  -- Reverse anything a previous interrupted run left behind, so the
+  -- opening-figure assertion below measures this run alone.
+  ------------------------------------------------------------------
+  for v_stranded in
+    select id from public.journal_entries
+    where reference like 'ZZVERIFY-%' and reference not like '%-REV'
+      and status = 'posted' and reversed_by_journal_id is null
+  loop
+    perform public.reverse_journal_entry(v_stranded.id, 'stranded verification entry');
+  end loop;
 
   ------------------------------------------------------------------
   -- 1. A balanced journal posts.
@@ -191,9 +204,11 @@ begin
   insert into _v4 values ('8. reversal returns inventory to its opening figure',
     v_before::text, v_after::text, v_after = v_before);
 
-  select status into v_debit from (select case when status = 'reversed' then 1 else 0 end as status
-                                   from public.journal_entries where id = v_journal) s;
-  insert into _v4 values ('8. original marked reversed', '1', v_debit::text, v_debit = 1);
+  select count(*) into v_count
+  from public.journal_entries
+  where id = v_journal and status = 'reversed' and reversed_by_journal_id = v_reversal;
+  insert into _v4 values ('8. original marked reversed and linked forward', '1',
+    v_count::text, v_count = 1);
 
   select count(*) into v_count
   from public.journal_entries
