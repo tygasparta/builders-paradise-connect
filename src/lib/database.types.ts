@@ -172,6 +172,126 @@ export type NotificationRow = {
   created_at: string;
 };
 
+// ---------------------------------------------------------------------
+// Phase 2 — catalogue and inventory
+// ---------------------------------------------------------------------
+
+export type ProductStatus = "active" | "inactive" | "discontinued";
+
+export type UnitOfMeasureRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  allow_decimal: boolean;
+  status: RecordStatus;
+};
+
+export type ProductCategoryRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  parent_id: string | null;
+  description: string | null;
+  status: RecordStatus;
+};
+
+export type BrandRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  status: RecordStatus;
+};
+
+export type ProductRow = Timestamps & {
+  id: string;
+  sku: string;
+  stock_code: string | null;
+  name: string;
+  description: string | null;
+  category_id: string | null;
+  brand_id: string | null;
+  uom_id: string;
+  default_supplier_id: string | null;
+  standard_cost: number;
+  selling_price: number;
+  tax_rate: number;
+  min_stock_level: number;
+  max_stock_level: number | null;
+  reorder_level: number;
+  image_url: string | null;
+  notes: string | null;
+  track_stock: boolean;
+  track_expiry: boolean;
+  status: ProductStatus;
+};
+
+/** The cost-masked read path: standard_cost is null without the permission. */
+export type ProductCatalogueRow = Omit<
+  ProductRow,
+  "standard_cost" | "created_by" | "updated_by" | "notes" | "default_supplier_id"
+> & {
+  standard_cost: number | null;
+};
+
+export type ProductBarcodeRow = {
+  id: string;
+  product_id: string;
+  barcode: string;
+  is_primary: boolean;
+  label: string | null;
+  created_at: string;
+  created_by: string | null;
+};
+
+export type InventoryMovementType =
+  | "opening_balance"
+  | "goods_receipt"
+  | "customer_return"
+  | "adjustment_increase"
+  | "transfer_in"
+  | "count_increase"
+  | "requisition_return"
+  | "sale"
+  | "supplier_return"
+  | "adjustment_decrease"
+  | "transfer_out"
+  | "count_decrease"
+  | "requisition_issue";
+
+export type InventoryBalanceRow = {
+  product_id: string;
+  warehouse_id: string;
+  quantity: number;
+  average_cost: number;
+  total_value: number;
+  last_movement_at: string | null;
+  updated_at: string;
+};
+
+export type InventoryMovementRow = {
+  id: string;
+  movement_no: number;
+  product_id: string;
+  warehouse_id: string;
+  movement_type: InventoryMovementType;
+  quantity: number;
+  direction: 1 | -1;
+  unit_cost: number;
+  total_cost: number;
+  balance_quantity: number;
+  balance_average_cost: number;
+  balance_value: number;
+  source_module: string | null;
+  source_document_type: string | null;
+  source_document_id: string | null;
+  source_document_number: string | null;
+  movement_date: string;
+  reason: string | null;
+  notes: string | null;
+  created_at: string;
+  created_by: string | null;
+};
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -211,8 +331,31 @@ export type Database = {
       system_settings: TableDef<SystemSettingsRow>;
       audit_logs: TableDef<AuditLogRow, never, never>;
       notifications: TableDef<NotificationRow, never, Pick<NotificationRow, "read_at">>;
+      units_of_measure: TableDef<
+        UnitOfMeasureRow,
+        Writable<UnitOfMeasureRow> & Pick<UnitOfMeasureRow, "code" | "name">
+      >;
+      product_categories: TableDef<
+        ProductCategoryRow,
+        Writable<ProductCategoryRow> & Pick<ProductCategoryRow, "code" | "name">
+      >;
+      brands: TableDef<BrandRow, Writable<BrandRow> & Pick<BrandRow, "code" | "name">>;
+      products: TableDef<
+        ProductRow,
+        Writable<ProductRow> & Pick<ProductRow, "sku" | "name" | "uom_id">
+      >;
+      product_barcodes: TableDef<
+        ProductBarcodeRow,
+        Pick<ProductBarcodeRow, "product_id" | "barcode"> &
+          Partial<Pick<ProductBarcodeRow, "is_primary" | "label">>,
+        Partial<Pick<ProductBarcodeRow, "is_primary" | "label">>
+      >;
+      inventory_balances: TableDef<InventoryBalanceRow, never, never>;
+      inventory_movements: TableDef<InventoryMovementRow, never, never>;
     };
-    Views: Record<never, never>;
+    Views: {
+      products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
+    };
     Functions: {
       has_permission: { Args: { p_code: string }; Returns: boolean };
       has_any_permission: { Args: { p_codes: string[] }; Returns: boolean };
@@ -223,6 +366,46 @@ export type Database = {
         Returns: { code: string; name: string; rank: number }[];
       };
       record_login_attempt: { Args: { p_email: string; p_succeeded: boolean }; Returns: void };
+      find_product_by_scan: {
+        Args: { p_code: string };
+        Returns: {
+          product_id: string;
+          sku: string;
+          name: string;
+          selling_price: number;
+          tax_rate: number;
+          uom_code: string;
+          track_stock: boolean;
+          status: string;
+        }[];
+      };
+      inventory_valuation_as_at: {
+        Args: { p_as_at?: string; p_warehouse_id?: string | null };
+        Returns: {
+          product_id: string;
+          warehouse_id: string;
+          quantity: number;
+          average_cost: number;
+          total_value: number;
+        }[];
+      };
+      post_inventory_movement: {
+        Args: {
+          p_product_id: string;
+          p_warehouse_id: string;
+          p_movement_type: InventoryMovementType;
+          p_quantity: number;
+          p_unit_cost?: number | null;
+          p_source_module?: string | null;
+          p_source_document_type?: string | null;
+          p_source_document_id?: string | null;
+          p_source_document_number?: string | null;
+          p_movement_date?: string | null;
+          p_reason?: string | null;
+          p_notes?: string | null;
+        };
+        Returns: string;
+      };
     };
     Enums: Record<never, never>;
     CompositeTypes: Record<never, never>;
