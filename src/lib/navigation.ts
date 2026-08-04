@@ -168,7 +168,6 @@ export const NAVIGATION: NavSection[] = [
         to: "/suppliers",
         icon: Truck,
         require: PERMISSIONS.SUPPLIERS_VIEW,
-        phase: 2,
       },
     ],
   },

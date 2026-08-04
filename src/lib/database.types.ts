@@ -292,6 +292,43 @@ export type InventoryMovementRow = {
   created_by: string | null;
 };
 
+// ---------------------------------------------------------------------
+// Phase 3 — suppliers
+// ---------------------------------------------------------------------
+
+export type SupplierStatus = "active" | "inactive" | "blocked";
+
+export type SupplierRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  trading_name: string | null;
+  contact_person: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  country: string;
+  tax_number: string | null;
+  registration_number: string | null;
+  currency_code: string;
+  payment_terms_days: number;
+  credit_limit: number | null;
+  opening_balance: number;
+  bank_name: string | null;
+  bank_account_name: string | null;
+  bank_account_number: string | null;
+  bank_branch: string | null;
+  swift_code: string | null;
+  status: SupplierStatus;
+  notes: string | null;
+};
+
+/** Bank fields are null without a supplier-payment permission. */
+export type SupplierDirectoryRow = Omit<SupplierRow, "created_by" | "updated_by">;
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -352,9 +389,11 @@ export type Database = {
       >;
       inventory_balances: TableDef<InventoryBalanceRow, never, never>;
       inventory_movements: TableDef<InventoryMovementRow, never, never>;
+      suppliers: TableDef<SupplierRow, Writable<SupplierRow> & Pick<SupplierRow, "code" | "name">>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
+      suppliers_directory: { Row: SupplierDirectoryRow; Relationships: [] };
     };
     Functions: {
       has_permission: { Args: { p_code: string }; Returns: boolean };
