@@ -10,6 +10,7 @@ import {
   FileText,
   LayoutDashboard,
   Landmark,
+  Package,
   PackageCheck,
   ReceiptText,
   ScanBarcode,
@@ -131,6 +132,12 @@ export const NAVIGATION: NavSection[] = [
   {
     label: "Stock",
     items: [
+      {
+        label: "Products",
+        to: "/products",
+        icon: Package,
+        require: PERMISSIONS.PRODUCTS_VIEW,
+      },
       {
         label: "Inventory",
         to: "/inventory",

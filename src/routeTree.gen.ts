@@ -19,6 +19,7 @@ import { Route as AppAuditTrailRouteImport } from './routes/_app/audit-trail'
 import { Route as AppGoodsReceivingRouteImport } from './routes/_app/goods-receiving'
 import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
 import { Route as AppPosRouteImport } from './routes/_app/pos'
+import { Route as AppProductsRouteImport } from './routes/_app/products'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppSalesRouteImport } from './routes/_app/sales'
 import { Route as AppUsersRouteImport } from './routes/_app/users'
@@ -75,6 +76,11 @@ const AppPosRoute = AppPosRouteImport.update({
   path: '/pos',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProductsRoute = AppProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/goods-receiving': typeof AppGoodsReceivingRoute
   '/inventory': typeof AppInventoryRoute
   '/pos': typeof AppPosRoute
+  '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
   '/sales': typeof AppSalesRoute
   '/users': typeof AppUsersRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/goods-receiving': typeof AppGoodsReceivingRoute
   '/inventory': typeof AppInventoryRoute
   '/pos': typeof AppPosRoute
+  '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
   '/sales': typeof AppSalesRoute
   '/users': typeof AppUsersRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/_app/goods-receiving': typeof AppGoodsReceivingRoute
   '/_app/inventory': typeof AppInventoryRoute
   '/_app/pos': typeof AppPosRoute
+  '/_app/products': typeof AppProductsRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/sales': typeof AppSalesRoute
   '/_app/users': typeof AppUsersRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/goods-receiving'
     | '/inventory'
     | '/pos'
+    | '/products'
     | '/profile'
     | '/sales'
     | '/users'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/goods-receiving'
     | '/inventory'
     | '/pos'
+    | '/products'
     | '/profile'
     | '/sales'
     | '/users'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/_app/goods-receiving'
     | '/_app/inventory'
     | '/_app/pos'
+    | '/_app/products'
     | '/_app/profile'
     | '/_app/sales'
     | '/_app/users'
@@ -293,6 +305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPosRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/products': {
+      id: '/_app/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof AppProductsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/profile': {
       id: '/_app/profile'
       path: '/profile'
@@ -344,6 +363,7 @@ interface AppRouteChildren {
   AppGoodsReceivingRoute: typeof AppGoodsReceivingRoute
   AppInventoryRoute: typeof AppInventoryRoute
   AppPosRoute: typeof AppPosRoute
+  AppProductsRoute: typeof AppProductsRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSalesRoute: typeof AppSalesRoute
   AppUsersRoute: typeof AppUsersRoute
@@ -359,6 +379,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGoodsReceivingRoute: AppGoodsReceivingRoute,
   AppInventoryRoute: AppInventoryRoute,
   AppPosRoute: AppPosRoute,
+  AppProductsRoute: AppProductsRoute,
   AppProfileRoute: AppProfileRoute,
   AppSalesRoute: AppSalesRoute,
   AppUsersRoute: AppUsersRoute,
