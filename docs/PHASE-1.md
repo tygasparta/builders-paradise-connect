@@ -164,7 +164,24 @@ live REST API using the public anon key:
 | Anonymous insert into `branches` | Refused, `42501 new row violates row-level security policy` |
 | Insert into `audit_logs` | Refused, `42501` — the append-only trail holds |
 
-**Still to verify** (needs a signed-in session, so it waits on the first
-administrator being bootstrapped): that a cashier is denied cost prices and
-branch settings, that the self-role-grant and self-status-edit triggers fire,
-and that branch/warehouse writes audit end to end.
+### Signed-in verification — 13/13 passed
+
+Run via `supabase/seed/phase1_verify.sql`, which impersonates a real user
+inside Postgres the same way PostgREST does (role `authenticated` plus
+`request.jwt.claims`), so RLS is enforced exactly as it would be for a live
+session — no password required.
+
+| Check | Result |
+|---|---|
+| 1. `handle_new_user` created an active profile when the auth user was added | PASS |
+| 2. Bootstrap assigned `super_admin` | PASS |
+| 3. RLS **grants**: super admin reads all 3 branches | PASS |
+| 4. RLS **denies**: identity with no active profile reads 0 branches | PASS |
+| 5. `my_permissions()` returns all 151 for a live session | PASS |
+| 6. Cashier cannot view cost prices | PASS |
+| 7. Cashier has `pos.operate` but no admin, branch or journal rights | PASS |
+| 8. Self role-grant rejected — *"You cannot assign a role to your own account"* | PASS |
+| 9. System role rename rejected — *"System role \"cashier\" cannot be renamed or downgraded"* | PASS |
+| 10a–d. A branch edit wrote one audit row capturing the new value and the author; original value restored | PASS |
+
+Phase 1 has no unverified claims remaining.
