@@ -6,7 +6,7 @@
 
 /*
  * Builders Paradise ERP design system.
- * Brand: Onismo Tech Lab — orange primary, black secondary,
+ * Brand: logo blue primary, black secondary,
  * #F8F9FA app canvas, white cards, #E5E7EB borders.
  */
 
@@ -78,18 +78,18 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.008 60);
 
-  --primary: oklch(0.685 0.192 45.5);
+  --primary: oklch(0.545 0.184 259);
   --primary-foreground: oklch(1 0 0);
-  --primary-soft: oklch(0.965 0.032 62);
+  --primary-soft: oklch(0.962 0.021 258);
 
-  --secondary: oklch(0.185 0.006 60);
+  --secondary: oklch(0.185 0.006 260);
   --secondary-foreground: oklch(0.985 0 0);
 
   --muted: oklch(0.968 0.003 247);
-  --muted-foreground: oklch(0.52 0.012 60);
+  --muted-foreground: oklch(0.52 0.012 260);
 
-  --accent: oklch(0.965 0.032 62);
-  --accent-foreground: oklch(0.44 0.14 45);
+  --accent: oklch(0.962 0.021 258);
+  --accent-foreground: oklch(0.42 0.15 259);
 
   --destructive: oklch(0.575 0.216 27.3);
   --destructive-foreground: oklch(1 0 0);
@@ -102,41 +102,41 @@
 
   --border: oklch(0.916 0.004 250);
   --input: oklch(0.916 0.004 250);
-  --ring: oklch(0.685 0.192 45.5);
+  --ring: oklch(0.545 0.184 259);
 
-  --chart-1: oklch(0.685 0.192 45.5);
-  --chart-2: oklch(0.24 0.01 60);
-  --chart-3: oklch(0.78 0.13 72);
+  --chart-1: oklch(0.545 0.184 259);
+  --chart-2: oklch(0.24 0.01 260);
+  --chart-3: oklch(0.68 0.12 220);
   --chart-4: oklch(0.63 0.15 155);
-  --chart-5: oklch(0.6 0.13 245);
+  --chart-5: oklch(0.78 0.13 72);
 
-  --sidebar: oklch(0.155 0.006 60);
-  --sidebar-foreground: oklch(0.85 0.006 60);
-  --sidebar-primary: oklch(0.685 0.192 45.5);
+  --sidebar: oklch(0.155 0.006 260);
+  --sidebar-foreground: oklch(0.85 0.006 260);
+  --sidebar-primary: oklch(0.545 0.184 259);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.23 0.008 60);
+  --sidebar-accent: oklch(0.23 0.008 260);
   --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.27 0.008 60);
-  --sidebar-ring: oklch(0.685 0.192 45.5);
+  --sidebar-border: oklch(0.27 0.008 260);
+  --sidebar-ring: oklch(0.545 0.184 259);
 }
 
 .dark {
-  --background: oklch(0.16 0.006 60);
-  --foreground: oklch(0.96 0.003 60);
-  --surface: oklch(0.21 0.007 60);
-  --card: oklch(0.21 0.007 60);
-  --card-foreground: oklch(0.96 0.003 60);
-  --popover: oklch(0.21 0.007 60);
-  --popover-foreground: oklch(0.96 0.003 60);
-  --primary: oklch(0.7 0.19 45.5);
-  --primary-foreground: oklch(0.16 0.006 60);
-  --primary-soft: oklch(0.28 0.05 50);
-  --secondary: oklch(0.28 0.008 60);
-  --secondary-foreground: oklch(0.96 0.003 60);
-  --muted: oklch(0.26 0.007 60);
-  --muted-foreground: oklch(0.72 0.008 60);
-  --accent: oklch(0.28 0.05 50);
-  --accent-foreground: oklch(0.9 0.09 60);
+  --background: oklch(0.16 0.006 260);
+  --foreground: oklch(0.96 0.003 260);
+  --surface: oklch(0.21 0.007 260);
+  --card: oklch(0.21 0.007 260);
+  --card-foreground: oklch(0.96 0.003 260);
+  --popover: oklch(0.21 0.007 260);
+  --popover-foreground: oklch(0.96 0.003 260);
+  --primary: oklch(0.62 0.17 259);
+  --primary-foreground: oklch(1 0 0);
+  --primary-soft: oklch(0.29 0.06 259);
+  --secondary: oklch(0.28 0.008 260);
+  --secondary-foreground: oklch(0.96 0.003 260);
+  --muted: oklch(0.26 0.007 260);
+  --muted-foreground: oklch(0.72 0.008 260);
+  --accent: oklch(0.29 0.06 259);
+  --accent-foreground: oklch(0.88 0.08 259);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 14%);
 }
