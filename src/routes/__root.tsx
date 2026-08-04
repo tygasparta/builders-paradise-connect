@@ -11,10 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
-import { AppSidebar } from "@/components/erp/app-sidebar";
-import { Topbar } from "@/components/erp/topbar";
+import { AuthProvider } from "@/lib/auth/auth-context";
 
 function NotFoundComponent() {
   return (
@@ -100,7 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
     ],
   }),
@@ -127,20 +125,15 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  // The root now supplies providers only. The application chrome — sidebar,
+  // topbar, branch scope — belongs to the authenticated `_app` layout, so the
+  // sign-in screens render clean.
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
-          <AppSidebar />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <Topbar />
-            <main className="flex-1 px-4 py-6 md:px-8 md:py-8">
-              {/* Required: nested routes render here. */}
-              <Outlet />
-            </main>
-          </div>
-        </div>
-      </SidebarProvider>
+      <AuthProvider>
+        {/* Required: nested routes render here. */}
+        <Outlet />
+      </AuthProvider>
       <Toaster position="top-right" richColors />
     </QueryClientProvider>
   );

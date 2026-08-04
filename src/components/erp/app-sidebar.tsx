@@ -1,18 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  Boxes,
-  PackageCheck,
-  ScanBarcode,
-  ReceiptText,
-  Landmark,
-  Users,
-  Truck,
-  BarChart3,
-  UsersRound,
-  Wallet,
-  Settings,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import {
   Sidebar,
@@ -21,64 +8,56 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { lowStock } from "@/lib/erp-data";
+import { useCompanySettings } from "@/features/settings/hooks";
+import { usePermissions } from "@/lib/auth/use-permission";
+import { NAVIGATION, type NavItem } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
+import { BrandMark } from "./brand-mark";
 
-type Item = { title: string; url: string; icon: typeof Boxes; badge?: string; soon?: boolean };
+export type SidebarBadges = Partial<Record<"approvals" | "lowStock" | "notifications", number>>;
 
-const groups: { label: string; items: Item[] }[] = [
-  {
-    label: "Overview",
-    items: [{ title: "Dashboard", url: "/", icon: LayoutDashboard }],
-  },
-  {
-    label: "Operations",
-    items: [
-      { title: "Inventory", url: "/inventory", icon: Boxes, badge: String(lowStock.length) },
-      { title: "Goods Receiving", url: "/goods-receiving", icon: PackageCheck },
-      { title: "Point of Sale", url: "/pos", icon: ScanBarcode },
-      { title: "Sales", url: "/sales", icon: ReceiptText },
-    ],
-  },
-  {
-    label: "Finance",
-    items: [{ title: "Accounting", url: "/accounting", icon: Landmark }],
-  },
-  {
-    label: "Coming next",
-    items: [
-      { title: "Purchasing", url: "/", icon: Truck, soon: true },
-      { title: "Customers", url: "/", icon: Users, soon: true },
-      { title: "Human Resources", url: "/", icon: UsersRound, soon: true },
-      { title: "Payroll", url: "/", icon: Wallet, soon: true },
-      { title: "Reports", url: "/", icon: BarChart3, soon: true },
-      { title: "Settings", url: "/", icon: Settings, soon: true },
-    ],
-  },
-];
-
-export function AppSidebar() {
+export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const pathname = useRouterState({ select: (r) => r.location.pathname });
+  const pathname = useRouterState({ select: (router) => router.location.pathname });
+  const { satisfies } = usePermissions();
+  const { data: settings } = useCompanySettings();
+
+  /** An entry is visible if the user holds its permission, or any child's. */
+  const isVisible = (item: NavItem): boolean => {
+    if (satisfies(item.require)) return true;
+    return item.children?.some(isVisible) ?? false;
+  };
+
+  const isActive = (item: NavItem) =>
+    Boolean(item.to) &&
+    (pathname === item.to || (item.to !== "/" && pathname.startsWith(`${item.to}/`)));
+
+  const hasActiveChild = (item: NavItem) => item.children?.some((child) => isActive(child)) ?? false;
 
   return (
     <Sidebar collapsible="icon" className="border-sidebar-border">
       <SidebarHeader className="px-3 py-4">
         <div className="flex items-center gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary font-bold text-primary-foreground">
-            BP
-          </div>
+          <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">
-                Builders Paradise
+                {settings?.company_name ?? "Builders Paradise"}
               </p>
               <p className="truncate text-xs text-sidebar-foreground/60">Enterprise ERP</p>
             </div>
@@ -87,60 +66,141 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
-        {groups.map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-sidebar-foreground/45">
-              {group.label}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => {
-                  const active = !item.soon && pathname === item.url;
-                  if (item.soon) {
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          className="cursor-default opacity-45"
-                          tooltip={`${item.title} — phase 2`}
-                        >
-                          <item.icon className="size-4" />
-                          <span>{item.title}</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  }
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
-                        <Link to={item.url} className="flex items-center gap-2">
-                          <item.icon className="size-4" />
-                          <span className="flex-1">{item.title}</span>
-                          {item.badge && !collapsed && (
-                            <Badge className="h-5 border-0 bg-primary/15 px-1.5 text-[10px] text-primary">
-                              {item.badge}
-                            </Badge>
-                          )}
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
+        {NAVIGATION.map((section) => {
+          const items = section.items.filter(isVisible);
+          if (items.length === 0) return null;
 
-      <SidebarFooter className="px-3 pb-4">
-        {!collapsed && (
-          <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/60 p-3">
-            <p className="text-xs font-medium text-sidebar-accent-foreground">Demo dataset</p>
-            <p className="mt-1 text-[11px] leading-relaxed text-sidebar-foreground/60">
-              Running on sample data. Connect the backend to go live.
-            </p>
-          </div>
-        )}
-      </SidebarFooter>
+          return (
+            <SidebarGroup key={section.label}>
+              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-sidebar-foreground/45">
+                {section.label}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {items.map((item) => (
+                    <NavEntry
+                      key={item.label}
+                      item={item}
+                      collapsed={collapsed}
+                      badges={badges}
+                      isVisible={isVisible}
+                      isActive={isActive}
+                      defaultOpen={hasActiveChild(item)}
+                    />
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
+      </SidebarContent>
     </Sidebar>
+  );
+}
+
+function NavEntry({
+  item,
+  collapsed,
+  badges,
+  isVisible,
+  isActive,
+  defaultOpen,
+}: {
+  item: NavItem;
+  collapsed: boolean;
+  badges: SidebarBadges;
+  isVisible: (item: NavItem) => boolean;
+  isActive: (item: NavItem) => boolean;
+  defaultOpen: boolean;
+}) {
+  const count = item.badgeKey ? badges[item.badgeKey] : undefined;
+  const children = item.children?.filter(isVisible) ?? [];
+  const active = isActive(item);
+
+  // A module whose screens land in a later phase is labelled, not linked —
+  // a link that goes nowhere is worse than an honest "P3".
+  const linkable = Boolean(item.to) && !item.phase;
+
+  const content = (
+    <>
+      <item.icon className="size-4" />
+      <span className="flex-1 truncate">{item.label}</span>
+      {!collapsed && item.phase && (
+        <span className="rounded-full bg-sidebar-accent px-1.5 py-0.5 text-[10px] font-medium text-sidebar-foreground/55">
+          P{item.phase}
+        </span>
+      )}
+      {!collapsed && count !== undefined && count > 0 && (
+        <Badge className="h-5 min-w-5 justify-center rounded-full border-0 bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+          {count > 99 ? "99+" : count}
+        </Badge>
+      )}
+    </>
+  );
+
+  if (children.length > 0) {
+    return (
+      <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
+        <SidebarMenuItem>
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton
+              tooltip={item.label}
+              isActive={active}
+              className="data-[state=open]:bg-sidebar-accent/60"
+            >
+              {content}
+              <ChevronRight className="size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SidebarMenuSub>
+              {children.map((child) => (
+                <SidebarMenuSubItem key={child.label}>
+                  {child.to && !child.phase ? (
+                    <SidebarMenuSubButton asChild isActive={isActive(child)}>
+                      <Link to={child.to}>
+                        <span>{child.label}</span>
+                      </Link>
+                    </SidebarMenuSubButton>
+                  ) : (
+                    <SidebarMenuSubButton
+                      className="cursor-default opacity-45"
+                      aria-disabled="true"
+                      title={`${child.label} — Phase ${child.phase}`}
+                    >
+                      <span className="flex-1">{child.label}</span>
+                      <span className="text-[10px]">P{child.phase}</span>
+                    </SidebarMenuSubButton>
+                  )}
+                </SidebarMenuSubItem>
+              ))}
+            </SidebarMenuSub>
+          </CollapsibleContent>
+        </SidebarMenuItem>
+      </Collapsible>
+    );
+  }
+
+  return (
+    <SidebarMenuItem>
+      {linkable ? (
+        <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+          <Link
+            to={item.to as string}
+            className={cn("flex items-center gap-2", active && "font-medium")}
+          >
+            {content}
+          </Link>
+        </SidebarMenuButton>
+      ) : (
+        <SidebarMenuButton
+          className="cursor-default opacity-45"
+          aria-disabled="true"
+          tooltip={item.phase ? `${item.label} — Phase ${item.phase}` : item.label}
+        >
+          {content}
+        </SidebarMenuButton>
+      )}
+    </SidebarMenuItem>
   );
 }

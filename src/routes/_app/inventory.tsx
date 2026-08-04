@@ -34,8 +34,9 @@ import {
   qty,
   retailValue,
 } from "@/lib/erp-data";
+import { DemoDataNotice } from "@/components/erp/demo-data-notice";
 
-export const Route = createFileRoute("/inventory")({
+export const Route = createFileRoute("/_app/inventory")({
   head: () => ({
     meta: [
       { title: "Inventory — Builders Paradise ERP" },
@@ -98,7 +99,9 @@ function InventoryPage() {
               className="rounded-lg"
               onClick={() => toast.success("Inventory export queued (CSV)")}
             >
-              <Download className="size-4" /> Export
+              <Download className="size-4" />
+
+      <DemoDataNotice phase={2} module="Inventory" /> Export
             </Button>
             <Button className="rounded-lg" onClick={() => toast.info("Product form opens here")}>
               <Plus className="size-4" /> New product

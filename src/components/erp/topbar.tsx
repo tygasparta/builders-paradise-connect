@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { Search, Bell, ChevronDown, Building2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Bell, Building2, ChevronDown, LogOut, Search, User, Warehouse } from "lucide-react";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -13,65 +14,210 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BRANCHES } from "@/lib/erp-data";
+import { GlobalSearch } from "./global-search";
+import { useAuth } from "@/lib/auth/auth-context";
+import { useBranches } from "@/features/branches/hooks";
+import { useWarehouses } from "@/features/warehouses/hooks";
+import { useUnreadNotifications } from "@/features/audit/hooks";
+import { cn } from "@/lib/utils";
+
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 export function Topbar() {
+  const navigate = useNavigate();
+  const {
+    profile,
+    roles,
+    signOut,
+    activeBranchId,
+    setActiveBranchId,
+    activeWarehouseId,
+    setActiveWarehouseId,
+  } = useAuth();
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const { data: branches } = useBranches();
+  const { data: warehouses } = useWarehouses(activeBranchId);
+  const { data: notifications } = useUnreadNotifications();
+
+  const activeBranch = branches?.find((branch) => branch.id === activeBranchId);
+  const activeWarehouse = warehouses?.find((warehouse) => warehouse.id === activeWarehouseId);
+  const unread = notifications?.total ?? 0;
+  const primaryRole = roles.slice().sort((a, b) => a.rank - b.rank)[0];
+
+  // Cmd/Ctrl+K opens search from anywhere.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-card/85 px-4 backdrop-blur md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-border bg-card/85 px-3 backdrop-blur md:px-6">
       <SidebarTrigger className="text-muted-foreground" />
 
-      <div className="relative hidden max-w-md flex-1 md:block">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search products, invoices, customers, orders…"
-          className="h-9 rounded-lg border-border bg-muted/60 pl-9 text-sm shadow-none focus-visible:bg-card"
-        />
-      </div>
+      <button
+        type="button"
+        onClick={() => setSearchOpen(true)}
+        className="hidden h-9 max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
+      >
+        <Search className="size-4 shrink-0" aria-hidden />
+        <span className="truncate">Search branches, warehouses, people…</span>
+        <kbd className="ml-auto hidden rounded border border-border bg-card px-1.5 py-0.5 text-[10px] font-medium lg:inline">
+          ⌘K
+        </kbd>
+      </button>
 
-      <div className="ml-auto flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-9 md:hidden"
+        onClick={() => setSearchOpen(true)}
+        aria-label="Search"
+      >
+        <Search className="size-4" />
+      </Button>
+
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        {/* Branch scope */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2 rounded-lg">
-              <Building2 className="size-4 text-primary" />
-              <span className="hidden sm:inline">{BRANCHES[0]!.name}</span>
-              <ChevronDown className="size-3.5 opacity-60" />
+            <Button variant="outline" size="sm" className="h-9 gap-2">
+              <Building2 className="size-4 text-primary" aria-hidden />
+              <span className="hidden max-w-32 truncate sm:inline">
+                {activeBranch?.name ?? "All branches"}
+              </span>
+              <ChevronDown className="size-3.5 opacity-60" aria-hidden />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>Switch branch</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Branch</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {BRANCHES.map((b) => (
-              <DropdownMenuItem key={b.id}>
-                {b.name}
-                <span className="ml-auto text-xs text-muted-foreground">{b.code}</span>
+            <DropdownMenuItem onSelect={() => setActiveBranchId(null)}>
+              All branches
+            </DropdownMenuItem>
+            {branches?.map((branch) => (
+              <DropdownMenuItem
+                key={branch.id}
+                onSelect={() => setActiveBranchId(branch.id)}
+                className={cn(branch.id === activeBranchId && "bg-accent text-accent-foreground")}
+              >
+                <span className="truncate">{branch.name}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{branch.code}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button variant="ghost" size="icon" className="relative size-9 rounded-lg">
+        {/* Warehouse scope — only meaningful once a branch is chosen */}
+        {activeBranchId && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="hidden h-9 gap-2 lg:flex">
+                <Warehouse className="size-4 text-primary" aria-hidden />
+                <span className="max-w-32 truncate">
+                  {activeWarehouse?.name ?? "All warehouses"}
+                </span>
+                <ChevronDown className="size-3.5 opacity-60" aria-hidden />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Warehouse</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => setActiveWarehouseId(null)}>
+                All warehouses
+              </DropdownMenuItem>
+              {warehouses?.map((warehouse) => (
+                <DropdownMenuItem
+                  key={warehouse.id}
+                  onSelect={() => setActiveWarehouseId(warehouse.id)}
+                  className={cn(
+                    warehouse.id === activeWarehouseId && "bg-accent text-accent-foreground",
+                  )}
+                >
+                  <span className="truncate">{warehouse.name}</span>
+                  <span className="ml-auto text-xs text-muted-foreground">{warehouse.code}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative size-9"
+          aria-label={unread > 0 ? `Notifications, ${unread} unread` : "Notifications"}
+        >
           <Bell className="size-4" />
-          <span className="absolute right-2 top-2 size-1.5 rounded-full bg-primary" />
+          {unread > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-lg py-1 pl-1 pr-2 transition-colors hover:bg-muted">
-              <span className="grid size-8 place-items-center rounded-lg bg-secondary text-xs font-semibold text-secondary-foreground">
-                OM
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-xs font-semibold text-secondary-foreground">
+                {profile ? initialsOf(profile.full_name) : "…"}
               </span>
               <span className="hidden text-left leading-tight sm:block">
-                <span className="block text-xs font-semibold">Onismo M.</span>
-                <span className="block text-[11px] text-muted-foreground">Super Admin</span>
+                <span className="block max-w-32 truncate text-xs font-semibold">
+                  {profile?.full_name ?? "Signed in"}
+                </span>
+                <span className="block max-w-32 truncate text-[11px] text-muted-foreground">
+                  {primaryRole?.name ?? "No role"}
+                </span>
               </span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>My account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="flex flex-col gap-0.5">
+              <span className="truncate">{profile?.full_name}</span>
+              <span className="truncate text-xs font-normal text-muted-foreground">
+                {profile?.email}
+              </span>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Activity log</DropdownMenuItem>
-            <DropdownMenuItem>Sign out</DropdownMenuItem>
+            <div className="flex flex-wrap gap-1 px-2 py-1.5">
+              {roles.map((role) => (
+                <Badge key={role.code} variant="secondary" className="text-[10px]">
+                  {role.name}
+                </Badge>
+              ))}
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link to="/profile">
+                <User className="size-4" />
+                My profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={async () => {
+                await signOut();
+                void navigate({ to: "/login" });
+              }}
+            >
+              <LogOut className="size-4" />
+              Sign out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -79,6 +225,11 @@ export function Topbar() {
   );
 }
 
+/**
+ * Retained for the Phase 1 module screens that already import it.
+ * New screens should use `@/components/erp/page-header`, which adds
+ * breadcrumbs.
+ */
 export function PageHeader({
   title,
   description,
@@ -86,9 +237,9 @@ export function PageHeader({
   actions,
 }: {
   title: string;
-  description?: string;
-  badge?: string;
-  actions?: ReactNode;
+  description?: string | undefined;
+  badge?: string | undefined;
+  actions?: ReactNode | undefined;
 }) {
   return (
     <div className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
