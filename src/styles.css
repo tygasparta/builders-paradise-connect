@@ -11,9 +11,15 @@
  * brand hex values rather than converted, so what ships matches the brand
  * sheet byte for byte. No gradients, no orange as a system colour.
  *
- *   Primary blue    #1682E6      Black       #15171A
- *   Deep blue       #0869C5      Sidebar     #101318
+ *   Brand blue      #1682E6      Black       #15171A
+ *   Deep blue       #0869C5      Sidebar     #0D2847 (navy)
  *   Secondary blue  #3F9EFF      Background  #F6F8FB
+ *
+ * Two blues, deliberately. White on the brand blue #1682E6 is only 3.91:1,
+ * below the 4.5:1 AA needs for body text — so anything FILLED and carrying
+ * white text (buttons, active pill, hero banner) uses the deep blue #0869C5
+ * at 5.47:1. The brand blue stays the identity accent: icons, focus rings,
+ * charts, borders and large type, where 3:1 is the bar.
  *   Light blue      #EFF6FF      Border      #E5E7EB
  *   Muted text      #667085      White       #FFFFFF
  *   Success #16A34A   Warning #F59E0B   Danger #DC2626
@@ -40,8 +46,10 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-deep: var(--primary-deep);
+  --color-primary-brand: var(--primary-brand);
   --color-primary-light: var(--primary-light);
   --color-primary-soft: var(--primary-soft);
+  --color-primary-hover: var(--primary-hover);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -66,6 +74,7 @@
   --color-chart-5: var(--chart-5);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
@@ -91,9 +100,11 @@
   --popover: #ffffff;
   --popover-foreground: #15171a;
 
-  --primary: #1682e6;
+  --primary: #0869c5;
   --primary-foreground: #ffffff;
-  --primary-deep: #0869c5;
+  --primary-hover: #06549c;
+  --primary-deep: #06549c;
+  --primary-brand: #1682e6;
   --primary-light: #3f9eff;
   --primary-soft: #eff6ff;
 
@@ -106,14 +117,14 @@
   --accent: #eff6ff;
   --accent-foreground: #0869c5;
 
-  --destructive: #dc2626;
+  --destructive: #c81e1e;
   --destructive-foreground: #ffffff;
-  --success: #16a34a;
+  --success: #15803d;
   --success-foreground: #ffffff;
   --warning: #f59e0b;
   /* Amber on white fails AA at body size; pair it with near-black text. */
   --warning-foreground: #3d2a05;
-  --info: #1682e6;
+  --info: #0869c5;
   --info-foreground: #ffffff;
 
   --border: #e5e7eb;
@@ -126,14 +137,20 @@
   --chart-4: #15171a;
   --chart-5: #667085;
 
-  --sidebar: #101318;
-  --sidebar-foreground: #c3c9d4;
-  --sidebar-primary: #1682e6;
+  /*
+   * Deep navy sidebar, derived from the brand blue's own hue rather than
+   * neutral black — the enterprise-console look. The active item is a
+   * filled pill in the full brand blue.
+   */
+  --sidebar: #0d2847;
+  --sidebar-foreground: #c7d5e8;
+  --sidebar-muted: #8ba1bf;
+  --sidebar-primary: #0869c5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1f27;
+  --sidebar-accent: #143459;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #232935;
-  --sidebar-ring: #1682e6;
+  --sidebar-border: #1c3b63;
+  --sidebar-ring: #3f9eff;
 }
 
 .dark {
@@ -148,6 +165,8 @@
   --primary: #3f9eff;
   --primary-foreground: #06182b;
   --primary-deep: #1682e6;
+  --primary-brand: #3f9eff;
+  --primary-hover: #7bbaff;
   --primary-light: #7bbaff;
   --primary-soft: #14243a;
 
@@ -179,9 +198,10 @@
   --chart-4: #98a2b3;
   --chart-5: #4ade80;
 
-  --sidebar: #0a0c10;
-  --sidebar-accent: #171b22;
-  --sidebar-border: #1e242e;
+  --sidebar: #081c33;
+  --sidebar-accent: #102a48;
+  --sidebar-border: #16314f;
+  --sidebar-muted: #7e94b2;
 }
 
 @layer base {

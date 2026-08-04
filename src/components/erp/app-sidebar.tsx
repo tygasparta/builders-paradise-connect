@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { useCompanySettings } from "@/features/settings/hooks";
+import { useAuth } from "@/lib/auth/auth-context";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { NAVIGATION, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,8 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
   const pathname = useRouterState({ select: (router) => router.location.pathname });
   const { satisfies } = usePermissions();
   const { data: settings } = useCompanySettings();
+  const { profile, roles } = useAuth();
+  const primaryRole = roles.slice().sort((a, b) => a.rank - b.rank)[0];
 
   /** An entry is visible if the user holds its permission, or any child's. */
   const isVisible = (item: NavItem): boolean => {
@@ -51,18 +54,37 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
 
   return (
     <Sidebar collapsible="icon" className="border-sidebar-border">
-      <SidebarHeader className="px-3 py-4">
-        <div className="flex items-center gap-3">
-          <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
-          {!collapsed && (
+      <SidebarHeader className="gap-3 px-3 py-4">
+        {/* The logo sits on white so a colour mark reads correctly on navy. */}
+        {collapsed ? (
+          <div className="grid place-items-center rounded-xl bg-white p-1.5">
+            <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 rounded-xl bg-white px-3 py-3">
+            <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-sidebar-accent-foreground">
+              <p className="truncate text-sm font-semibold text-foreground">
                 {settings?.company_name ?? "Builders Paradise"}
               </p>
-              <p className="truncate text-xs text-sidebar-foreground/60">Enterprise ERP</p>
+              <p className="truncate text-xs text-muted-foreground">Enterprise ERP</p>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {!collapsed && (
+          <div className="rounded-xl bg-sidebar-accent/70 px-3 py-2.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-muted">
+              Signed in as
+            </p>
+            <p className="mt-0.5 truncate text-sm font-medium text-sidebar-accent-foreground">
+              {profile?.full_name ?? "…"}
+            </p>
+            {primaryRole && (
+              <p className="truncate text-xs text-sidebar-muted">{primaryRole.name}</p>
+            )}
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
@@ -72,7 +94,7 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
 
           return (
             <SidebarGroup key={section.label}>
-              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-sidebar-foreground/45">
+              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-sidebar-muted">
                 {section.label}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -126,7 +148,7 @@ function NavEntry({
       <item.icon className="size-4" />
       <span className="flex-1 truncate">{item.label}</span>
       {!collapsed && item.phase && (
-        <span className="rounded-full bg-sidebar-accent px-1.5 py-0.5 text-[10px] font-medium text-sidebar-foreground/55">
+        <span className="rounded-full bg-sidebar-accent px-1.5 py-0.5 text-[10px] font-medium text-sidebar-muted">
           P{item.phase}
         </span>
       )}
@@ -184,12 +206,23 @@ function NavEntry({
   return (
     <SidebarMenuItem>
       {linkable ? (
-        <SidebarMenuButton asChild isActive={active} tooltip={item.label}>
+        <SidebarMenuButton
+          asChild
+          isActive={active}
+          tooltip={item.label}
+          className={cn(
+            "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground",
+            "data-[active=true]:hover:bg-sidebar-primary",
+          )}
+        >
           <Link
             to={item.to as string}
             className={cn("flex items-center gap-2", active && "font-medium")}
           >
             {content}
+            {active && !collapsed && (
+              <span className="size-1.5 shrink-0 rounded-full bg-white/80" aria-hidden />
+            )}
           </Link>
         </SidebarMenuButton>
       ) : (

@@ -1,7 +1,19 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Building2, ChevronDown, LogOut, Search, User, Warehouse } from "lucide-react";
+import {
+  Bell,
+  Building2,
+  ChevronDown,
+  LogOut,
+  Plus,
+  Search,
+  User,
+  Warehouse,
+  Wifi,
+  WifiOff,
+  Zap,
+} from "lucide-react";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -19,6 +31,8 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { useBranches } from "@/features/branches/hooks";
 import { useWarehouses } from "@/features/warehouses/hooks";
 import { useUnreadNotifications } from "@/features/audit/hooks";
+import { PERMISSIONS, type PermissionCode } from "@/lib/permissions/catalog";
+import { usePermissions } from "@/lib/auth/use-permission";
 import { cn } from "@/lib/utils";
 
 function initialsOf(name: string): string {
@@ -42,7 +56,9 @@ export function Topbar() {
     setActiveWarehouseId,
   } = useAuth();
 
+  const { can } = usePermissions();
   const [searchOpen, setSearchOpen] = useState(false);
+  const online = useOnlineStatus();
   const { data: branches } = useBranches();
   const { data: warehouses } = useWarehouses(activeBranchId);
   const { data: notifications } = useUnreadNotifications();
@@ -93,6 +109,26 @@ export function Topbar() {
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        {/* Live connection state — reflects the browser, not a decoration */}
+        <span
+          className={cn(
+            "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium xl:inline-flex",
+            online
+              ? "border-success/30 bg-success/10 text-success"
+              : "border-destructive/30 bg-destructive/10 text-destructive",
+          )}
+          role="status"
+        >
+          {online ? (
+            <Wifi className="size-3" aria-hidden />
+          ) : (
+            <WifiOff className="size-3" aria-hidden />
+          )}
+          {online ? "Online" : "Offline"}
+        </span>
+
+        <QuickActions can={can} />
+
         {/* Branch scope */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -258,5 +294,64 @@ export function PageHeader({
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
+  );
+}
+
+/** Tracks real browser connectivity so the status pill means something. */
+function useOnlineStatus(): boolean {
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  return online;
+}
+
+/**
+ * Shortcuts to the things this user can actually create right now.
+ * Entries the user lacks permission for are not rendered, and the whole
+ * control disappears rather than opening an empty menu.
+ */
+function QuickActions({ can }: { can: (code: PermissionCode) => boolean }) {
+  const actions: { label: string; to: string; require: PermissionCode }[] = [
+    { label: "New branch", to: "/settings/branches", require: PERMISSIONS.SETTINGS_BRANCHES_MANAGE },
+    { label: "New warehouse", to: "/warehouses", require: PERMISSIONS.WAREHOUSES_MANAGE },
+    { label: "Manage users & roles", to: "/users", require: PERMISSIONS.USERS_VIEW },
+    { label: "Company settings", to: "/settings/company", require: PERMISSIONS.SETTINGS_COMPANY_MANAGE },
+    { label: "Audit trail", to: "/audit-trail", require: PERMISSIONS.AUDIT_VIEW },
+  ].filter((action) => can(action.require));
+
+  if (actions.length === 0) return null;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm" className="hidden h-9 gap-2 md:flex">
+          <Zap className="size-4 text-primary" aria-hidden />
+          <span className="hidden lg:inline">Quick actions</span>
+          <ChevronDown className="size-3.5 opacity-60" aria-hidden />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>Quick actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {actions.map((action) => (
+          <DropdownMenuItem key={action.to} asChild>
+            <Link to={action.to}>
+              <Plus className="size-4" />
+              {action.label}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

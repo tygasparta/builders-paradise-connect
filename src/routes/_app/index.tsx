@@ -8,12 +8,13 @@ import {
   Warehouse as WarehouseIcon,
 } from "lucide-react";
 
-import { PageHeader } from "@/components/erp/page-header";
+import { HeroBanner } from "@/components/erp/hero-banner";
 import { CardsSkeleton, EmptyState, ErrorState } from "@/components/erp/states";
 import { StatCard, SectionCard } from "@/components/erp/ui-kit";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOrganisationStats, useRecentActivity } from "@/features/dashboard/hooks";
+import { useCompanySettings } from "@/features/settings/hooks";
 import { useAuth } from "@/lib/auth/auth-context";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
@@ -25,6 +26,8 @@ export const Route = createFileRoute("/_app/")({
 function DashboardPage() {
   const { profile, roles } = useAuth();
   const { can } = usePermissions();
+  const { data: settings } = useCompanySettings();
+  const primaryRole = roles.slice().sort((a, b) => a.rank - b.rank)[0];
   const stats = useOrganisationStats();
   const activity = useRecentActivity();
 
@@ -38,14 +41,22 @@ function DashboardPage() {
 
   return (
     <>
-      <PageHeader
-        title={`Good day, ${firstName}`}
-        description={today}
-        breadcrumbs={[{ label: "Dashboard" }]}
+      <HeroBanner
+        eyebrow={`${primaryRole?.name ?? "Signed in"} · Control centre`}
+        title={`${settings?.company_name ?? "Builders Paradise"} — Enterprise Overview`}
+        stats={[
+          `Good day, ${firstName}`,
+          today,
+          stats.data ? `${stats.data.activeUsers} active users` : null,
+          stats.data ? `${stats.data.branches} branches` : null,
+        ]}
         actions={
           <div className="flex flex-wrap gap-1.5">
             {roles.map((role) => (
-              <Badge key={role.code} variant="secondary">
+              <Badge
+                key={role.code}
+                className="border-0 bg-white/15 text-[11px] font-semibold text-white"
+              >
                 {role.name}
               </Badge>
             ))}
