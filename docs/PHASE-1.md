@@ -151,8 +151,20 @@ TypeScript permission catalogue and the database seed ever drift apart, plus
 assertions that every permission referenced by an RLS policy exists, that all
 definer functions pin `search_path`, and that the audit log has no write policy.
 
-**Not run:** the migrations themselves have not been executed — the database is
-yours and Lovable's SQL endpoint cannot reach it (`database_not_managed`). Every
-runtime claim above was verified against the live project with an empty schema;
-claims about table behaviour follow from the SQL and are unverified until you
-apply it.
+### Applied to the live database — 4 August 2026
+
+The migrations were run in the Supabase SQL Editor and verified against the
+live REST API using the public anon key:
+
+| Probe | Result |
+|---|---|
+| All 12 tables reachable | HTTP 200, none 404 — schema applied |
+| Anonymous read of every table | `[]` — RLS active; seeded `roles` and `permissions` correctly hidden |
+| `has_permission`, `is_active_user`, `my_permissions`, `my_roles` | Exist; return `false` / `[]` to an unauthenticated caller |
+| Anonymous insert into `branches` | Refused, `42501 new row violates row-level security policy` |
+| Insert into `audit_logs` | Refused, `42501` — the append-only trail holds |
+
+**Still to verify** (needs a signed-in session, so it waits on the first
+administrator being bootstrapped): that a cashier is denied cost prices and
+branch settings, that the self-role-grant and self-status-edit triggers fire,
+and that branch/warehouse writes audit end to end.
