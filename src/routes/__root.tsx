@@ -79,14 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Builders Paradise ERP" },
+      { title: "Dashboard — Builders Paradise ERP" },
       {
         name: "description",
         content:
-          "Enterprise cloud ERP for Builders Paradise Hardware — inventory, POS, sales and accounting.",
+          "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Dashboard — Builders Paradise ERP" },
+      { name: "twitter:title", content: "Dashboard — Builders Paradise ERP" },
+      { property: "og:description", content: "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit." },
+      { name: "twitter:description", content: "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d642971d-db7a-4f4c-b203-2a09ed7c69bd/id-preview-306cb3c0--2e65a74b-4811-4e41-b896-4c7b5730ff2c.lovable.app-1785854291891.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -96,7 +102,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,

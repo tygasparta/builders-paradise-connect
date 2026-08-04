@@ -61,7 +61,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Dashboard — Builders Paradise ERP" },
       {
         property: "og:description",
-        content: "Sales, purchases, cash position, inventory value and gross profit at a glance.",
+        content: "Live trading overview for Builders Paradise Hardware: sales, purchases, cash, inventory value and gross profit.",
       },
     ],
   }),
