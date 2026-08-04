@@ -17,8 +17,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CUSTOMERS, KPIS, SALES_DOCS, money } from "@/lib/erp-data";
+import { DemoDataNotice } from "@/components/erp/demo-data-notice";
 
-export const Route = createFileRoute("/sales")({
+export const Route = createFileRoute("/_app/sales")({
   head: () => ({
     meta: [
       { title: "Sales — Builders Paradise ERP" },
@@ -53,7 +54,9 @@ function SalesPage() {
         actions={
           <>
             <Button variant="outline" className="rounded-lg" onClick={() => toast.info("Quotation builder")}>
-              <FileText className="size-4" /> New quotation
+              <FileText className="size-4" />
+
+      <DemoDataNotice phase={3} module="Sales" /> New quotation
             </Button>
             <Button className="rounded-lg" onClick={() => toast.info("Invoice builder")}>
               <Plus className="size-4" /> New invoice

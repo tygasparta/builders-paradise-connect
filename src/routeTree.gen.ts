@@ -9,150 +9,383 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AccountingRouteImport } from './routes/accounting'
-import { Route as GoodsReceivingRouteImport } from './routes/goods-receiving'
-import { Route as InventoryRouteImport } from './routes/inventory'
-import { Route as PosRouteImport } from './routes/pos'
-import { Route as SalesRouteImport } from './routes/sales'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppAccountingRouteImport } from './routes/_app/accounting'
+import { Route as AppAuditTrailRouteImport } from './routes/_app/audit-trail'
+import { Route as AppGoodsReceivingRouteImport } from './routes/_app/goods-receiving'
+import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
+import { Route as AppPosRouteImport } from './routes/_app/pos'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppSalesRouteImport } from './routes/_app/sales'
+import { Route as AppUsersRouteImport } from './routes/_app/users'
+import { Route as AppWarehousesRouteImport } from './routes/_app/warehouses'
+import { Route as AppSettingsBranchesRouteImport } from './routes/_app/settings/branches'
+import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const AccountingRoute = AccountingRouteImport.update({
+const AppAccountingRoute = AppAccountingRouteImport.update({
   id: '/accounting',
   path: '/accounting',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const GoodsReceivingRoute = GoodsReceivingRouteImport.update({
+const AppAuditTrailRoute = AppAuditTrailRouteImport.update({
+  id: '/audit-trail',
+  path: '/audit-trail',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGoodsReceivingRoute = AppGoodsReceivingRouteImport.update({
   id: '/goods-receiving',
   path: '/goods-receiving',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const InventoryRoute = InventoryRouteImport.update({
+const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const PosRoute = PosRouteImport.update({
+const AppPosRoute = AppPosRouteImport.update({
   id: '/pos',
   path: '/pos',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const SalesRoute = SalesRouteImport.update({
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSalesRoute = AppSalesRouteImport.update({
   id: '/sales',
   path: '/sales',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUsersRoute = AppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWarehousesRoute = AppWarehousesRouteImport.update({
+  id: '/warehouses',
+  path: '/warehouses',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsBranchesRoute = AppSettingsBranchesRouteImport.update({
+  id: '/settings/branches',
+  path: '/settings/branches',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsCompanyRoute = AppSettingsCompanyRouteImport.update({
+  id: '/settings/company',
+  path: '/settings/company',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/accounting': typeof AccountingRoute
-  '/goods-receiving': typeof GoodsReceivingRoute
-  '/inventory': typeof InventoryRoute
-  '/pos': typeof PosRoute
-  '/sales': typeof SalesRoute
+  '/': typeof AppIndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/accounting': typeof AppAccountingRoute
+  '/audit-trail': typeof AppAuditTrailRoute
+  '/goods-receiving': typeof AppGoodsReceivingRoute
+  '/inventory': typeof AppInventoryRoute
+  '/pos': typeof AppPosRoute
+  '/profile': typeof AppProfileRoute
+  '/sales': typeof AppSalesRoute
+  '/users': typeof AppUsersRoute
+  '/warehouses': typeof AppWarehousesRoute
+  '/settings/branches': typeof AppSettingsBranchesRoute
+  '/settings/company': typeof AppSettingsCompanyRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/accounting': typeof AccountingRoute
-  '/goods-receiving': typeof GoodsReceivingRoute
-  '/inventory': typeof InventoryRoute
-  '/pos': typeof PosRoute
-  '/sales': typeof SalesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/accounting': typeof AppAccountingRoute
+  '/audit-trail': typeof AppAuditTrailRoute
+  '/goods-receiving': typeof AppGoodsReceivingRoute
+  '/inventory': typeof AppInventoryRoute
+  '/pos': typeof AppPosRoute
+  '/profile': typeof AppProfileRoute
+  '/sales': typeof AppSalesRoute
+  '/users': typeof AppUsersRoute
+  '/warehouses': typeof AppWarehousesRoute
+  '/': typeof AppIndexRoute
+  '/settings/branches': typeof AppSettingsBranchesRoute
+  '/settings/company': typeof AppSettingsCompanyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/accounting': typeof AccountingRoute
-  '/goods-receiving': typeof GoodsReceivingRoute
-  '/inventory': typeof InventoryRoute
-  '/pos': typeof PosRoute
-  '/sales': typeof SalesRoute
+  '/_app': typeof AppRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_app/accounting': typeof AppAccountingRoute
+  '/_app/audit-trail': typeof AppAuditTrailRoute
+  '/_app/goods-receiving': typeof AppGoodsReceivingRoute
+  '/_app/inventory': typeof AppInventoryRoute
+  '/_app/pos': typeof AppPosRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/sales': typeof AppSalesRoute
+  '/_app/users': typeof AppUsersRoute
+  '/_app/warehouses': typeof AppWarehousesRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/settings/branches': typeof AppSettingsBranchesRoute
+  '/_app/settings/company': typeof AppSettingsCompanyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/accounting' | '/goods-receiving' | '/inventory' | '/pos' | '/sales'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    '/' | '/accounting' | '/goods-receiving' | '/inventory' | '/pos' | '/sales'
-  id:
-    | '__root__'
     | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
     | '/accounting'
+    | '/audit-trail'
     | '/goods-receiving'
     | '/inventory'
     | '/pos'
+    | '/profile'
     | '/sales'
+    | '/users'
+    | '/warehouses'
+    | '/settings/branches'
+    | '/settings/company'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/accounting'
+    | '/audit-trail'
+    | '/goods-receiving'
+    | '/inventory'
+    | '/pos'
+    | '/profile'
+    | '/sales'
+    | '/users'
+    | '/warehouses'
+    | '/'
+    | '/settings/branches'
+    | '/settings/company'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/_app/accounting'
+    | '/_app/audit-trail'
+    | '/_app/goods-receiving'
+    | '/_app/inventory'
+    | '/_app/pos'
+    | '/_app/profile'
+    | '/_app/sales'
+    | '/_app/users'
+    | '/_app/warehouses'
+    | '/_app/'
+    | '/_app/settings/branches'
+    | '/_app/settings/company'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AccountingRoute: typeof AccountingRoute
-  GoodsReceivingRoute: typeof GoodsReceivingRoute
-  InventoryRoute: typeof InventoryRoute
-  PosRoute: typeof PosRoute
-  SalesRoute: typeof SalesRoute
+  AppRoute: typeof AppRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/accounting': {
-      id: '/accounting'
+    '/_app/accounting': {
+      id: '/_app/accounting'
       path: '/accounting'
       fullPath: '/accounting'
-      preLoaderRoute: typeof AccountingRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppAccountingRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/goods-receiving': {
-      id: '/goods-receiving'
+    '/_app/audit-trail': {
+      id: '/_app/audit-trail'
+      path: '/audit-trail'
+      fullPath: '/audit-trail'
+      preLoaderRoute: typeof AppAuditTrailRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/goods-receiving': {
+      id: '/_app/goods-receiving'
       path: '/goods-receiving'
       fullPath: '/goods-receiving'
-      preLoaderRoute: typeof GoodsReceivingRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppGoodsReceivingRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/inventory': {
-      id: '/inventory'
+    '/_app/inventory': {
+      id: '/_app/inventory'
       path: '/inventory'
       fullPath: '/inventory'
-      preLoaderRoute: typeof InventoryRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/pos': {
-      id: '/pos'
+    '/_app/pos': {
+      id: '/_app/pos'
       path: '/pos'
       fullPath: '/pos'
-      preLoaderRoute: typeof PosRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppPosRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/sales': {
-      id: '/sales'
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sales': {
+      id: '/_app/sales'
       path: '/sales'
       fullPath: '/sales'
-      preLoaderRoute: typeof SalesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppSalesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/warehouses': {
+      id: '/_app/warehouses'
+      path: '/warehouses'
+      fullPath: '/warehouses'
+      preLoaderRoute: typeof AppWarehousesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings/branches': {
+      id: '/_app/settings/branches'
+      path: '/settings/branches'
+      fullPath: '/settings/branches'
+      preLoaderRoute: typeof AppSettingsBranchesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings/company': {
+      id: '/_app/settings/company'
+      path: '/settings/company'
+      fullPath: '/settings/company'
+      preLoaderRoute: typeof AppSettingsCompanyRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
+interface AppRouteChildren {
+  AppAccountingRoute: typeof AppAccountingRoute
+  AppAuditTrailRoute: typeof AppAuditTrailRoute
+  AppGoodsReceivingRoute: typeof AppGoodsReceivingRoute
+  AppInventoryRoute: typeof AppInventoryRoute
+  AppPosRoute: typeof AppPosRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppSalesRoute: typeof AppSalesRoute
+  AppUsersRoute: typeof AppUsersRoute
+  AppWarehousesRoute: typeof AppWarehousesRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppSettingsBranchesRoute: typeof AppSettingsBranchesRoute
+  AppSettingsCompanyRoute: typeof AppSettingsCompanyRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAccountingRoute: AppAccountingRoute,
+  AppAuditTrailRoute: AppAuditTrailRoute,
+  AppGoodsReceivingRoute: AppGoodsReceivingRoute,
+  AppInventoryRoute: AppInventoryRoute,
+  AppPosRoute: AppPosRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppSalesRoute: AppSalesRoute,
+  AppUsersRoute: AppUsersRoute,
+  AppWarehousesRoute: AppWarehousesRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppSettingsBranchesRoute: AppSettingsBranchesRoute,
+  AppSettingsCompanyRoute: AppSettingsCompanyRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AccountingRoute: AccountingRoute,
-  GoodsReceivingRoute: GoodsReceivingRoute,
-  InventoryRoute: InventoryRoute,
-  PosRoute: PosRoute,
-  SalesRoute: SalesRoute,
+  AppRoute: AppRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -16,8 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CATEGORIES, COMPANY, CUSTOMERS, PRODUCTS, money, qty } from "@/lib/erp-data";
+import { DemoDataNotice } from "@/components/erp/demo-data-notice";
 
-export const Route = createFileRoute("/pos")({
+export const Route = createFileRoute("/_app/pos")({
   head: () => ({
     meta: [
       { title: "Point of Sale — Builders Paradise ERP" },
@@ -97,7 +98,9 @@ function POS() {
   };
 
   return (
-    <div className="mx-auto grid max-w-[1560px] gap-4 lg:grid-cols-[1fr_400px]">
+    <>
+      <DemoDataNotice phase={3} module="Point of Sale" />
+      <div className="mx-auto grid max-w-[1560px] gap-4 lg:grid-cols-[1fr_400px]">
       <div className="card-surface flex min-h-[640px] flex-col overflow-hidden">
         <div className="flex flex-wrap items-center gap-2 border-b border-border p-4">
           <div className="relative min-w-[220px] flex-1">
@@ -284,7 +287,8 @@ function POS() {
           </Button>
         </div>
       </aside>
-    </div>
+      </div>
+    </>
   );
 }
 

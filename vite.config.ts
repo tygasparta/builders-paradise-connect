@@ -12,4 +12,23 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    optimizeDeps: {
+      // These are only reached from lazily-loaded route components, so the dev
+      // optimizer discovers them mid-session, re-bundles, and ends up serving
+      // one React chunk to the app and a second, stale one to these packages —
+      // which surfaces as "Invalid hook call". Declaring them up front makes
+      // the optimizer resolve everything in a single pass. Build is unaffected.
+      include: [
+        "react-hook-form",
+        "@hookform/resolvers/zod",
+        "@tanstack/react-table",
+        "@supabase/supabase-js",
+        "zod",
+        "date-fns",
+        "cmdk",
+        "sonner",
+      ],
+    },
+  },
 });

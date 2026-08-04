@@ -15,8 +15,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CHART_OF_ACCOUNTS, JOURNALS, KPIS, money } from "@/lib/erp-data";
+import { DemoDataNotice } from "@/components/erp/demo-data-notice";
 
-export const Route = createFileRoute("/accounting")({
+export const Route = createFileRoute("/_app/accounting")({
   head: () => ({
     meta: [
       { title: "Accounting — Builders Paradise ERP" },
@@ -58,6 +59,8 @@ function Accounting() {
         badge="Period: Aug 2026"
         description="Double-entry ledger fed automatically by sales, POS, purchasing, inventory and payroll. Transaction-generated entries are locked from manual edits."
       />
+
+      <DemoDataNotice phase={4} module="Accounting" />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

@@ -16,8 +16,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { GRNS, PURCHASE_ORDERS, money, qty } from "@/lib/erp-data";
+import { DemoDataNotice } from "@/components/erp/demo-data-notice";
 
-export const Route = createFileRoute("/goods-receiving")({
+export const Route = createFileRoute("/_app/goods-receiving")({
   head: () => ({
     meta: [
       { title: "Goods Receiving — Builders Paradise ERP" },
@@ -58,7 +59,9 @@ function GoodsReceiving() {
         description="Receive against purchase orders, record inspection variances and post the inventory and payable entries automatically."
         actions={
           <Button className="rounded-lg" onClick={() => toast.info("Select a purchase order to receive")}>
-            <PackageCheck className="size-4" /> New GRN
+            <PackageCheck className="size-4" />
+
+      <DemoDataNotice phase={2} module="Goods receiving" /> New GRN
           </Button>
         }
       />
