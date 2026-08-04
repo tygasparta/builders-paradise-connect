@@ -6,8 +6,9 @@
 -- warehouse. Everything it creates is removed at the end.
 --
 -- SAFE TO RUN ON PRODUCTION: it touches only rows it created itself,
--- identified by the __VERIFY prefix. It does not read, alter or delete
--- any real product, warehouse, balance or movement.
+-- identified by the ZZVERIFY prefix. (Codes must start with a letter or
+-- digit, so the prefix cannot be an underscore.) It does not read, alter
+-- or delete any real product, warehouse, balance or movement.
 --
 -- Paste into Supabase → SQL Editor → Run. Read the `result` column.
 -- =====================================================================
@@ -45,17 +46,17 @@ begin
   -- Fixtures
   ------------------------------------------------------------------
   insert into public.warehouses (code, name, branch_id, type, allow_negative_stock)
-  values ('__VERIFY-WH', '__VERIFY Test Warehouse', v_branch, 'main', false)
+  values ('ZZVERIFYWH', 'ZZVERIFY Test Warehouse', v_branch, 'main', false)
   on conflict (code) do update set allow_negative_stock = false
   returning id into v_wh;
 
   insert into public.warehouses (code, name, branch_id, type, allow_negative_stock)
-  values ('__VERIFY-NEG', '__VERIFY Negative Allowed', v_branch, 'main', true)
+  values ('ZZVERIFYNEG', 'ZZVERIFY Negative Allowed', v_branch, 'main', true)
   on conflict (code) do update set allow_negative_stock = true
   returning id into v_wh_neg;
 
   insert into public.products (sku, name, uom_id, standard_cost, selling_price, track_stock)
-  values ('__VERIFY-SKU', '__VERIFY Test Product', v_uom, 10, 25, true)
+  values ('ZZVERIFY-SKU', 'ZZVERIFY Test Product', v_uom, 10, 25, true)
   on conflict (sku) do update set track_stock = true
   returning id into v_product;
 
@@ -213,13 +214,13 @@ begin
   -- 12. Barcode lookup resolves by SKU and by barcode
   ------------------------------------------------------------------
   insert into public.product_barcodes (product_id, barcode, is_primary)
-  values (v_product, '__VERIFY-6001234567890', true)
+  values (v_product, 'ZZVERIFY6001234567890', true)
   on conflict (barcode) do nothing;
 
-  select count(*) into v_count from public.find_product_by_scan('__VERIFY-6001234567890');
+  select count(*) into v_count from public.find_product_by_scan('ZZVERIFY6001234567890');
   insert into _v2 values ('12. scan finds product by barcode', '1', v_count::text, v_count = 1);
 
-  select count(*) into v_count from public.find_product_by_scan('__VERIFY-SKU');
+  select count(*) into v_count from public.find_product_by_scan('ZZVERIFY-SKU');
   insert into _v2 values ('12. scan finds product by SKU', '1', v_count::text, v_count = 1);
 
   ------------------------------------------------------------------
@@ -233,7 +234,7 @@ begin
   alter table public.inventory_movements enable trigger trg_movements_immutable;
   delete from public.inventory_balances where product_id = v_product;
   delete from public.products where id = v_product;
-  delete from public.warehouses where code in ('__VERIFY-WH', '__VERIFY-NEG');
+  delete from public.warehouses where code in ('ZZVERIFYWH', 'ZZVERIFYNEG');
 
   insert into _v2 values ('13. cleanup: fixtures removed', 'removed', 'removed', true);
 end $$;
