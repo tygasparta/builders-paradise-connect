@@ -329,6 +329,204 @@ export type SupplierRow = Timestamps & {
 /** Bank fields are null without a supplier-payment permission. */
 export type SupplierDirectoryRow = Omit<SupplierRow, "created_by" | "updated_by">;
 
+// ---------------------------------------------------------------------
+// Phase 3 — purchasing
+// ---------------------------------------------------------------------
+
+export type RequisitionStatus =
+  "draft" | "submitted" | "approved" | "rejected" | "converted" | "cancelled";
+
+export type PurchaseOrderStatus =
+  | "draft"
+  | "pending_approval"
+  | "approved"
+  | "partially_received"
+  | "received"
+  | "cancelled"
+  | "closed";
+
+export type GrnStatus = "draft" | "inspected" | "approved" | "posted" | "cancelled";
+
+export type PurchaseRequisitionRow = Timestamps & {
+  id: string;
+  requisition_no: string;
+  branch_id: string | null;
+  warehouse_id: string | null;
+  requested_by: string | null;
+  department: string | null;
+  required_date: string | null;
+  reason: string | null;
+  notes: string | null;
+  status: RequisitionStatus;
+  submitted_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  rejected_reason: string | null;
+};
+
+export type PurchaseRequisitionLineRow = {
+  id: string;
+  requisition_id: string;
+  line_no: number;
+  product_id: string;
+  quantity: number;
+  estimated_unit_price: number;
+  notes: string | null;
+  created_at: string;
+};
+
+export type PurchaseOrderRow = Timestamps & {
+  id: string;
+  po_no: string;
+  supplier_id: string;
+  requisition_id: string | null;
+  branch_id: string | null;
+  warehouse_id: string;
+  order_date: string;
+  expected_date: string | null;
+  quotation_ref: string | null;
+  payment_terms_days: number;
+  currency_code: string;
+  subtotal: number;
+  discount_total: number;
+  tax_total: number;
+  total: number;
+  status: PurchaseOrderStatus;
+  approved_by: string | null;
+  approved_at: string | null;
+  cancelled_reason: string | null;
+  notes: string | null;
+};
+
+export type PurchaseOrderLineRow = {
+  id: string;
+  purchase_order_id: string;
+  line_no: number;
+  product_id: string;
+  description: string | null;
+  quantity_ordered: number;
+  quantity_received: number;
+  unit_price: number;
+  discount_percent: number;
+  tax_rate: number;
+  line_total: number;
+  created_at: string;
+};
+
+export type GoodsReceivedNoteRow = Timestamps & {
+  id: string;
+  grn_no: string;
+  purchase_order_id: string | null;
+  supplier_id: string;
+  warehouse_id: string;
+  branch_id: string | null;
+  delivery_note_ref: string | null;
+  received_date: string;
+  received_by: string | null;
+  inspected_by: string | null;
+  inspection_notes: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  status: GrnStatus;
+  posted_at: string | null;
+  posted_by: string | null;
+  journal_entry_id: string | null;
+  total_cost: number;
+  notes: string | null;
+};
+
+export type GoodsReceivedNoteLineRow = {
+  id: string;
+  grn_id: string;
+  line_no: number;
+  purchase_order_line_id: string | null;
+  product_id: string;
+  quantity_ordered: number;
+  quantity_delivered: number;
+  quantity_accepted: number;
+  quantity_rejected: number;
+  unit_cost: number;
+  rejection_reason: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+export type DocumentSequenceRow = {
+  doc_type: string;
+  prefix: string;
+  next_number: number;
+  padding: number;
+  updated_at: string;
+};
+
+// ---------------------------------------------------------------------
+// Accounting
+// ---------------------------------------------------------------------
+
+export type AccountType = "asset" | "liability" | "equity" | "income" | "cost_of_sales" | "expense";
+
+export type ChartOfAccountRow = Timestamps & {
+  id: string;
+  account_code: string;
+  name: string;
+  account_type: AccountType;
+  parent_id: string | null;
+  description: string | null;
+  is_postable: boolean;
+  is_system: boolean;
+  status: RecordStatus;
+};
+
+export type AccountingPeriodRow = Timestamps & {
+  id: string;
+  fiscal_year: number;
+  period_no: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+  status: "open" | "locked" | "closed";
+  closed_at: string | null;
+  closed_by: string | null;
+};
+
+export type JournalEntryRow = {
+  id: string;
+  journal_no: number;
+  reference: string;
+  journal_date: string;
+  posting_date: string;
+  period_id: string | null;
+  description: string;
+  source_module: string | null;
+  source_document_type: string | null;
+  source_document_id: string | null;
+  source_document_number: string | null;
+  is_system: boolean;
+  total_debit: number;
+  total_credit: number;
+  status: "posted" | "reversed";
+  reverses_journal_id: string | null;
+  reversed_by_journal_id: string | null;
+  branch_id: string | null;
+  created_at: string;
+  created_by: string | null;
+};
+
+export type JournalEntryLineRow = {
+  id: string;
+  journal_id: string;
+  line_no: number;
+  account_id: string;
+  description: string | null;
+  debit: number;
+  credit: number;
+  branch_id: string | null;
+  supplier_id: string | null;
+  customer_id: string | null;
+  product_id: string | null;
+  created_at: string;
+};
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -390,6 +588,17 @@ export type Database = {
       inventory_balances: TableDef<InventoryBalanceRow, never, never>;
       inventory_movements: TableDef<InventoryMovementRow, never, never>;
       suppliers: TableDef<SupplierRow, Writable<SupplierRow> & Pick<SupplierRow, "code" | "name">>;
+      purchase_requisitions: TableDef<PurchaseRequisitionRow>;
+      purchase_requisition_lines: TableDef<PurchaseRequisitionLineRow>;
+      purchase_orders: TableDef<PurchaseOrderRow>;
+      purchase_order_lines: TableDef<PurchaseOrderLineRow>;
+      goods_received_notes: TableDef<GoodsReceivedNoteRow>;
+      goods_received_note_lines: TableDef<GoodsReceivedNoteLineRow>;
+      document_sequences: TableDef<DocumentSequenceRow, never, never>;
+      chart_of_accounts: TableDef<ChartOfAccountRow>;
+      accounting_periods: TableDef<AccountingPeriodRow>;
+      journal_entries: TableDef<JournalEntryRow, never, never>;
+      journal_entry_lines: TableDef<JournalEntryLineRow, never, never>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
@@ -426,6 +635,39 @@ export type Database = {
           quantity: number;
           average_cost: number;
           total_value: number;
+        }[];
+      };
+      post_goods_received_note: { Args: { p_grn_id: string }; Returns: string };
+      next_document_number: { Args: { p_doc_type: string }; Returns: string };
+      post_journal_entry: {
+        Args: {
+          p_reference: string;
+          p_description: string;
+          p_lines: unknown;
+          p_journal_date?: string;
+          p_source_module?: string | null;
+          p_source_document_type?: string | null;
+          p_source_document_id?: string | null;
+          p_source_document_number?: string | null;
+          p_branch_id?: string | null;
+          p_is_system?: boolean;
+          p_reverses_journal_id?: string | null;
+        };
+        Returns: string;
+      };
+      reverse_journal_entry: {
+        Args: { p_journal_id: string; p_reason: string; p_reversal_date?: string };
+        Returns: string;
+      };
+      trial_balance: {
+        Args: { p_as_at?: string; p_branch_id?: string | null };
+        Returns: {
+          account_code: string;
+          account_name: string;
+          account_type: AccountType;
+          total_debit: number;
+          total_credit: number;
+          balance: number;
         }[];
       };
       post_inventory_movement: {
