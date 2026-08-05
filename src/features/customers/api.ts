@@ -55,3 +55,76 @@ export async function fetchBalances(customerIds: string[]): Promise<Map<string, 
   );
   return new Map(entries);
 }
+
+// ---------------------------------------------------------------------
+// Account activity — what a customer detail view needs
+// ---------------------------------------------------------------------
+
+export type CustomerInvoiceRow = {
+  id: string;
+  invoice_no: string;
+  invoice_date: string;
+  due_date: string | null;
+  total: number;
+  amount_paid: number;
+  status: string;
+  payment_type: string;
+};
+
+export type CustomerReceiptSummary = {
+  id: string;
+  receipt_no: string;
+  receipt_date: string;
+  payment_method: string;
+  reference: string | null;
+  amount: number;
+  status: string;
+};
+
+export type CustomerCreditNote = {
+  id: string;
+  return_no: string;
+  return_date: string;
+  reason: string;
+  total: number;
+  status: string;
+};
+
+export type CustomerActivity = {
+  invoices: CustomerInvoiceRow[];
+  receipts: CustomerReceiptSummary[];
+  creditNotes: CustomerCreditNote[];
+};
+
+/**
+ * Everything on one customer's account.
+ *
+ * Three parallel reads rather than one nested select: they are unrelated
+ * tables, and a nested select of this depth makes supabase-js's type
+ * inference explode.
+ */
+export async function fetchCustomerActivity(customerId: string): Promise<CustomerActivity> {
+  const [invoices, receipts, creditNotes] = await Promise.all([
+    db
+      .from("sales_invoices")
+      .select("id, invoice_no, invoice_date, due_date, total, amount_paid, status, payment_type")
+      .eq("customer_id", customerId)
+      .order("invoice_date", { ascending: false }),
+    db
+      .from("customer_receipts")
+      .select("id, receipt_no, receipt_date, payment_method, reference, amount, status")
+      .eq("customer_id", customerId)
+      .order("receipt_date", { ascending: false }),
+    db
+      .from("sales_returns")
+      .select("id, return_no, return_date, reason, total, status")
+      .eq("customer_id", customerId)
+      .order("return_date", { ascending: false }),
+  ]);
+
+  return {
+    invoices: unwrap(invoices) as unknown as CustomerInvoiceRow[],
+    receipts: unwrap(receipts) as unknown as CustomerReceiptSummary[],
+    creditNotes: unwrap(creditNotes) as unknown as CustomerCreditNote[],
+  };
+}

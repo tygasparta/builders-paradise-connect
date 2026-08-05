@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Ban, Download, MoreHorizontal, Pencil, Plus, Power, Truck } from "lucide-react";
+import { Ban, Download, Eye, MoreHorizontal, Pencil, Plus, Power, Truck } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/erp/page-header";
@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { SupplierFormDialog } from "@/features/suppliers/supplier-form-dialog";
+import { SupplierDetailSheet } from "@/features/suppliers/supplier-detail-sheet";
 import { useSetSupplierStatus, useSuppliers } from "@/features/suppliers/hooks";
 import { paymentTermsLabel } from "@/features/suppliers/schema";
 import { usePermissions } from "@/lib/auth/use-permission";
@@ -59,6 +60,7 @@ function SuppliersScreen() {
   const [includeInactive, setIncludeInactive] = useState(false);
   const [editing, setEditing] = useState<SupplierRow | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [viewing, setViewing] = useState<SupplierRow | null>(null);
   const [blocking, setBlocking] = useState<SupplierRow | null>(null);
 
   const suppliers = useSuppliers(includeInactive);
@@ -175,6 +177,10 @@ function SuppliersScreen() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onSelect={() => setViewing(supplier)}>
+                    <Eye className="size-4" />
+                    View account
+                  </DropdownMenuItem>
                   {canUpdate && (
                     <DropdownMenuItem
                       onSelect={() => {
@@ -288,6 +294,8 @@ function SuppliersScreen() {
       />
 
       <SupplierFormDialog open={formOpen} onOpenChange={setFormOpen} supplier={editing} />
+
+      <SupplierDetailSheet supplier={viewing} onOpenChange={(open) => !open && setViewing(null)} />
 
       <AlertDialog open={Boolean(blocking)} onOpenChange={(open) => !open && setBlocking(null)}>
         <AlertDialogContent>

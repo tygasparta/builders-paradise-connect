@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Download, MoreHorizontal, PauseCircle, Pencil, Plus, Power, Users } from "lucide-react";
+import {
+  Download,
+  Eye,
+  MoreHorizontal,
+  PauseCircle,
+  Pencil,
+  Plus,
+  Power,
+  Users,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/erp/page-header";
@@ -19,6 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CustomerFormDialog } from "@/features/customers/customer-form-dialog";
+import { CustomerDetailSheet } from "@/features/customers/customer-detail-sheet";
 import {
   useCustomerBalances,
   useCustomers,
@@ -63,6 +73,7 @@ function CustomersScreen() {
   const [includeInactive, setIncludeInactive] = useState(false);
   const [editing, setEditing] = useState<CustomerRow | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [viewing, setViewing] = useState<CustomerRow | null>(null);
 
   const customers = useCustomers(includeInactive);
   const setStatus = useSetCustomerStatus();
@@ -204,6 +215,10 @@ function CustomersScreen() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuItem onSelect={() => setViewing(customer)}>
+                    <Eye className="size-4" />
+                    View account
+                  </DropdownMenuItem>
                   {canUpdate && (
                     <DropdownMenuItem
                       onSelect={() => {
@@ -319,6 +334,12 @@ function CustomersScreen() {
       />
 
       <CustomerFormDialog open={formOpen} onOpenChange={setFormOpen} customer={editing} />
+
+      <CustomerDetailSheet
+        customer={viewing}
+        balance={viewing ? (balances.data?.get(viewing.id) ?? 0) : 0}
+        onOpenChange={(open) => !open && setViewing(null)}
+      />
 
       <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
         <Users className="size-3.5" aria-hidden />A blank credit limit means cash only. On hold

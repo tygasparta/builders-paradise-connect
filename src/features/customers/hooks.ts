@@ -5,6 +5,7 @@ import type { CustomerFormValues } from "./schema";
 import {
   createCustomer,
   fetchBalances,
+  fetchCustomerActivity,
   listCustomers,
   setCustomerStatus,
   updateCustomer,
@@ -74,5 +75,14 @@ export function useSetCustomerStatus() {
       );
     },
     onError: (error: Error) => toast.error(error.message),
+  });
+}
+
+export function useCustomerActivity(customerId: string | null) {
+  return useQuery({
+    queryKey: ["customers", "activity", customerId ?? ""] as const,
+    queryFn: () => fetchCustomerActivity(customerId as string),
+    enabled: Boolean(customerId),
+    staleTime: 30_000,
   });
 }

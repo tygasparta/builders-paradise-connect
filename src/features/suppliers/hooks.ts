@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import type { SupplierFormValues } from "./schema";
 import {
   createSupplier,
+  fetchSupplierActivity,
   listSupplierProducts,
   listSuppliers,
   setSupplierStatus,
@@ -73,5 +74,14 @@ export function useSetSupplierStatus() {
       );
     },
     onError: (error: Error) => toast.error(error.message),
+  });
+}
+
+export function useSupplierActivity(supplierId: string | null) {
+  return useQuery({
+    queryKey: ["suppliers", "activity", supplierId ?? ""] as const,
+    queryFn: () => fetchSupplierActivity(supplierId as string),
+    enabled: Boolean(supplierId),
+    staleTime: 30_000,
   });
 }
