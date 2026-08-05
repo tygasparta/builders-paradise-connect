@@ -20,7 +20,7 @@ const MODULES = [
 ] as const;
 
 const ASSURANCES = [
-  { icon: ShieldCheck, title: "Secure & Reliable", note: "Enterprise-grade security" },
+  { icon: ShieldCheck, title: "Secure & Reliable", note: "Enterprise-grade" },
   { icon: Cloud, title: "Cloud Based", note: "Access from anywhere" },
   { icon: Headphones, title: "24/7 Support", note: "Always here to help" },
 ] as const;
@@ -51,7 +51,7 @@ export function AuthShell({
           aria-hidden
         />
 
-        <div className="relative flex flex-1 flex-col justify-between p-12 xl:p-14">
+        <div className="relative flex flex-1 flex-col p-12 xl:p-14">
           <div className="inline-flex w-fit items-center rounded-xl bg-white px-4 py-3 shadow-lg">
             <img
               src={logoAsset.url}
@@ -60,7 +60,7 @@ export function AuthShell({
             />
           </div>
 
-          <div className="max-w-md py-10">
+          <div className="mt-auto max-w-md">
             <span className="block h-[3px] w-14 rounded-full bg-sidebar-primary" />
             <p className="mt-7 text-td text-sidebar-foreground/85">Welcome to</p>
             <h2 className="mt-2 text-kpi font-semibold tracking-tight text-white">
@@ -72,7 +72,7 @@ export function AuthShell({
             </p>
           </div>
 
-          <div>
+          <div className="mt-auto pt-14">
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
               {MODULES.map(({ icon: Icon, label }) => (
                 <div
