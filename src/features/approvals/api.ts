@@ -42,6 +42,12 @@ export type ApprovalSource = {
   pending: string[];
   approvedStatus: string;
   rejectedStatus: string;
+  /**
+   * Whether the table carries an approved_at column to stamp. Not every
+   * one does — sales_invoices records approval only as a status — and
+   * writing a column that does not exist fails the whole update.
+   */
+  stampsApprovedAt: boolean;
 };
 
 export const APPROVAL_SOURCES: ApprovalSource[] = [
@@ -54,6 +60,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["submitted"],
     approvedStatus: "approved",
     rejectedStatus: "rejected",
+    stampsApprovedAt: true,
   },
   {
     kind: "requisition",
@@ -64,6 +71,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["submitted"],
     approvedStatus: "approved",
     rejectedStatus: "rejected",
+    stampsApprovedAt: true,
   },
   {
     kind: "purchase_order",
@@ -74,6 +82,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["pending_approval"],
     approvedStatus: "approved",
     rejectedStatus: "cancelled",
+    stampsApprovedAt: true,
   },
   {
     kind: "grn",
@@ -84,6 +93,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["draft", "inspected"],
     approvedStatus: "approved",
     rejectedStatus: "cancelled",
+    stampsApprovedAt: true,
   },
   {
     kind: "invoice",
@@ -94,6 +104,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["awaiting_approval"],
     approvedStatus: "approved",
     rejectedStatus: "cancelled",
+    stampsApprovedAt: false,
   },
   {
     kind: "expense",
@@ -104,6 +115,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["submitted"],
     approvedStatus: "approved",
     rejectedStatus: "rejected",
+    stampsApprovedAt: true,
   },
   {
     kind: "payroll",
@@ -114,6 +126,7 @@ export const APPROVAL_SOURCES: ApprovalSource[] = [
     pending: ["calculated"],
     approvedStatus: "approved",
     rejectedStatus: "cancelled",
+    stampsApprovedAt: true,
   },
 ];
 
@@ -260,7 +273,7 @@ export async function fetchPending(source: ApprovalSource): Promise<ApprovalItem
 export async function decide(source: ApprovalSource, id: string, approve: boolean): Promise<void> {
   const status = approve ? source.approvedStatus : source.rejectedStatus;
   const patch: Row = { status };
-  if (approve && source.kind !== "grn") patch["approved_at"] = new Date().toISOString();
+  if (approve && source.stampsApprovedAt) patch["approved_at"] = new Date().toISOString();
 
   const rows = unwrap(
     await db

@@ -16,9 +16,12 @@ export type SalesSummaryRow = {
   customer_name: string;
   payment_type: string;
   subtotal: number;
-  tax_amount: number;
+  discount_total: number;
+  tax_total: number;
   total: number;
   amount_paid: number;
+  /** What the goods cost us, captured on the invoice when it posted. */
+  cost_of_sales: number;
   status: string;
 };
 
@@ -27,7 +30,8 @@ export async function fetchSalesSummary(range: DateRange): Promise<SalesSummaryR
     await db
       .from("sales_invoices")
       .select(
-        `invoice_no, invoice_date, payment_type, subtotal, tax_amount, total, amount_paid, status,
+        `invoice_no, invoice_date, payment_type, subtotal, discount_total, tax_total,
+         total, amount_paid, cost_of_sales, status,
          customer:customers!sales_invoices_customer_id_fkey(name)`,
       )
       .gte("invoice_date", range.from)

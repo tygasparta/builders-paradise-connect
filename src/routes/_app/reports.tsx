@@ -170,15 +170,27 @@ function Totals({
 function SalesReport({ range }: { range: DateRange }) {
   const { can } = usePermissions();
   const canExport = can(PERMISSIONS.REPORTS_EXPORT);
+  const canSeeProfit = can(PERMISSIONS.REPORTS_GROSS_PROFIT_VIEW);
   const sales = useSalesSummary(range);
   const rows = useMemo(() => sales.data ?? [], [sales.data]);
 
   const totals = useMemo(() => {
     const net = rows.reduce((s, r) => s + Number(r.subtotal), 0);
-    const tax = rows.reduce((s, r) => s + Number(r.tax_amount), 0);
+    const tax = rows.reduce((s, r) => s + Number(r.tax_total), 0);
     const gross = rows.reduce((s, r) => s + Number(r.total), 0);
     const paid = rows.reduce((s, r) => s + Number(r.amount_paid), 0);
-    return { net, tax, gross, outstanding: gross - paid };
+    // Cost is stamped on the invoice at posting, so margin is what was
+    // actually earned then — not today's cost re-applied to old sales.
+    const cost = rows.reduce((s, r) => s + Number(r.cost_of_sales), 0);
+    return {
+      net,
+      tax,
+      gross,
+      outstanding: gross - paid,
+      cost,
+      profit: net - cost,
+      margin: net > 0 ? ((net - cost) / net) * 100 : 0,
+    };
   }, [rows]);
 
   const byCustomer = useMemo(
@@ -218,6 +230,28 @@ function SalesReport({ range }: { range: DateRange }) {
         ]}
       />
 
+      {canSeeProfit && (
+        <Totals
+          items={[
+            { label: "Cost of sales", value: money(totals.cost) },
+            {
+              label: "Gross profit",
+              value: money(totals.profit),
+              tone: totals.profit >= 0 ? "text-success" : "text-destructive",
+            },
+            {
+              label: "Margin",
+              value: totals.net > 0 ? `${totals.margin.toFixed(1)}%` : "—",
+              tone: totals.margin >= 0 ? undefined : "text-destructive",
+            },
+            {
+              label: "Average invoice",
+              value: money(rows.length > 0 ? totals.gross / rows.length : 0),
+            },
+          ]}
+        />
+      )}
+
       <div className="grid gap-4 lg:grid-cols-2">
         <SectionCard
           title="By customer"
@@ -235,9 +269,18 @@ function SalesReport({ range }: { range: DateRange }) {
                     { header: "Customer", value: (r) => r.customer_name },
                     { header: "Type", value: (r) => r.payment_type },
                     { header: "Net", value: (r) => Number(r.subtotal).toFixed(2) },
-                    { header: "Tax", value: (r) => Number(r.tax_amount).toFixed(2) },
+                    { header: "Discount", value: (r) => Number(r.discount_total).toFixed(2) },
+                    { header: "Tax", value: (r) => Number(r.tax_total).toFixed(2) },
                     { header: "Total", value: (r) => Number(r.total).toFixed(2) },
                     { header: "Paid", value: (r) => Number(r.amount_paid).toFixed(2) },
+                    ...(canSeeProfit
+                      ? [
+                          {
+                            header: "Cost of sales",
+                            value: (r: (typeof rows)[number]) => Number(r.cost_of_sales).toFixed(2),
+                          },
+                        ]
+                      : []),
                     { header: "Status", value: (r) => r.status },
                   ]);
                   toast.success(`${plural(rows.length, "invoice")} exported`);
