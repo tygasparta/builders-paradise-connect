@@ -21,6 +21,7 @@ import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
 import { Route as AppPosRouteImport } from './routes/_app/pos'
 import { Route as AppProductsRouteImport } from './routes/_app/products'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppPurchasesRouteImport } from './routes/_app/purchases'
 import { Route as AppSalesRouteImport } from './routes/_app/sales'
 import { Route as AppSuppliersRouteImport } from './routes/_app/suppliers'
 import { Route as AppUsersRouteImport } from './routes/_app/users'
@@ -87,6 +88,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPurchasesRoute = AppPurchasesRouteImport.update({
+  id: '/purchases',
+  path: '/purchases',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSalesRoute = AppSalesRouteImport.update({
   id: '/sales',
   path: '/sales',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/pos': typeof AppPosRoute
   '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
+  '/purchases': typeof AppPurchasesRoute
   '/sales': typeof AppSalesRoute
   '/suppliers': typeof AppSuppliersRoute
   '/users': typeof AppUsersRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/pos': typeof AppPosRoute
   '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
+  '/purchases': typeof AppPurchasesRoute
   '/sales': typeof AppSalesRoute
   '/suppliers': typeof AppSuppliersRoute
   '/users': typeof AppUsersRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/_app/pos': typeof AppPosRoute
   '/_app/products': typeof AppProductsRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/purchases': typeof AppPurchasesRoute
   '/_app/sales': typeof AppSalesRoute
   '/_app/suppliers': typeof AppSuppliersRoute
   '/_app/users': typeof AppUsersRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/products'
     | '/profile'
+    | '/purchases'
     | '/sales'
     | '/suppliers'
     | '/users'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/pos'
     | '/products'
     | '/profile'
+    | '/purchases'
     | '/sales'
     | '/suppliers'
     | '/users'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/_app/pos'
     | '/_app/products'
     | '/_app/profile'
+    | '/_app/purchases'
     | '/_app/sales'
     | '/_app/suppliers'
     | '/_app/users'
@@ -331,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/purchases': {
+      id: '/_app/purchases'
+      path: '/purchases'
+      fullPath: '/purchases'
+      preLoaderRoute: typeof AppPurchasesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/sales': {
       id: '/_app/sales'
       path: '/sales'
@@ -384,6 +403,7 @@ interface AppRouteChildren {
   AppPosRoute: typeof AppPosRoute
   AppProductsRoute: typeof AppProductsRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppPurchasesRoute: typeof AppPurchasesRoute
   AppSalesRoute: typeof AppSalesRoute
   AppSuppliersRoute: typeof AppSuppliersRoute
   AppUsersRoute: typeof AppUsersRoute
@@ -401,6 +421,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPosRoute: AppPosRoute,
   AppProductsRoute: AppProductsRoute,
   AppProfileRoute: AppProfileRoute,
+  AppPurchasesRoute: AppPurchasesRoute,
   AppSalesRoute: AppSalesRoute,
   AppSuppliersRoute: AppSuppliersRoute,
   AppUsersRoute: AppUsersRoute,

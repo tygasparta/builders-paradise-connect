@@ -105,25 +105,24 @@ export const NAVIGATION: NavSection[] = [
         to: "/purchases",
         icon: ShoppingCart,
         require: PERMISSIONS.PURCHASING_VIEW,
-        phase: 2,
         children: [
           {
-            label: "Requisitions",
-            icon: ClipboardList,
-            require: PERMISSIONS.PURCHASE_REQUISITIONS_VIEW,
-            phase: 2,
-          },
-          {
             label: "Purchase orders",
+            to: "/purchases",
             icon: FileText,
             require: PERMISSIONS.PURCHASE_ORDERS_VIEW,
-            phase: 2,
           },
           {
             label: "Goods receiving",
             to: "/goods-receiving",
             icon: PackageCheck,
             require: PERMISSIONS.GRN_VIEW,
+          },
+          {
+            label: "Requisitions",
+            icon: ClipboardList,
+            require: PERMISSIONS.PURCHASE_REQUISITIONS_VIEW,
+            phase: 3,
           },
         ],
       },
