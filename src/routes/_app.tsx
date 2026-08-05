@@ -1,10 +1,12 @@
 import { Outlet, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/erp/app-sidebar";
 import { Topbar } from "@/components/erp/topbar";
 import { useAuth } from "@/lib/auth/auth-context";
+import { usePermissions } from "@/lib/auth/use-permission";
+import { APPROVAL_SOURCES, usePendingApprovalCount } from "@/features/approvals/api";
 
 export const Route = createFileRoute("/_app")({
   component: AppLayout,
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/_app")({
  */
 function AppLayout() {
   const { status } = useAuth();
+  const { can } = usePermissions();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (router) => router.location.pathname });
 
@@ -31,6 +34,15 @@ function AppLayout() {
     }
   }, [status, navigate, pathname]);
 
+  // Only count what this person can actually act on. Hooks run before
+  // the signed-out return below, so the order stays stable across renders;
+  // the query itself is disabled while there are no sources.
+  const approvalSources = useMemo(
+    () => APPROVAL_SOURCES.filter((source) => can(source.permission)),
+    [can],
+  );
+  const approvals = usePendingApprovalCount(approvalSources);
+
   if (status !== "signed-in") {
     return <BootScreen />;
   }
@@ -38,7 +50,7 @@ function AppLayout() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        <AppSidebar />
+        <AppSidebar badges={{ approvals: approvals.data ?? 0 }} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar />
           <main className="flex-1 px-4 py-6 md:px-8 md:py-8">

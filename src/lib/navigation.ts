@@ -216,14 +216,12 @@ export const NAVIGATION: NavSection[] = [
         icon: CheckSquare,
         require: PERMISSIONS.APPROVALS_INBOX_VIEW,
         badgeKey: "approvals",
-        phase: 6,
       },
       {
         label: "Reports",
         to: "/reports",
         icon: BarChart3,
         require: PERMISSIONS.REPORTS_VIEW,
-        phase: 6,
       },
       {
         label: "Users & Roles",
