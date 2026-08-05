@@ -85,11 +85,12 @@ export function AuthShell({
                 </div>
               ))}
             </div>
-
-            <p className="mt-10 text-helper text-sidebar-muted">
-              © {new Date().getFullYear()} Builders Paradise Hardware. All rights reserved.
-            </p>
           </div>
+
+          <p className="text-helper text-sidebar-muted">
+            © {new Date().getFullYear()} Builders Paradise Hardware. All rights reserved.
+          </p>
+
         </div>
       </aside>
 
