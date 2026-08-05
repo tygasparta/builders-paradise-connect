@@ -8,6 +8,7 @@ import {
   Download,
   Landmark,
   Loader2,
+  Pencil,
   Plus,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -36,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Field } from "@/components/erp/form-field";
+import type { BankAccountWithLedger } from "@/features/finance/api";
 import {
   useBankAccounts,
   useBankTransactions,
@@ -43,6 +45,7 @@ import {
   useSetReconciled,
 } from "@/features/finance/api";
 import { useAccounts } from "@/features/accounting/api";
+import { BankAccountDialog } from "@/features/finance/bank-account-dialog";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
 import type { BankTransactionType } from "@/lib/database.types";
@@ -74,11 +77,14 @@ function BankingScreen() {
   const { can } = usePermissions();
   const canRecord = can(PERMISSIONS.BANKING_TRANSACTIONS_CREATE);
   const canReconcile = can(PERMISSIONS.BANKING_RECONCILE);
+  const canManageAccounts = can(PERMISSIONS.BANKING_ACCOUNTS_MANAGE);
   const canExport = can(PERMISSIONS.REPORTS_EXPORT);
 
   const accounts = useBankAccounts();
   const [accountId, setAccountId] = useState<string | null>(null);
   const [recordOpen, setRecordOpen] = useState(false);
+  const [accountFormOpen, setAccountFormOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<BankAccountWithLedger | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const transactions = useBankTransactions(accountId);
@@ -160,7 +166,20 @@ function BankingScreen() {
           <EmptyState
             icon={<Landmark className="size-5" />}
             title="No bank accounts yet"
-            description="A bank account links to a ledger account, so every movement on the statement lands in the general ledger. Add one in Settings."
+            description="A bank account links to a ledger account, so every movement on the statement lands in the general ledger."
+            action={
+              canManageAccounts ? (
+                <Button
+                  onClick={() => {
+                    setEditingAccount(null);
+                    setAccountFormOpen(true);
+                  }}
+                >
+                  <Plus className="size-4" />
+                  Add bank account
+                </Button>
+              ) : undefined
+            }
           />
         </div>
       </>
@@ -192,6 +211,33 @@ function BankingScreen() {
                 <Download className="size-4" />
                 Export
               </Button>
+            )}
+            {canManageAccounts && (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="size-9"
+                  aria-label="Edit this bank account"
+                  disabled={!account}
+                  onClick={() => {
+                    setEditingAccount(account);
+                    setAccountFormOpen(true);
+                  }}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingAccount(null);
+                    setAccountFormOpen(true);
+                  }}
+                >
+                  <Plus className="size-4" />
+                  Account
+                </Button>
+              </>
             )}
             {canRecord && (
               <Button onClick={() => setRecordOpen(true)}>
@@ -356,6 +402,12 @@ function BankingScreen() {
         open={recordOpen}
         onOpenChange={setRecordOpen}
         bankAccountId={accountId}
+      />
+
+      <BankAccountDialog
+        open={accountFormOpen}
+        onOpenChange={setAccountFormOpen}
+        account={editingAccount}
       />
     </>
   );
