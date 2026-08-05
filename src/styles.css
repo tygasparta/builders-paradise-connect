@@ -80,6 +80,7 @@
   --color-sidebar-accent: var(--sidebar-accent);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-rail: var(--sidebar-rail);
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Soft, low-opacity only. Enterprise surfaces should not float. */
@@ -150,6 +151,7 @@
   --sidebar-accent: #143459;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #1c3b63;
+  --sidebar-rail: #24466d;
   --sidebar-ring: #3f9eff;
 }
 
@@ -201,6 +203,7 @@
   --sidebar: #081c33;
   --sidebar-accent: #102a48;
   --sidebar-border: #16314f;
+  --sidebar-rail: #1e3d61;
   --sidebar-muted: #7e94b2;
 }
 
@@ -259,4 +262,34 @@
 @utility table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * The navigation column scrolls when the sign-in has enough permissions to
+ * see every module. Fading the top and bottom few pixels says "there is
+ * more" without adding a scrollbar to a surface this narrow.
+ */
+@utility sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 12px),
+    transparent 100%
+  );
+}
+
+@utility sidebar-scroll {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--sidebar-border);
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }

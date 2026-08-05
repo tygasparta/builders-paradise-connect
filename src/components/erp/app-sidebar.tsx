@@ -17,9 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
 import { useCompanySettings } from "@/features/settings/hooks";
-import { useAuth } from "@/lib/auth/auth-context";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { NAVIGATION, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -27,14 +25,23 @@ import { BrandMark } from "./brand-mark";
 
 export type SidebarBadges = Partial<Record<"approvals" | "lowStock" | "notifications", number>>;
 
+/**
+ * The navigation rail.
+ *
+ * A hairline runs down the item column and the current entry is marked by
+ * a short segment on that line rather than by filling the row. Tracking
+ * one vertical line is quicker than scanning twenty rows for a shaded
+ * block, and it keeps the brand blue to a single place at a time.
+ *
+ * Identity lives in the topbar, so it is deliberately absent here — this
+ * owns navigation and nothing else.
+ */
 export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (router) => router.location.pathname });
   const { satisfies } = usePermissions();
   const { data: settings } = useCompanySettings();
-  const { profile, roles } = useAuth();
-  const primaryRole = roles.slice().sort((a, b) => a.rank - b.rank)[0];
 
   /** An entry is visible if the user holds its permission, or any child's. */
   const isVisible = (item: NavItem): boolean => {
@@ -51,51 +58,49 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
 
   return (
     <Sidebar collapsible="icon" className="border-sidebar-border">
-      <SidebarHeader className="gap-3 px-3 py-4">
-        {/* The logo sits on white so a colour mark reads correctly on navy. */}
-        {collapsed ? (
-          <div className="grid place-items-center rounded-xl bg-white p-1.5">
+      <SidebarHeader className="px-3 pb-1 pt-4">
+        <div className={cn("flex items-center gap-2.5", collapsed && "justify-center")}>
+          {/* A small white tile rather than a full-width card: a colour mark
+              still needs white to read, but it does not need to shout. */}
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-white">
             <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
           </div>
-        ) : (
-          <div className="flex items-center gap-3 rounded-xl bg-white px-3 py-3">
-            <BrandMark logoUrl={settings?.logo_url} companyName={settings?.company_name} />
+          {!collapsed && (
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-foreground">
+              <p className="truncate text-[13.5px] font-semibold leading-tight text-sidebar-accent-foreground">
                 {settings?.company_name ?? "Builders Paradise"}
               </p>
-              <p className="truncate text-xs text-muted-foreground">Enterprise ERP</p>
+              <p className="truncate text-[11px] leading-tight text-sidebar-muted">
+                Enterprise ERP
+              </p>
             </div>
-          </div>
-        )}
-
-        {!collapsed && (
-          <div className="rounded-xl bg-sidebar-accent/70 px-3 py-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-muted">
-              Signed in as
-            </p>
-            <p className="mt-0.5 truncate text-sm font-medium text-sidebar-accent-foreground">
-              {profile?.full_name ?? "…"}
-            </p>
-            {primaryRole && (
-              <p className="truncate text-xs text-sidebar-muted">{primaryRole.name}</p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </SidebarHeader>
 
-      <SidebarContent className="gap-0">
+      <SidebarContent className="sidebar-scroll gap-0 pb-4">
         {NAVIGATION.map((section) => {
           const items = section.items.filter(isVisible);
           if (items.length === 0) return null;
 
           return (
-            <SidebarGroup key={section.label}>
-              <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-widest text-sidebar-muted">
-                {section.label}
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
+            <SidebarGroup key={section.label} className="px-3 py-0 pt-4 first:pt-2">
+              {!collapsed && (
+                <SidebarGroupLabel className="h-auto px-0 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted/80">
+                  {section.label}
+                </SidebarGroupLabel>
+              )}
+
+              <SidebarGroupContent className="relative">
+                {/* The rail. Hidden when collapsed, where icons centre instead. */}
+                {!collapsed && (
+                  <span
+                    aria-hidden
+                    className="absolute bottom-1 left-[13px] top-1 w-px bg-sidebar-rail"
+                  />
+                )}
+
+                <SidebarMenu className="gap-px">
                   {items.map((item) => (
                     <NavEntry
                       key={item.label}
@@ -117,6 +122,27 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
   );
 }
 
+/** The blue segment that sits on the rail beside the current entry. */
+function ActiveMark({ short = false }: { short?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "absolute left-[11px] top-1/2 w-[3px] -translate-y-1/2 rounded-full bg-sidebar-primary",
+        short ? "h-3" : "h-4",
+      )}
+    />
+  );
+}
+
+function CountBadge({ count }: { count: number }) {
+  return (
+    <span className="num ml-auto shrink-0 rounded-full bg-sidebar-primary px-1.5 py-px text-[10px] font-semibold leading-4 text-sidebar-primary-foreground">
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
 function NavEntry({
   item,
   collapsed,
@@ -135,64 +161,94 @@ function NavEntry({
   const count = item.badgeKey ? badges[item.badgeKey] : undefined;
   const children = item.children?.filter(isVisible) ?? [];
   const active = isActive(item);
+  const childActive = children.some(isActive);
 
-  // A module whose screens land in a later phase is labelled, not linked —
-  // a link that goes nowhere is worse than an honest "P3".
+  // A module still awaiting its screens is labelled, not linked. Nothing
+  // carries a phase today; the guard stays so re-adding one is safe.
   const linkable = Boolean(item.to) && !item.phase;
 
-  const content = (
-    <>
-      <item.icon className="size-4" />
-      <span className="flex-1 truncate">{item.label}</span>
-      {!collapsed && item.phase && (
-        <span className="rounded-full bg-sidebar-accent px-1.5 py-0.5 text-[10px] font-medium text-sidebar-muted">
-          P{item.phase}
-        </span>
-      )}
-      {!collapsed && count !== undefined && count > 0 && (
-        <Badge className="h-5 min-w-5 justify-center rounded-full border-0 bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
-          {count > 99 ? "99+" : count}
-        </Badge>
-      )}
-    </>
+  /**
+   * Rows stay quiet. The current row gets a faint tint and brighter text —
+   * the loud part is the mark on the rail, which is why blue never appears
+   * in two places at once.
+   */
+  const rowClass = cn(
+    "group/row relative h-8 rounded-md text-[13.5px] font-medium transition-colors motion-reduce:transition-none",
+    collapsed ? "justify-center px-0" : "pl-[26px] pr-2",
+    active
+      ? "bg-sidebar-accent/60 text-sidebar-accent-foreground hover:bg-sidebar-accent/60"
+      : "text-sidebar-foreground hover:bg-sidebar-accent/35 hover:text-sidebar-accent-foreground",
   );
 
+  const iconClass = cn(
+    "size-4 shrink-0 transition-colors motion-reduce:transition-none",
+    active
+      ? "text-sidebar-accent-foreground"
+      : "text-sidebar-muted group-hover/row:text-sidebar-foreground",
+  );
+
+  // ---- Entry with children ---------------------------------------------
   if (children.length > 0) {
     return (
       <Collapsible defaultOpen={defaultOpen} className="group/collapsible">
         <SidebarMenuItem>
           <CollapsibleTrigger asChild>
             <SidebarMenuButton
-              tooltip={item.label}
-              isActive={active}
-              className="data-[state=open]:bg-sidebar-accent/60"
+              {...(collapsed ? { tooltip: item.label } : {})}
+              className={cn(
+                rowClass,
+                // A parent whose child is current stays legible without
+                // claiming the mark — that belongs to the child.
+                !active && childActive && "text-sidebar-accent-foreground",
+              )}
             >
-              {content}
-              <ChevronRight className="size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              {childActive && !active && !collapsed && (
+                <span
+                  aria-hidden
+                  className="absolute left-[11px] top-1/2 size-[3px] -translate-y-1/2 rounded-full bg-sidebar-muted"
+                />
+              )}
+              <item.icon className={iconClass} />
+              {!collapsed && (
+                <>
+                  <span className="truncate">{item.label}</span>
+                  <ChevronRight className="ml-auto size-3.5 shrink-0 text-sidebar-muted transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 motion-reduce:transition-none" />
+                </>
+              )}
             </SidebarMenuButton>
           </CollapsibleTrigger>
+
           <CollapsibleContent>
-            <SidebarMenuSub>
-              {children.map((child) => (
-                <SidebarMenuSubItem key={child.label}>
-                  {child.to && !child.phase ? (
-                    <SidebarMenuSubButton asChild isActive={isActive(child)}>
-                      <Link to={child.to}>
-                        <span>{child.label}</span>
-                      </Link>
-                    </SidebarMenuSubButton>
-                  ) : (
+            <SidebarMenuSub className="mx-0 my-0.5 gap-px border-0 px-0">
+              {children.map((child) => {
+                const childIsActive = isActive(child);
+                const childLinkable = Boolean(child.to) && !child.phase;
+                return (
+                  <SidebarMenuSubItem key={child.label}>
                     <SidebarMenuSubButton
-                      className="cursor-default opacity-45"
-                      aria-disabled="true"
-                      title={`${child.label} — Phase ${child.phase}`}
+                      asChild={childLinkable}
+                      isActive={childIsActive}
+                      aria-disabled={childLinkable ? undefined : "true"}
+                      className={cn(
+                        "relative h-7 rounded-md pl-[42px] pr-2 text-[13px] transition-colors motion-reduce:transition-none",
+                        childIsActive
+                          ? "bg-sidebar-accent/60 font-medium text-sidebar-accent-foreground hover:bg-sidebar-accent/60"
+                          : "text-sidebar-muted hover:bg-sidebar-accent/35 hover:text-sidebar-foreground",
+                        !childLinkable && "cursor-default opacity-45",
+                      )}
                     >
-                      <span className="flex-1">{child.label}</span>
-                      <span className="text-[10px]">P{child.phase}</span>
+                      {childLinkable ? (
+                        <Link to={child.to ?? "/"}>
+                          {childIsActive && <ActiveMark short />}
+                          <span className="truncate">{child.label}</span>
+                        </Link>
+                      ) : (
+                        <span className="truncate">{child.label}</span>
+                      )}
                     </SidebarMenuSubButton>
-                  )}
-                </SidebarMenuSubItem>
-              ))}
+                  </SidebarMenuSubItem>
+                );
+              })}
             </SidebarMenuSub>
           </CollapsibleContent>
         </SidebarMenuItem>
@@ -200,37 +256,30 @@ function NavEntry({
     );
   }
 
+  // ---- Leaf entry -------------------------------------------------------
   return (
     <SidebarMenuItem>
-      {linkable ? (
-        <SidebarMenuButton
-          asChild
-          isActive={active}
-          tooltip={item.label}
-          className={cn(
-            "data-[active=true]:bg-sidebar-primary data-[active=true]:text-sidebar-primary-foreground",
-            "data-[active=true]:hover:bg-sidebar-primary",
-          )}
-        >
-          <Link
-            to={item.to as string}
-            className={cn("flex items-center gap-2", active && "font-medium")}
-          >
-            {content}
-            {active && !collapsed && (
-              <span className="size-1.5 shrink-0 rounded-full bg-white/80" aria-hidden />
-            )}
+      <SidebarMenuButton
+        asChild={linkable}
+        isActive={active}
+        {...(collapsed ? { tooltip: item.label } : {})}
+        aria-disabled={linkable ? undefined : "true"}
+        className={cn(rowClass, !linkable && "cursor-default opacity-45")}
+      >
+        {linkable ? (
+          <Link to={item.to ?? "/"}>
+            {active && !collapsed && <ActiveMark />}
+            <item.icon className={iconClass} />
+            {!collapsed && <span className="truncate">{item.label}</span>}
+            {!collapsed && count !== undefined && count > 0 && <CountBadge count={count} />}
           </Link>
-        </SidebarMenuButton>
-      ) : (
-        <SidebarMenuButton
-          className="cursor-default opacity-45"
-          aria-disabled="true"
-          tooltip={item.phase ? `${item.label} — Phase ${item.phase}` : item.label}
-        >
-          {content}
-        </SidebarMenuButton>
-      )}
+        ) : (
+          <>
+            <item.icon className={iconClass} />
+            {!collapsed && <span className="truncate">{item.label}</span>}
+          </>
+        )}
+      </SidebarMenuButton>
     </SidebarMenuItem>
   );
 }
