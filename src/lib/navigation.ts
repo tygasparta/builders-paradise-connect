@@ -118,9 +118,9 @@ export const NAVIGATION: NavSection[] = [
           },
           {
             label: "Requisitions",
+            to: "/requisitions",
             icon: ClipboardList,
             require: PERMISSIONS.PURCHASE_REQUISITIONS_VIEW,
-            phase: 3,
           },
         ],
       },

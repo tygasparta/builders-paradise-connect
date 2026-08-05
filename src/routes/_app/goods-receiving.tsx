@@ -1,252 +1,386 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardCheck, PackageCheck, Truck, ArrowRight, FileCheck2 } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import {
+  CheckCircle2,
+  ClipboardCheck,
+  Download,
+  MoreHorizontal,
+  PackageCheck,
+  Plus,
+  Upload,
+} from "lucide-react";
 import { toast } from "sonner";
 
-import { PageHeader } from "@/components/erp/topbar";
-import { SectionCard, StatCard, StatusPill } from "@/components/erp/ui-kit";
+import { PageHeader } from "@/components/erp/page-header";
+import { DataTable } from "@/components/erp/data-table";
+import { RequirePermission } from "@/components/erp/permission-gate";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { GRNS, PURCHASE_ORDERS, money, qty } from "@/lib/erp-data";
-import { DemoDataNotice } from "@/components/erp/demo-data-notice";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ChooseOrderDialog, ReceiveGoodsDialog } from "@/features/purchasing/receive-goods-dialog";
+import { useGrns, usePostGrn, useSetGrnStatus } from "@/features/purchasing/hooks";
+import { GRN_STATUS_LABELS } from "@/features/purchasing/schema";
+import type { GrnWithRefs, PurchaseOrderWithRefs } from "@/features/purchasing/api";
+import type { GrnStatus } from "@/lib/database.types";
+import { usePermissions } from "@/lib/auth/use-permission";
+import { PERMISSIONS } from "@/lib/permissions/catalog";
+import { downloadCsv } from "@/lib/export";
+import { plural } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/goods-receiving")({
-  head: () => ({
-    meta: [
-      { title: "Goods Receiving — Builders Paradise ERP" },
-      {
-        name: "description",
-        content:
-          "Goods Received Notes with inspection, variance capture and automatic Dr Inventory / Cr Accounts Payable posting.",
-      },
-      { property: "og:title", content: "Goods Receiving — Builders Paradise ERP" },
-      {
-        property: "og:description",
-        content:
-          "GRN workflow from purchase order to inspection, posting and supplier balance update.",
-      },
-    ],
-  }),
-  component: GoodsReceiving,
+  component: GoodsReceivingPage,
 });
 
-const STEPS = [
-  "Purchase Order",
-  "Goods Delivered",
-  "Inspection",
-  "GRN Posted",
-  "Inventory Updated",
-  "Supplier Balance",
-];
+function money(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return Number(value).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
-function GoodsReceiving() {
-  const [selected, setSelected] = useState(GRNS[1]!);
-  const total = selected.lines.reduce((s, l) => s + l.received * l.cost, 0);
-  const stepIndex =
-    selected.status === "Draft" ? 1 : selected.status === "Inspection" ? 2 : STEPS.length - 1;
+const TONE: Record<string, string> = {
+  draft: "bg-muted text-muted-foreground",
+  inspected: "bg-info/12 text-info",
+  approved: "bg-warning/20 text-warning-foreground",
+  posted: "bg-success/12 text-success",
+  cancelled: "bg-destructive/12 text-destructive",
+};
+
+function GoodsReceivingPage() {
+  return (
+    <RequirePermission require={PERMISSIONS.GRN_VIEW} what="goods receiving">
+      <GoodsReceivingScreen />
+    </RequirePermission>
+  );
+}
+
+function GoodsReceivingScreen() {
+  const { can } = usePermissions();
+  const canCreate = can(PERMISSIONS.GRN_CREATE);
+  const canInspect = can(PERMISSIONS.GRN_INSPECT);
+  const canApprove = can(PERMISSIONS.GRN_APPROVE);
+  const canPost = can(PERMISSIONS.GRN_POST);
+  const canExport = can(PERMISSIONS.REPORTS_EXPORT);
+  const canSeeCost = can(PERMISSIONS.PRODUCTS_COST_PRICE_VIEW);
+
+  const [status, setStatus] = useState("all");
+  const [chooseOpen, setChooseOpen] = useState(false);
+  const [receivingOrder, setReceivingOrder] = useState<PurchaseOrderWithRefs | null>(null);
+  const [posting, setPosting] = useState<GrnWithRefs | null>(null);
+
+  const grns = useGrns({ status: status === "all" ? null : (status as GrnStatus) });
+  const setGrnStatus = useSetGrnStatus();
+  const postGrn = usePostGrn();
+
+  const exportGrns = () => {
+    const rows = grns.data ?? [];
+    downloadCsv("Goods received notes", rows, [
+      { header: "GRN", value: (g) => g.grn_no },
+      { header: "Date", value: (g) => g.received_date },
+      { header: "Supplier", value: (g) => g.supplier?.name },
+      { header: "Purchase order", value: (g) => g.purchase_order?.po_no },
+      { header: "Warehouse", value: (g) => g.warehouse?.name },
+      { header: "Delivery note", value: (g) => g.delivery_note_ref },
+      {
+        header: "Delivered",
+        value: (g) =>
+          g.goods_received_note_lines.reduce((s, l) => s + Number(l.quantity_delivered), 0),
+      },
+      {
+        header: "Accepted",
+        value: (g) =>
+          g.goods_received_note_lines.reduce((s, l) => s + Number(l.quantity_accepted), 0),
+      },
+      {
+        header: "Rejected",
+        value: (g) =>
+          g.goods_received_note_lines.reduce((s, l) => s + Number(l.quantity_rejected), 0),
+      },
+      ...(canSeeCost
+        ? [{ header: "Value", value: (g: GrnWithRefs) => Number(g.total_cost).toFixed(2) }]
+        : []),
+      { header: "Status", value: (g) => GRN_STATUS_LABELS[g.status] ?? g.status },
+    ]);
+    toast.success(`${plural(rows.length, "GRN")} exported`);
+  };
+
+  const columns = useMemo<ColumnDef<GrnWithRefs, unknown>[]>(() => {
+    const base: ColumnDef<GrnWithRefs, unknown>[] = [
+      {
+        accessorKey: "grn_no",
+        header: "GRN",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <p className="num text-xs font-medium">{row.original.grn_no}</p>
+            <p className="text-xs text-muted-foreground">
+              {format(new Date(row.original.received_date), "dd MMM yyyy")}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "supplier",
+        header: "Supplier",
+        accessorFn: (row) => row.supplier?.name ?? "",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <p className="truncate font-medium">{row.original.supplier?.name ?? "—"}</p>
+            <p className="num truncate text-xs text-muted-foreground">
+              {row.original.purchase_order?.po_no ?? "Direct receipt"}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "quantities",
+        header: "Delivered / accepted",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const lines = row.original.goods_received_note_lines;
+          const delivered = lines.reduce((s, l) => s + Number(l.quantity_delivered), 0);
+          const accepted = lines.reduce((s, l) => s + Number(l.quantity_accepted), 0);
+          const rejected = lines.reduce((s, l) => s + Number(l.quantity_rejected), 0);
+          return (
+            <div className="min-w-0">
+              <p className="num text-sm">
+                {delivered} / {accepted}
+              </p>
+              {rejected > 0 && (
+                <Badge className="mt-0.5 border-0 bg-destructive/12 text-[10px] text-destructive">
+                  {rejected} rejected
+                </Badge>
+              )}
+            </div>
+          );
+        },
+      },
+    ];
+
+    if (canSeeCost) {
+      base.push({
+        accessorKey: "total_cost",
+        header: "Value",
+        cell: ({ row }) =>
+          Number(row.original.total_cost) > 0 ? (
+            <span className="num font-medium">{money(row.original.total_cost)}</span>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          ),
+      });
+    }
+
+    base.push({
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            TONE[row.original.status] ?? "bg-muted text-muted-foreground"
+          }`}
+        >
+          {GRN_STATUS_LABELS[row.original.status] ?? row.original.status}
+        </span>
+      ),
+    });
+
+    base.push({
+      id: "actions",
+      header: "",
+      enableSorting: false,
+      cell: ({ row }) => {
+        const grn = row.original;
+        if (grn.status === "posted") {
+          return (
+            <span className="flex justify-end pr-2 text-[11px] text-muted-foreground">Posted</span>
+          );
+        }
+        return (
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  aria-label={`Actions for ${grn.grn_no}`}
+                >
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                {canInspect && grn.status === "draft" && (
+                  <DropdownMenuItem
+                    onSelect={() => setGrnStatus.mutate({ id: grn.id, status: "inspected" })}
+                  >
+                    <ClipboardCheck className="size-4" />
+                    Mark inspected
+                  </DropdownMenuItem>
+                )}
+                {canApprove && ["draft", "inspected"].includes(grn.status) && (
+                  <DropdownMenuItem
+                    onSelect={() => setGrnStatus.mutate({ id: grn.id, status: "approved" })}
+                  >
+                    <CheckCircle2 className="size-4" />
+                    Approve
+                  </DropdownMenuItem>
+                )}
+                {canPost && grn.status === "approved" && (
+                  <DropdownMenuItem onSelect={() => setPosting(grn)}>
+                    <Upload className="size-4" />
+                    Post to stock &amp; ledger
+                  </DropdownMenuItem>
+                )}
+                {canApprove && grn.status !== "cancelled" && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onSelect={() => setGrnStatus.mutate({ id: grn.id, status: "cancelled" })}
+                    >
+                      Cancel GRN
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
+    });
+
+    return base;
+  }, [canInspect, canApprove, canPost, canSeeCost, setGrnStatus]);
 
   return (
-    <div className="mx-auto max-w-[1560px]">
+    <>
       <PageHeader
-        title="Goods Receiving"
-        description="Receive against purchase orders, record inspection variances and post the inventory and payable entries automatically."
+        title="Goods receiving"
+        description="What actually arrived, what passed inspection, and what did not. Posting turns accepted goods into stock and a supplier liability."
+        breadcrumbs={[{ label: "Trade" }, { label: "Goods receiving" }]}
         actions={
-          <Button
-            className="rounded-lg"
-            onClick={() => toast.info("Select a purchase order to receive")}
-          >
-            <PackageCheck className="size-4" />
-            <DemoDataNotice phase={2} module="Goods receiving" /> New GRN
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {canExport && (
+              <Button variant="outline" onClick={exportGrns} disabled={!grns.data?.length}>
+                <Download className="size-4" />
+                Export
+              </Button>
+            )}
+            {canCreate && (
+              <Button onClick={() => setChooseOpen(true)}>
+                <Plus className="size-4" />
+                Receive goods
+              </Button>
+            )}
+          </div>
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Open purchase orders"
-          value={qty(PURCHASE_ORDERS.filter((p) => p.status !== "Received").length)}
-          sub="Awaiting delivery or approval"
-          tone="primary"
-          icon={<Truck className="size-4" />}
-        />
-        <StatCard
-          label="Awaiting inspection"
-          value={qty(GRNS.filter((g) => g.status === "Inspection").length)}
-          sub="Quality check pending"
-          tone="warning"
-          icon={<ClipboardCheck className="size-4" />}
-        />
-        <StatCard
-          label="Posted this week"
-          value={qty(GRNS.filter((g) => g.status === "Posted").length)}
-          sub="Inventory and AP updated"
-          tone="success"
-          icon={<FileCheck2 className="size-4" />}
-        />
-        <StatCard
-          label="Receipt value (MTD)"
-          value={money(
-            GRNS.reduce((s, g) => s + g.lines.reduce((a, l) => a + l.received * l.cost, 0), 0),
-          )}
-          sub="At supplier cost"
-          icon={<PackageCheck className="size-4" />}
-        />
-      </div>
-
-      <SectionCard
-        title="Receiving workflow"
-        description="Every GRN follows this controlled path"
-        className="mt-6"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          {STEPS.map((s, i) => (
-            <div key={s} className="flex items-center gap-2">
-              <div
-                className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
-                  i <= stepIndex
-                    ? "border-primary/25 bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground"
-                }`}
-              >
-                <span
-                  className={`num grid size-5 place-items-center rounded-md text-[10px] ${
-                    i <= stepIndex ? "bg-primary text-primary-foreground" : "bg-muted"
-                  }`}
-                >
-                  {i + 1}
-                </span>
-                {s}
-              </div>
-              {i < STEPS.length - 1 && <ArrowRight className="size-3.5 text-muted-foreground/50" />}
-            </div>
-          ))}
-        </div>
-      </SectionCard>
-
-      <div className="mt-6 grid gap-4 xl:grid-cols-3">
-        <SectionCard
-          title="Goods Received Notes"
-          description="Select a GRN to review"
-          bodyClassName="p-0"
-          className="xl:col-span-2"
-        >
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="pl-5">GRN</TableHead>
-                <TableHead>PO</TableHead>
-                <TableHead>Supplier</TableHead>
-                <TableHead>Warehouse</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Value</TableHead>
-                <TableHead className="pr-5 text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {GRNS.map((g) => (
-                <TableRow
-                  key={g.id}
-                  onClick={() => setSelected(g)}
-                  className={`cursor-pointer ${selected.id === g.id ? "bg-primary/5" : ""}`}
-                >
-                  <TableCell className="num pl-5 font-medium">{g.id}</TableCell>
-                  <TableCell className="num text-muted-foreground">{g.po}</TableCell>
-                  <TableCell>{g.supplier}</TableCell>
-                  <TableCell className="text-muted-foreground">{g.warehouse}</TableCell>
-                  <TableCell className="num text-muted-foreground">{g.date}</TableCell>
-                  <TableCell className="num text-right font-medium">
-                    {money(g.lines.reduce((s, l) => s + l.received * l.cost, 0))}
-                  </TableCell>
-                  <TableCell className="pr-5 text-right">
-                    <StatusPill status={g.status} />
-                  </TableCell>
-                </TableRow>
+      <DataTable
+        columns={columns}
+        data={grns.data}
+        isLoading={grns.isLoading}
+        error={grns.error}
+        onRetry={() => void grns.refetch()}
+        searchPlaceholder="Search by GRN, supplier or purchase order…"
+        emptyTitle={status === "all" ? "Nothing received yet" : "No GRNs with that status"}
+        emptyDescription={
+          status === "all"
+            ? "Approve a purchase order, then receive the delivery against it."
+            : "Try a different status filter."
+        }
+        emptyAction={
+          canCreate && status === "all" ? (
+            <Button onClick={() => setChooseOpen(true)}>
+              <Plus className="size-4" />
+              Receive goods
+            </Button>
+          ) : undefined
+        }
+        pageSize={25}
+        toolbar={
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="h-9 w-44" aria-label="Filter by status">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All statuses</SelectItem>
+              {Object.entries(GRN_STATUS_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
               ))}
-            </TableBody>
-          </Table>
-        </SectionCard>
+            </SelectContent>
+          </Select>
+        }
+      />
 
-        <SectionCard
-          title={`${selected.id} detail`}
-          description={`${selected.supplier} · ${selected.po}`}
-          bodyClassName="space-y-4"
-        >
-          <div className="space-y-3">
-            {selected.lines.map((l) => {
-              const variance = l.received - l.ordered;
-              return (
-                <div key={l.product} className="rounded-lg border border-border p-3">
-                  <p className="text-sm font-medium">{l.product}</p>
-                  <div className="num mt-2 grid grid-cols-3 gap-2 text-xs">
-                    <div>
-                      <p className="text-muted-foreground">Ordered</p>
-                      <p className="font-medium">{qty(l.ordered)}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Received</p>
-                      <p className="font-medium">{qty(l.received)}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Variance</p>
-                      <p
-                        className={variance < 0 ? "font-semibold text-destructive" : "font-medium"}
-                      >
-                        {variance}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="num mt-2 text-xs text-muted-foreground">
-                    {qty(l.received)} × {money(l.cost)} = {money(l.received * l.cost)}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+      <ChooseOrderDialog
+        open={chooseOpen}
+        onOpenChange={setChooseOpen}
+        onChoose={(order) => setReceivingOrder(order)}
+      />
 
-          <Separator />
+      <ReceiveGoodsDialog
+        open={Boolean(receivingOrder)}
+        onOpenChange={(open) => !open && setReceivingOrder(null)}
+        order={receivingOrder}
+      />
 
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Automatic journal entry
-            </p>
-            <div className="num mt-2 space-y-1.5 rounded-lg bg-muted/60 p-3 text-xs">
-              <div className="flex justify-between">
-                <span>Dr 1300 Inventory</span>
-                <span className="font-semibold">{money(total)}</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span className="pl-4">Cr 2000 Accounts Payable</span>
-                <span className="font-semibold">{money(total)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              className="flex-1 rounded-lg"
-              disabled={selected.status === "Posted"}
-              onClick={() => toast.success(`${selected.id} posted — inventory and AP updated`)}
+      <AlertDialog open={Boolean(posting)} onOpenChange={(open) => !open && setPosting(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Post {posting?.grn_no}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The accepted quantities become stock at the cost on this note, which recalculates the
+              weighted average for that warehouse. The same transaction debits Inventory and credits
+              Accounts Payable, and rolls the received quantities onto the purchase order. A posted
+              GRN cannot be edited — a mistake is corrected with a supplier return.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (posting) postGrn.mutate(posting.id);
+                setPosting(null);
+              }}
             >
-              {selected.status === "Posted" ? "Already posted" : "Post GRN"}
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-lg"
-              onClick={() => toast.info("Printing GRN…")}
-            >
-              Print
-            </Button>
-          </div>
-        </SectionCard>
-      </div>
-    </div>
+              Post GRN
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <PackageCheck className="size-3.5" aria-hidden />
+        Only accepted quantities become stock. Rejected goods stay off the books and need a reason
+        recorded on the note.
+      </p>
+    </>
   );
 }
