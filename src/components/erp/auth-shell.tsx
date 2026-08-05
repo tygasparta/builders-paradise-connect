@@ -1,29 +1,32 @@
 import type { ReactNode } from "react";
+import { BarChart3, Cloud, Headphones, Lock, Package, ShieldCheck, ShoppingCart, Users } from "lucide-react";
 
-import { BrandMark } from "./brand-mark";
+import warehouseAsset from "@/assets/auth-warehouse.png.asset.json";
+import logoAsset from "@/assets/bp-logo.png.asset.json";
 
 /**
  * Shared frame for sign-in, forgot-password and reset-password.
  *
- * The form sits on white; alongside it on wide screens is the navy panel —
- * the same surface as the sidebar, so signing in reads as the front door of
- * the building rather than a different product.
- *
- * The panel carries the plumb line from the navigation rail. Hung on it is
- * the chain the system actually enforces, in the order goods and money move
- * through it. That is a real sequence rather than decoration, and it tells
- * someone on their first morning what this place does. It replaced a row of
- * counts — module and role totals persuade nobody who already works here.
+ * Left: the brand panel — logo on white, then the warehouse photograph tinted
+ * in brand blue, the welcome copy and the four module pillars.
+ * Right: the form, on a single white card.
  */
 
-/** The order every document follows. Each stage hands the next its evidence. */
-const CHAIN = [
-  { stage: "Requisition", note: "Someone asks" },
-  { stage: "Purchase order", note: "The business commits" },
-  { stage: "Goods received", note: "What actually arrived" },
-  { stage: "Stock", note: "Counted and costed" },
-  { stage: "Sale", note: "Over the counter or on account" },
-  { stage: "Ledger", note: "Posted once, never twice" },
+const MODULES = [
+  { icon: Package, label: "Inventory\nManagement" },
+  { icon: ShoppingCart, label: "Sales &\nPOS" },
+  { icon: BarChart3, label: "Accounting &\nFinance" },
+  { icon: Users, label: "HR &\nPayroll" },
+] as const;
+
+const ASSURANCES = [
+  {
+    icon: ShieldCheck,
+    title: "Secure & Reliable",
+    note: "Enterprise-grade security to protect your data",
+  },
+  { icon: Cloud, title: "Cloud Based", note: "Access your business anywhere, anytime" },
+  { icon: Headphones, title: "24/7 Support", note: "Our support team is always here to help" },
 ] as const;
 
 export function AuthShell({
@@ -39,60 +42,93 @@ export function AuthShell({
 }) {
   return (
     <div className="flex min-h-screen bg-surface">
-      <div className="flex w-full flex-col justify-center px-5 py-10 sm:px-10 lg:w-[46%] lg:px-14">
-        <div className="mx-auto w-full max-w-sm">
-          <div className="flex items-center gap-3">
-            <BrandMark className="size-10" />
-            <div>
-              <p className="text-td font-semibold leading-tight">Builders Paradise</p>
-              <p className="text-helper text-muted-foreground">Enterprise ERP</p>
-            </div>
+      {/* Brand panel */}
+      <aside className="relative hidden w-[43%] flex-col overflow-hidden bg-sidebar text-sidebar-foreground lg:flex">
+        <div className="bg-white px-10 py-6">
+          <img
+            src={logoAsset.url}
+            alt="Builders Paradise Hardware"
+            className="h-16 w-auto object-contain object-left"
+          />
+        </div>
+
+        <div className="relative flex flex-1 flex-col justify-between px-10 py-12">
+          <img
+            src={warehouseAsset.url}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 size-full object-cover"
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-sidebar via-sidebar/90 to-sidebar/40"
+            aria-hidden
+          />
+
+          <div className="relative">
+            <span className="block h-[3px] w-14 rounded-full bg-sidebar-primary" />
+            <p className="mt-7 text-td text-sidebar-foreground/85">Welcome to</p>
+            <h2 className="mt-1.5 text-kpi font-semibold tracking-tight text-white">
+              Builders Paradise ERP
+            </h2>
+            <p className="mt-4 max-w-md text-td leading-relaxed text-sidebar-foreground/80">
+              Your all-in-one solution for managing inventory, sales, purchases, accounting, HR and
+              more — everything in one place.
+            </p>
           </div>
 
-          <h1 className="mt-9 text-module-title tracking-tight">{title}</h1>
-          {description && <p className="mt-2 text-td text-foreground-body">{description}</p>}
-
-          <div className="mt-7">{children}</div>
-
-          {footer && <div className="mt-6 text-td text-muted-foreground">{footer}</div>}
-        </div>
-      </div>
-
-      <aside
-        className="relative hidden flex-1 flex-col justify-center overflow-hidden bg-sidebar px-12 py-14 text-sidebar-foreground lg:flex xl:px-16"
-        aria-hidden
-      >
-        {/*
-          The plumb line, continued from the navigation rail. It is the
-          container's own left border rather than a positioned bar, so the
-          stage markers below cannot drift off it however the padding changes.
-        */}
-        <div className="relative max-w-lg border-l border-sidebar-rail pl-9">
-          <p className="text-eyebrow uppercase tracking-[0.16em] text-sidebar-muted">
-            Builders Paradise Hardware
-          </p>
-
-          <p className="mt-7 text-kpi tracking-tight text-white">
-            One system for stock, the till, the ledger and the people who run them.
-          </p>
-
-          <p className="mt-5 max-w-md text-td leading-relaxed text-sidebar-foreground/80">
-            Every movement of stock and every cent is recorded against a document, a warehouse and a
-            person — so the numbers on the dashboard are the numbers in the yard.
-          </p>
-
-          <ol className="mt-11 space-y-3.5 border-t border-sidebar-border pt-8">
-            {CHAIN.map(({ stage, note }) => (
-              <li key={stage} className="relative flex items-baseline gap-3">
-                {/* Sits on the line: half its own width left of the padding edge. */}
-                <span className="absolute -left-9 top-[0.45rem] size-[7px] -translate-x-1/2 rounded-full bg-sidebar-primary ring-4 ring-sidebar" />
-                <span className="w-36 shrink-0 text-td font-medium text-white">{stage}</span>
-                <span className="text-helper text-sidebar-muted">{note}</span>
-              </li>
+          <div className="relative mt-12 grid grid-cols-4 gap-4">
+            {MODULES.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col gap-3">
+                <span className="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
+                  <Icon className="size-5 text-white" aria-hidden />
+                </span>
+                <span className="whitespace-pre-line text-helper font-medium leading-snug text-white">
+                  {label}
+                </span>
+              </div>
             ))}
-          </ol>
+          </div>
+
+          <p className="relative mt-12 text-helper text-sidebar-muted">
+            © {new Date().getFullYear()} Builders Paradise Hardware. All rights reserved.
+          </p>
         </div>
       </aside>
+
+      {/* Form panel */}
+      <div className="flex w-full flex-col justify-center px-5 py-10 sm:px-10 lg:w-[57%] lg:px-16">
+        <div className="mx-auto w-full max-w-md">
+          <div className="rounded-2xl border border-border bg-card p-8 shadow-lg sm:p-10">
+            <div className="flex flex-col items-center text-center">
+              <span className="grid size-14 place-items-center rounded-full bg-primary/10">
+                <Lock className="size-6 text-primary" aria-hidden />
+              </span>
+              <h1 className="mt-5 text-module-title tracking-tight">{title}</h1>
+              {description && <p className="mt-2 text-td text-foreground-body">{description}</p>}
+            </div>
+
+            <div className="mt-7 text-left">{children}</div>
+
+            {footer && (
+              <div className="mt-7 border-t border-border pt-5 text-center text-td text-muted-foreground">
+                {footer}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {ASSURANCES.map(({ icon: Icon, title: heading, note }) => (
+              <div key={heading} className="flex gap-2.5">
+                <Icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+                <div>
+                  <p className="text-helper font-semibold text-foreground">{heading}</p>
+                  <p className="mt-0.5 text-helper leading-snug text-muted-foreground">{note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

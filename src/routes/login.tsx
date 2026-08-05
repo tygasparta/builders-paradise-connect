@@ -3,7 +3,7 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 
 import { AuthShell } from "@/components/erp/auth-shell";
 import { Button } from "@/components/ui/button";
@@ -63,14 +63,17 @@ function LoginPage() {
 
   return (
     <AuthShell
-      title="Sign in"
-      description="Use the account your administrator created for you."
+      title="Sign in to your account"
+      description="Enter your credentials to access the system"
       footer={
-        <p>
-          Trouble signing in?{" "}
-          <Link to="/forgot-password" className="font-medium text-primary hover:underline">
-            Reset your password
-          </Link>
+        <p className="flex items-center justify-center gap-1.5">
+          <ShieldCheck className="size-4 text-primary" aria-hidden />
+          <span>
+            New to the system?{" "}
+            <Link to="/forgot-password" className="font-medium text-primary hover:underline">
+              Contact your administrator
+            </Link>
+          </span>
         </p>
       }
     >
@@ -89,16 +92,23 @@ function LoginPage() {
           <Label htmlFor="email">
             Email address <span className="text-destructive">*</span>
           </Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            autoFocus
-            placeholder="you@buildersparadise.co.zw"
-            aria-invalid={Boolean(form.formState.errors.email)}
-            aria-describedby={form.formState.errors.email ? "email-error" : undefined}
-            {...form.register("email")}
-          />
+          <div className="relative">
+            <Mail
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              autoFocus
+              className="pl-9"
+              placeholder="Enter your email address"
+              aria-invalid={Boolean(form.formState.errors.email)}
+              aria-describedby={form.formState.errors.email ? "email-error" : undefined}
+              {...form.register("email")}
+            />
+          </div>
           {form.formState.errors.email && (
             <p id="email-error" className="text-helper text-destructive">
               {form.formState.errors.email.message}
@@ -113,17 +123,22 @@ function LoginPage() {
             </Label>
             <Link
               to="/forgot-password"
-              className="text-helper text-muted-foreground hover:text-primary"
+              className="text-helper font-medium text-primary hover:underline"
             >
-              Forgot?
+              Forgot password?
             </Link>
           </div>
           <div className="relative">
+            <LockKeyhole
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              className="pr-10"
+              className="pl-9 pr-10"
+              placeholder="Enter your password"
               aria-invalid={Boolean(form.formState.errors.password)}
               aria-describedby={form.formState.errors.password ? "password-error" : undefined}
               {...form.register("password")}
