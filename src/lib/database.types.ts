@@ -527,6 +527,175 @@ export type JournalEntryLineRow = {
   created_at: string;
 };
 
+// ---------------------------------------------------------------------
+// Sales
+// ---------------------------------------------------------------------
+
+export type CustomerStatus = "active" | "inactive" | "on_hold";
+export type CustomerType = "retail" | "trade" | "contractor" | "government" | "internal";
+
+export type InvoiceStatus =
+  | "draft"
+  | "awaiting_approval"
+  | "approved"
+  | "posted"
+  | "partially_paid"
+  | "paid"
+  | "overdue"
+  | "cancelled";
+
+export type QuotationStatus =
+  "draft" | "sent" | "accepted" | "declined" | "expired" | "converted" | "cancelled";
+
+export type SalesReturnStatus = "draft" | "approved" | "posted" | "cancelled";
+
+export type CustomerRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  trading_name: string | null;
+  customer_type: CustomerType;
+  contact_person: string | null;
+  phone: string | null;
+  email: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  country: string;
+  tax_number: string | null;
+  registration_number: string | null;
+  currency_code: string;
+  payment_terms_days: number;
+  credit_limit: number | null;
+  opening_balance: number;
+  salesperson_id: string | null;
+  branch_id: string | null;
+  status: CustomerStatus;
+  notes: string | null;
+};
+
+export type SalesQuotationRow = Timestamps & {
+  id: string;
+  quotation_no: string;
+  customer_id: string | null;
+  customer_name: string | null;
+  branch_id: string | null;
+  warehouse_id: string | null;
+  salesperson_id: string | null;
+  quotation_date: string;
+  valid_until: string | null;
+  currency_code: string;
+  subtotal: number;
+  discount_total: number;
+  tax_total: number;
+  total: number;
+  status: QuotationStatus;
+  converted_invoice_id: string | null;
+  notes: string | null;
+};
+
+export type SalesInvoiceRow = Timestamps & {
+  id: string;
+  invoice_no: string;
+  customer_id: string | null;
+  customer_name: string | null;
+  quotation_id: string | null;
+  branch_id: string | null;
+  warehouse_id: string;
+  salesperson_id: string | null;
+  invoice_date: string;
+  due_date: string | null;
+  currency_code: string;
+  payment_type: "cash" | "credit";
+  subtotal: number;
+  discount_total: number;
+  tax_total: number;
+  total: number;
+  amount_paid: number;
+  cost_of_sales: number;
+  status: InvoiceStatus;
+  posted_at: string | null;
+  posted_by: string | null;
+  journal_entry_id: string | null;
+  cancelled_reason: string | null;
+  notes: string | null;
+};
+
+export type SalesDocumentLineRow = {
+  id: string;
+  line_no: number;
+  product_id: string;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  discount_percent: number;
+  tax_rate: number;
+  line_total: number;
+  created_at: string;
+};
+
+export type SalesInvoiceLineRow = SalesDocumentLineRow & {
+  invoice_id: string;
+  unit_cost: number;
+  line_cost: number;
+};
+
+export type SalesQuotationLineRow = SalesDocumentLineRow & { quotation_id: string };
+
+export type SalesReturnRow = Timestamps & {
+  id: string;
+  return_no: string;
+  invoice_id: string | null;
+  customer_id: string | null;
+  customer_name: string | null;
+  branch_id: string | null;
+  warehouse_id: string;
+  return_date: string;
+  reason: string;
+  restock: boolean;
+  subtotal: number;
+  tax_total: number;
+  total: number;
+  cost_of_sales: number;
+  status: SalesReturnStatus;
+  posted_at: string | null;
+  posted_by: string | null;
+  journal_entry_id: string | null;
+  notes: string | null;
+};
+
+export type SalesReturnLineRow = {
+  id: string;
+  return_id: string;
+  line_no: number;
+  invoice_line_id: string | null;
+  product_id: string;
+  quantity: number;
+  unit_price: number;
+  tax_rate: number;
+  line_total: number;
+  unit_cost: number;
+  line_cost: number;
+  created_at: string;
+};
+
+export type CustomerReceiptRow = Timestamps & {
+  id: string;
+  receipt_no: string;
+  customer_id: string;
+  branch_id: string | null;
+  receipt_date: string;
+  payment_method: "cash" | "bank_transfer" | "eft" | "cheque" | "card" | "mobile_money";
+  reference: string | null;
+  amount: number;
+  unallocated: number;
+  received_by: string | null;
+  status: "draft" | "posted" | "cancelled";
+  posted_at: string | null;
+  journal_entry_id: string | null;
+  notes: string | null;
+};
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -599,6 +768,14 @@ export type Database = {
       accounting_periods: TableDef<AccountingPeriodRow>;
       journal_entries: TableDef<JournalEntryRow, never, never>;
       journal_entry_lines: TableDef<JournalEntryLineRow, never, never>;
+      customers: TableDef<CustomerRow>;
+      sales_quotations: TableDef<SalesQuotationRow>;
+      sales_quotation_lines: TableDef<SalesQuotationLineRow>;
+      sales_invoices: TableDef<SalesInvoiceRow>;
+      sales_invoice_lines: TableDef<SalesInvoiceLineRow>;
+      sales_returns: TableDef<SalesReturnRow>;
+      sales_return_lines: TableDef<SalesReturnLineRow>;
+      customer_receipts: TableDef<CustomerReceiptRow>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
@@ -638,6 +815,9 @@ export type Database = {
         }[];
       };
       post_goods_received_note: { Args: { p_grn_id: string }; Returns: string };
+      post_sales_invoice: { Args: { p_invoice_id: string }; Returns: string };
+      post_sales_return: { Args: { p_return_id: string }; Returns: string };
+      customer_balance: { Args: { p_customer_id: string }; Returns: number };
       next_document_number: { Args: { p_doc_type: string }; Returns: string };
       post_journal_entry: {
         Args: {

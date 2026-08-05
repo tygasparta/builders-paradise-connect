@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+// One implementation of the line maths, shared with sales.
+import {
+  documentTotals as sharedDocumentTotals,
+  lineTotals as sharedLineTotals,
+  type DocumentTotals,
+  type LineTotals,
+} from "@/lib/document-math";
+
 /** One editable line on a purchase order. */
 export const poLineSchema = z.object({
   product_id: z.string().uuid("Choose a product"),
@@ -55,46 +63,6 @@ export function purchaseOrderDefaults(today: string): PurchaseOrderFormValues {
   };
 }
 
-/**
- * Line and document totals.
- *
- * Discount comes off the line before tax, which is the ordinary treatment
- * and the one the supplier's own invoice will use. Rounding happens once,
- * at the line, so the document total is the sum of what is displayed
- * rather than a separately-rounded figure that disagrees by a cent.
- */
-export function lineTotals(line: {
-  quantity_ordered: number;
-  unit_price: number;
-  discount_percent: number;
-  tax_rate: number;
-}) {
-  const gross = round4(line.quantity_ordered * line.unit_price);
-  const discount = round4(gross * (line.discount_percent / 100));
-  const net = round4(gross - discount);
-  const tax = round4(net * (line.tax_rate / 100));
-  return { gross, discount, net, tax, total: round4(net + tax) };
-}
-
-export function documentTotals(lines: PoLineValues[]) {
-  return lines.reduce(
-    (acc, line) => {
-      const totals = lineTotals(line);
-      return {
-        subtotal: round4(acc.subtotal + totals.gross),
-        discount_total: round4(acc.discount_total + totals.discount),
-        tax_total: round4(acc.tax_total + totals.tax),
-        total: round4(acc.total + totals.total),
-      };
-    },
-    { subtotal: 0, discount_total: 0, tax_total: 0, total: 0 },
-  );
-}
-
-function round4(value: number): number {
-  return Math.round(value * 1e4) / 1e4;
-}
-
 /** Statuses a purchase order can be edited in. */
 export const PO_EDITABLE_STATUSES = ["draft", "pending_approval"] as const;
 
@@ -115,3 +83,25 @@ export const GRN_STATUS_LABELS: Record<string, string> = {
   posted: "Posted",
   cancelled: "Cancelled",
 };
+
+type PoLineLike = {
+  quantity_ordered: number;
+  unit_price: number;
+  discount_percent: number;
+  tax_rate: number;
+};
+
+const asDocumentLine = (line: PoLineLike) => ({
+  quantity: line.quantity_ordered,
+  unit_price: line.unit_price,
+  discount_percent: line.discount_percent,
+  tax_rate: line.tax_rate,
+});
+
+export function lineTotals(line: PoLineLike): LineTotals {
+  return sharedLineTotals(asDocumentLine(line));
+}
+
+export function documentTotals(lines: readonly PoLineLike[]): DocumentTotals {
+  return sharedDocumentTotals(lines.map(asDocumentLine));
+}

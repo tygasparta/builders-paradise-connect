@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { documentTotals, lineTotals } from "./schema";
+import { documentTotals, lineTotals } from "@/lib/document-math";
 
 describe("lineTotals", () => {
   it("multiplies quantity by price", () => {
     const result = lineTotals({
-      quantity_ordered: 100,
+      quantity: 100,
       unit_price: 12,
       discount_percent: 0,
       tax_rate: 0,
@@ -20,7 +20,7 @@ describe("lineTotals", () => {
     // but it diverges the moment rounding bites, and the supplier's
     // invoice will discount first.
     const result = lineTotals({
-      quantity_ordered: 100,
+      quantity: 100,
       unit_price: 10,
       discount_percent: 10,
       tax_rate: 15,
@@ -34,7 +34,7 @@ describe("lineTotals", () => {
 
   it("handles a zero-price line without dividing by anything", () => {
     const result = lineTotals({
-      quantity_ordered: 5,
+      quantity: 5,
       unit_price: 0,
       discount_percent: 10,
       tax_rate: 15,
@@ -44,7 +44,7 @@ describe("lineTotals", () => {
 
   it("handles a full discount", () => {
     const result = lineTotals({
-      quantity_ordered: 10,
+      quantity: 10,
       unit_price: 50,
       discount_percent: 100,
       tax_rate: 15,
@@ -57,7 +57,7 @@ describe("lineTotals", () => {
   it("keeps fractional quantities exact to four places", () => {
     // 2.5 tonnes of sand at 18.75
     const result = lineTotals({
-      quantity_ordered: 2.5,
+      quantity: 2.5,
       unit_price: 18.75,
       discount_percent: 0,
       tax_rate: 0,
@@ -71,7 +71,7 @@ describe("documentTotals", () => {
     {
       product_id: "a",
       description: "",
-      quantity_ordered: 100,
+      quantity: 100,
       unit_price: 12,
       discount_percent: 0,
       tax_rate: 15,
@@ -79,7 +79,7 @@ describe("documentTotals", () => {
     {
       product_id: "b",
       description: "",
-      quantity_ordered: 50,
+      quantity: 50,
       unit_price: 8,
       discount_percent: 10,
       tax_rate: 15,
