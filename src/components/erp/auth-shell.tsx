@@ -60,7 +60,7 @@ export function AuthShell({
             />
           </div>
 
-          <div className="my-auto max-w-md py-12">
+          <div className="my-auto w-full max-w-lg py-12">
             <span className="block h-[3px] w-14 rounded-full bg-sidebar-primary" />
             <p className="mt-7 text-td text-sidebar-foreground/85">Welcome to</p>
             <h2 className="mt-2 text-kpi font-semibold tracking-tight text-white">
