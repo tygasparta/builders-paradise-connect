@@ -256,6 +256,12 @@ export const NAVIGATION: NavSection[] = [
             icon: Building2,
             require: PERMISSIONS.SETTINGS_BRANCHES_MANAGE,
           },
+          {
+            label: "System",
+            to: "/settings/system",
+            icon: Cog,
+            require: PERMISSIONS.SETTINGS_SYSTEM_MANAGE,
+          },
         ],
       },
     ],

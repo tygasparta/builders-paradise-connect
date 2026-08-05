@@ -36,6 +36,7 @@ import { Route as AppUsersRouteImport } from './routes/_app/users'
 import { Route as AppWarehousesRouteImport } from './routes/_app/warehouses'
 import { Route as AppSettingsBranchesRouteImport } from './routes/_app/settings/branches'
 import { Route as AppSettingsCompanyRouteImport } from './routes/_app/settings/company'
+import { Route as AppSettingsSystemRouteImport } from './routes/_app/settings/system'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -171,6 +172,11 @@ const AppSettingsCompanyRoute = AppSettingsCompanyRouteImport.update({
   path: '/settings/company',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsSystemRoute = AppSettingsSystemRouteImport.update({
+  id: '/settings/system',
+  path: '/settings/system',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/warehouses': typeof AppWarehousesRoute
   '/settings/branches': typeof AppSettingsBranchesRoute
   '/settings/company': typeof AppSettingsCompanyRoute
+  '/settings/system': typeof AppSettingsSystemRoute
 }
 export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/settings/branches': typeof AppSettingsBranchesRoute
   '/settings/company': typeof AppSettingsCompanyRoute
+  '/settings/system': typeof AppSettingsSystemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -257,6 +265,7 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/settings/branches': typeof AppSettingsBranchesRoute
   '/_app/settings/company': typeof AppSettingsCompanyRoute
+  '/_app/settings/system': typeof AppSettingsSystemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -287,6 +296,7 @@ export interface FileRouteTypes {
     | '/warehouses'
     | '/settings/branches'
     | '/settings/company'
+    | '/settings/system'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/'
     | '/settings/branches'
     | '/settings/company'
+    | '/settings/system'
   id:
     | '__root__'
     | '/_app'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/settings/branches'
     | '/_app/settings/company'
+    | '/_app/settings/system'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -544,6 +556,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsCompanyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings/system': {
+      id: '/_app/settings/system'
+      path: '/settings/system'
+      fullPath: '/settings/system'
+      preLoaderRoute: typeof AppSettingsSystemRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -571,6 +590,7 @@ interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
   AppSettingsBranchesRoute: typeof AppSettingsBranchesRoute
   AppSettingsCompanyRoute: typeof AppSettingsCompanyRoute
+  AppSettingsSystemRoute: typeof AppSettingsSystemRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -597,6 +617,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
   AppSettingsBranchesRoute: AppSettingsBranchesRoute,
   AppSettingsCompanyRoute: AppSettingsCompanyRoute,
+  AppSettingsSystemRoute: AppSettingsSystemRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

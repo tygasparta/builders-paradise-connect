@@ -1104,7 +1104,14 @@ export type Database = {
       purchase_order_lines: TableDef<PurchaseOrderLineRow>;
       goods_received_notes: TableDef<GoodsReceivedNoteRow>;
       goods_received_note_lines: TableDef<GoodsReceivedNoteLineRow>;
-      document_sequences: TableDef<DocumentSequenceRow, never, never>;
+      // Inserts stay closed — a new sequence is a migration concern. Updates
+      // opened in phase6 for the numbering screen, guarded in the database
+      // against moving a counter backwards.
+      document_sequences: TableDef<
+        DocumentSequenceRow,
+        never,
+        Partial<Pick<DocumentSequenceRow, "prefix" | "padding" | "next_number">>
+      >;
       chart_of_accounts: TableDef<ChartOfAccountRow>;
       accounting_periods: TableDef<AccountingPeriodRow>;
       journal_entries: TableDef<JournalEntryRow, never, never>;
