@@ -60,7 +60,7 @@ export function AuthShell({
             />
           </div>
 
-          <div className="mt-auto max-w-md">
+          <div className="my-auto max-w-md py-12">
             <span className="block h-[3px] w-14 rounded-full bg-sidebar-primary" />
             <p className="mt-7 text-td text-sidebar-foreground/85">Welcome to</p>
             <h2 className="mt-2 text-kpi font-semibold tracking-tight text-white">
@@ -70,10 +70,9 @@ export function AuthShell({
               Your all-in-one solution for managing inventory, sales, purchases, accounting, HR and
               more — everything in one place.
             </p>
-          </div>
 
-          <div className="mt-auto pt-14">
-            <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+            <div className="mt-10 grid grid-cols-2 gap-3 xl:grid-cols-4">
+
               {MODULES.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
