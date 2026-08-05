@@ -83,14 +83,12 @@ export const NAVIGATION: NavSection[] = [
             to: "/sales",
             icon: FileText,
             require: PERMISSIONS.QUOTATIONS_VIEW,
-            phase: 3,
           },
           {
             label: "Returns",
             to: "/sales",
             icon: FileText,
             require: PERMISSIONS.SALES_RETURNS_VIEW,
-            phase: 3,
           },
         ],
       },
@@ -160,7 +158,6 @@ export const NAVIGATION: NavSection[] = [
         to: "/customers",
         icon: Users,
         require: PERMISSIONS.CUSTOMERS_VIEW,
-        phase: 3,
       },
       {
         label: "Suppliers",
