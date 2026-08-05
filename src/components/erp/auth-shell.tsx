@@ -5,9 +5,27 @@ import { BrandMark } from "./brand-mark";
 /**
  * Shared frame for sign-in, forgot-password and reset-password.
  *
- * Split layout: the form on white, a black brand panel alongside it on
- * larger screens. No gradients — flat brand blue and black only.
+ * The form sits on white; alongside it on wide screens is the navy panel —
+ * the same surface as the sidebar, so signing in reads as the front door of
+ * the building rather than a different product.
+ *
+ * The panel carries the plumb line from the navigation rail. Hung on it is
+ * the chain the system actually enforces, in the order goods and money move
+ * through it. That is a real sequence rather than decoration, and it tells
+ * someone on their first morning what this place does. It replaced a row of
+ * counts — module and role totals persuade nobody who already works here.
  */
+
+/** The order every document follows. Each stage hands the next its evidence. */
+const CHAIN = [
+  { stage: "Requisition", note: "Someone asks" },
+  { stage: "Purchase order", note: "The business commits" },
+  { stage: "Goods received", note: "What actually arrived" },
+  { stage: "Stock", note: "Counted and costed" },
+  { stage: "Sale", note: "Over the counter or on account" },
+  { stage: "Ledger", note: "Posted once, never twice" },
+] as const;
+
 export function AuthShell({
   title,
   description,
@@ -31,8 +49,8 @@ export function AuthShell({
             </div>
           </div>
 
-          <h1 className="mt-9 text-module-title font-semibold tracking-tight">{title}</h1>
-          {description && <p className="mt-2 text-td text-muted-foreground">{description}</p>}
+          <h1 className="mt-9 text-module-title tracking-tight">{title}</h1>
+          {description && <p className="mt-2 text-td text-foreground-body">{description}</p>}
 
           <div className="mt-7">{children}</div>
 
@@ -41,41 +59,39 @@ export function AuthShell({
       </div>
 
       <aside
-        className="relative hidden flex-1 flex-col justify-between bg-secondary p-12 text-secondary-foreground lg:flex"
+        className="relative hidden flex-1 flex-col justify-center overflow-hidden bg-sidebar px-12 py-14 text-sidebar-foreground lg:flex xl:px-16"
         aria-hidden
       >
-        <div className="flex items-center gap-2 text-helper font-medium uppercase tracking-widest text-white/45">
-          <span className="h-px w-8 bg-primary" />
-          Builders Paradise Hardware
-        </div>
+        {/*
+          The plumb line, continued from the navigation rail. It is the
+          container's own left border rather than a positioned bar, so the
+          stage markers below cannot drift off it however the padding changes.
+        */}
+        <div className="relative max-w-lg border-l border-sidebar-rail pl-9">
+          <p className="text-eyebrow uppercase tracking-[0.16em] text-sidebar-muted">
+            Builders Paradise Hardware
+          </p>
 
-        <div className="max-w-md">
-          <p className="text-kpi font-semibold leading-snug tracking-tight">
+          <p className="mt-7 text-kpi tracking-tight text-white">
             One system for stock, the till, the ledger and the people who run them.
           </p>
-          <p className="mt-4 text-td leading-relaxed text-white/55">
+
+          <p className="mt-5 max-w-md text-td leading-relaxed text-sidebar-foreground/80">
             Every movement of stock and every cent is recorded against a document, a warehouse and a
             person — so the numbers on the dashboard are the numbers in the yard.
           </p>
-        </div>
 
-        <dl className="grid grid-cols-3 gap-6 border-t border-white/10 pt-7">
-          {[
-            { value: "18", label: "Modules" },
-            { value: "14", label: "Roles" },
-            { value: "3", label: "Branches" },
-          ].map((stat) => (
-            <div key={stat.label}>
-              <dt className="sr-only">{stat.label}</dt>
-              <dd>
-                <span className="num block text-section font-semibold text-primary">
-                  {stat.value}
-                </span>
-                <span className="mt-0.5 block text-helper text-white/45">{stat.label}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
+          <ol className="mt-11 space-y-3.5 border-t border-sidebar-border pt-8">
+            {CHAIN.map(({ stage, note }) => (
+              <li key={stage} className="relative flex items-baseline gap-3">
+                {/* Sits on the line: half its own width left of the padding edge. */}
+                <span className="absolute -left-9 top-[0.45rem] size-[7px] -translate-x-1/2 rounded-full bg-sidebar-primary ring-4 ring-sidebar" />
+                <span className="w-36 shrink-0 text-td font-medium text-white">{stage}</span>
+                <span className="text-helper text-sidebar-muted">{note}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
       </aside>
     </div>
   );
