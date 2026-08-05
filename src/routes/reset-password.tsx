@@ -84,7 +84,7 @@ function ResetPasswordPage() {
       {linkValid === false ? (
         <div
           role="alert"
-          className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-3 text-sm text-warning-foreground"
+          className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-3 text-td text-warning-foreground"
         >
           <p className="font-medium">This reset link is no longer valid</p>
           <p className="mt-1">
@@ -100,7 +100,7 @@ function ResetPasswordPage() {
           {formError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{formError}</span>
@@ -120,9 +120,11 @@ function ResetPasswordPage() {
               {...form.register("password")}
             />
             {form.formState.errors.password ? (
-              <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
+              <p className="text-helper text-destructive">
+                {form.formState.errors.password.message}
+              </p>
             ) : (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-helper text-muted-foreground">
                 At least 10 characters, with a capital, a lower-case letter and a number.
               </p>
             )}
@@ -140,7 +142,9 @@ function ResetPasswordPage() {
               {...form.register("confirm")}
             />
             {form.formState.errors.confirm && (
-              <p className="text-xs text-destructive">{form.formState.errors.confirm.message}</p>
+              <p className="text-helper text-destructive">
+                {form.formState.errors.confirm.message}
+              </p>
             )}
           </div>
 

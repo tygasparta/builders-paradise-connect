@@ -131,8 +131,8 @@ function PurchasesScreen() {
         header: "PO",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.po_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.po_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.order_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -145,7 +145,9 @@ function PurchasesScreen() {
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.supplier?.name ?? "—"}</p>
-            <p className="truncate text-xs text-muted-foreground">{row.original.warehouse?.name}</p>
+            <p className="truncate text-helper text-muted-foreground">
+              {row.original.warehouse?.name}
+            </p>
           </div>
         ),
       },
@@ -154,7 +156,7 @@ function PurchasesScreen() {
         header: "Lines",
         accessorFn: (row) => row.purchase_order_lines.length,
         cell: ({ row }) => (
-          <span className="num text-sm">{row.original.purchase_order_lines.length}</span>
+          <span className="num text-td">{row.original.purchase_order_lines.length}</span>
         ),
       },
       {
@@ -168,7 +170,7 @@ function PurchasesScreen() {
           const percent = ordered === 0 ? 0 : Math.round((received / ordered) * 100);
           return (
             <div className="min-w-24">
-              <p className="num text-xs">
+              <p className="num text-helper">
                 {received} / {ordered}
               </p>
               <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -195,7 +197,7 @@ function PurchasesScreen() {
         header: "Status",
         cell: ({ row }) => (
           <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
               STATUS_TONE[row.original.status] ?? "bg-muted text-muted-foreground"
             }`}
           >
@@ -369,7 +371,7 @@ function PurchasesScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <ShoppingCart className="size-3.5" aria-hidden />
         An approved order can be received on the Goods Receiving screen, which is where stock and
         Accounts Payable are updated.

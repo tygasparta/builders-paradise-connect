@@ -137,7 +137,7 @@ function AccountingScreen() {
       {!balanced && !trialBalance.isLoading && (trialBalance.data?.length ?? 0) > 0 && (
         <p
           role="alert"
-          className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+          className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
         >
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>
@@ -177,7 +177,7 @@ function AccountingScreen() {
       </div>
 
       {openPeriod && (
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 text-helper text-muted-foreground">
           Posting into <span className="font-medium">{openPeriod.name}</span>. A closed period
           cannot be reopened — corrections go into the current one.
         </p>
@@ -238,12 +238,12 @@ function TrialBalanceTab({ asAt, canExport }: { asAt: string; canExport: boolean
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="h-10 text-[11px] uppercase tracking-wider">Account</TableHead>
-              <TableHead className="h-10 text-[11px] uppercase tracking-wider">Type</TableHead>
-              <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+              <TableHead className="h-10 text-helper uppercase tracking-wider">Account</TableHead>
+              <TableHead className="h-10 text-helper uppercase tracking-wider">Type</TableHead>
+              <TableHead className="h-10 text-right text-helper uppercase tracking-wider">
                 Debit
               </TableHead>
-              <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+              <TableHead className="h-10 text-right text-helper uppercase tracking-wider">
                 Credit
               </TableHead>
             </TableRow>
@@ -252,16 +252,16 @@ function TrialBalanceTab({ asAt, canExport }: { asAt: string; canExport: boolean
             {rows.map((row) => (
               <TableRow key={row.account_code}>
                 <TableCell className="py-2.5">
-                  <span className="num text-xs text-muted-foreground">{row.account_code}</span>
-                  <span className="ml-2 text-sm">{row.account_name}</span>
+                  <span className="num text-helper text-muted-foreground">{row.account_code}</span>
+                  <span className="ml-2 text-td">{row.account_name}</span>
                 </TableCell>
-                <TableCell className="py-2.5 text-xs text-muted-foreground">
+                <TableCell className="py-2.5 text-helper text-muted-foreground">
                   {ACCOUNT_TYPE_LABELS[row.account_type] ?? row.account_type}
                 </TableCell>
-                <TableCell className="num py-2.5 text-right text-sm">
+                <TableCell className="num py-2.5 text-right text-td">
                   {Number(row.total_debit) === 0 ? "" : money(row.total_debit)}
                 </TableCell>
-                <TableCell className="num py-2.5 text-right text-sm">
+                <TableCell className="num py-2.5 text-right text-td">
                   {Number(row.total_credit) === 0 ? "" : money(row.total_credit)}
                 </TableCell>
               </TableRow>
@@ -291,8 +291,8 @@ function StatementsTab({
     <div
       className={
         emphasis
-          ? "flex justify-between border-t border-border pt-2 text-sm font-semibold"
-          : "flex justify-between text-sm"
+          ? "flex justify-between border-t border-border pt-2 text-td font-semibold"
+          : "flex justify-between text-td"
       }
     >
       <dt className={emphasis ? "" : "text-muted-foreground"}>{label}</dt>
@@ -332,7 +332,7 @@ function StatementsTab({
         </dl>
 
         {Math.abs(statements.balanceCheck) >= 0.005 && (
-          <p className="mt-3 flex items-start gap-1.5 text-xs text-destructive">
+          <p className="mt-3 flex items-start gap-1.5 text-helper text-destructive">
             <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
             Assets differ from liabilities, equity and profit by{" "}
             {money(Math.abs(statements.balanceCheck))}.
@@ -410,32 +410,32 @@ function JournalsTab({ canExport }: { canExport: boolean }) {
           <li key={journal.id} className="px-5 py-3">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="num text-xs font-medium">
+                <p className="num text-helper font-medium">
                   {journal.reference}
                   {journal.status === "reversed" && (
-                    <Badge className="ml-2 border-0 bg-destructive/12 text-[10px] text-destructive">
+                    <Badge className="ml-2 border-0 bg-destructive/12 text-helper text-destructive">
                       Reversed
                     </Badge>
                   )}
                   {journal.is_system && (
-                    <Badge variant="secondary" className="ml-2 text-[10px]">
+                    <Badge variant="secondary" className="ml-2 text-helper">
                       {journal.source_module ?? "system"}
                     </Badge>
                   )}
                 </p>
-                <p className="truncate text-sm">{journal.description}</p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="truncate text-td">{journal.description}</p>
+                <p className="text-helper text-muted-foreground">
                   {format(new Date(journal.journal_date), "dd MMM yyyy")}
                 </p>
               </div>
-              <span className="num text-sm font-medium">{money(journal.total_debit)}</span>
+              <span className="num text-td font-medium">{money(journal.total_debit)}</span>
             </div>
 
             <ul className="mt-2 space-y-0.5">
               {[...journal.journal_entry_lines]
                 .sort((a, b) => a.line_no - b.line_no)
                 .map((line) => (
-                  <li key={line.id} className="flex items-center gap-2 text-[11px]">
+                  <li key={line.id} className="flex items-center gap-2 text-helper">
                     <span className="num w-12 shrink-0 text-muted-foreground">
                       {line.account?.account_code}
                     </span>
@@ -511,13 +511,13 @@ function AccountsTab({ canExport }: { canExport: boolean }) {
       <div className="divide-y divide-border">
         {grouped.map(([type, list]) => (
           <div key={type} className="px-5 py-3">
-            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <h4 className="text-helper font-semibold uppercase tracking-wider text-muted-foreground">
               {ACCOUNT_TYPE_LABELS[type] ?? type}
             </h4>
             <ul className="mt-1.5 space-y-1">
               {list.map((account) => (
-                <li key={account.id} className="flex items-center gap-2 text-sm">
-                  <span className="num w-12 shrink-0 text-xs text-muted-foreground">
+                <li key={account.id} className="flex items-center gap-2 text-td">
+                  <span className="num w-12 shrink-0 text-helper text-muted-foreground">
                     {account.account_code}
                   </span>
                   <span
@@ -530,12 +530,12 @@ function AccountsTab({ canExport }: { canExport: boolean }) {
                     {account.name}
                   </span>
                   {!account.is_postable && (
-                    <Badge variant="secondary" className="text-[10px]">
+                    <Badge variant="secondary" className="text-helper">
                       Heading
                     </Badge>
                   )}
                   {account.is_system && (
-                    <Badge className="border-0 bg-primary/12 text-[10px] text-primary">
+                    <Badge className="border-0 bg-primary/12 text-helper text-primary">
                       System
                     </Badge>
                   )}
@@ -568,16 +568,16 @@ function PeriodsTab() {
         {rows.map((period) => (
           <li key={period.id} className="flex items-center justify-between gap-3 px-5 py-2.5">
             <div className="min-w-0">
-              <p className="text-sm font-medium">{period.name}</p>
-              <p className="num text-[11px] text-muted-foreground">
+              <p className="text-td font-medium">{period.name}</p>
+              <p className="num text-helper text-muted-foreground">
                 {format(new Date(period.start_date), "dd MMM")} –{" "}
                 {format(new Date(period.end_date), "dd MMM yyyy")}
               </p>
             </div>
             {period.status === "open" ? (
-              <Badge className="border-0 bg-success/12 text-[10px] text-success">Open</Badge>
+              <Badge className="border-0 bg-success/12 text-helper text-success">Open</Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1 text-[10px]">
+              <Badge variant="secondary" className="gap-1 text-helper">
                 <Lock className="size-2.5" aria-hidden />
                 {period.status}
               </Badge>

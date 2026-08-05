@@ -251,42 +251,44 @@ function BankingScreen() {
 
       <section aria-label="Balances" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="card-surface p-4">
-          <p className="text-xs text-muted-foreground">Balance per books</p>
+          <p className="text-helper text-muted-foreground">Balance per books</p>
           <p
             className={cn(
-              "num mt-1 text-xl font-semibold",
+              "num mt-1 text-section font-semibold",
               balances.book < 0 && "text-destructive",
             )}
           >
             {money(balances.book)}
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
+          <p className="mt-0.5 text-helper text-muted-foreground">
             {account?.currency_code} · opening {money(account?.opening_balance)}
           </p>
         </div>
         <div className="card-surface p-4">
-          <p className="text-xs text-muted-foreground">Reconciled balance</p>
-          <p className="num mt-1 text-xl font-semibold">{money(balances.reconciled)}</p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
+          <p className="text-helper text-muted-foreground">Reconciled balance</p>
+          <p className="num mt-1 text-section font-semibold">{money(balances.reconciled)}</p>
+          <p className="mt-0.5 text-helper text-muted-foreground">
             {balances.unreconciled === 0
               ? "Everything ticked off"
               : `${plural(balances.unreconciled, "line")} not yet cleared`}
           </p>
         </div>
         <div className="card-surface p-4">
-          <p className="text-xs text-muted-foreground">Money in</p>
-          <p className="num mt-1 text-xl font-semibold text-success">{money(balances.moneyIn)}</p>
+          <p className="text-helper text-muted-foreground">Money in</p>
+          <p className="num mt-1 text-section font-semibold text-success">
+            {money(balances.moneyIn)}
+          </p>
         </div>
         <div className="card-surface p-4">
-          <p className="text-xs text-muted-foreground">Money out</p>
-          <p className="num mt-1 text-xl font-semibold text-destructive">
+          <p className="text-helper text-muted-foreground">Money out</p>
+          <p className="num mt-1 text-section font-semibold text-destructive">
             {money(Math.abs(balances.moneyOut))}
           </p>
         </div>
       </section>
 
       {account?.ledger_account && (
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-3 text-helper text-muted-foreground">
           Posting to{" "}
           <span className="num font-medium text-foreground">
             {account.ledger_account.account_code}
@@ -364,26 +366,26 @@ function BankingScreen() {
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm">{transaction.description}</p>
-                      <p className="num truncate text-[11px] text-muted-foreground">
+                      <p className="truncate text-td">{transaction.description}</p>
+                      <p className="num truncate text-helper text-muted-foreground">
                         {format(new Date(transaction.transaction_date), "dd MMM yyyy")} ·{" "}
                         {transaction.reference_no}
                         {transaction.reference ? ` · ${transaction.reference}` : ""}
                       </p>
                     </div>
                     {transaction.source_module && transaction.source_module !== "banking" && (
-                      <Badge variant="secondary" className="hidden text-[10px] sm:inline-flex">
+                      <Badge variant="secondary" className="hidden text-helper sm:inline-flex">
                         {transaction.source_module}
                       </Badge>
                     )}
                     {transaction.reconciled && (
-                      <Badge className="border-0 bg-success/12 text-[10px] text-success">
+                      <Badge className="border-0 bg-success/12 text-helper text-success">
                         Reconciled
                       </Badge>
                     )}
                     <span
                       className={cn(
-                        "num w-28 shrink-0 text-right text-sm font-medium",
+                        "num w-28 shrink-0 text-right text-td font-medium",
                         isIn ? "text-success" : "text-destructive",
                       )}
                     >
@@ -501,7 +503,7 @@ function RecordTransactionDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -592,7 +594,7 @@ function RecordTransactionDialog({
           </Field>
 
           {amount > 0 && (
-            <p className="rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+            <p className="rounded-lg bg-muted/60 px-3 py-2 text-helper text-muted-foreground">
               The bank balance will move by{" "}
               <span
                 className={cn("num font-semibold", moneyOut ? "text-destructive" : "text-success")}

@@ -133,28 +133,28 @@ export function CustomerDetailSheet({
           {/* Position */}
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">Balance owing</p>
+              <p className="text-helper text-muted-foreground">Balance owing</p>
               <p
                 className={
                   credit.overLimit
-                    ? "num mt-0.5 text-lg font-semibold text-destructive"
-                    : "num mt-0.5 text-lg font-semibold"
+                    ? "num mt-0.5 text-section font-semibold text-destructive"
+                    : "num mt-0.5 text-section font-semibold"
                 }
               >
                 {money(balance)}
               </p>
             </div>
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">Credit limit</p>
-              <p className="num mt-0.5 text-lg font-semibold">
+              <p className="text-helper text-muted-foreground">Credit limit</p>
+              <p className="num mt-0.5 text-section font-semibold">
                 {customer?.credit_limit === null ? "Cash only" : money(customer?.credit_limit)}
               </p>
             </div>
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-helper text-muted-foreground">
                 {credit.limited ? "Available" : "Terms"}
               </p>
-              <p className="num mt-0.5 text-lg font-semibold">
+              <p className="num mt-0.5 text-section font-semibold">
                 {credit.limited
                   ? money(credit.available)
                   : customer?.payment_terms_days === 0
@@ -166,7 +166,7 @@ export function CustomerDetailSheet({
 
           {credit.limited && (
             <div>
-              <div className="mb-1 flex items-center justify-between text-xs">
+              <div className="mb-1 flex items-center justify-between text-helper">
                 <span className="text-muted-foreground">Credit used</span>
                 <span
                   className={
@@ -183,7 +183,7 @@ export function CustomerDetailSheet({
                 />
               </div>
               {credit.overLimit && (
-                <p className="mt-1 text-[11px] text-destructive">
+                <p className="mt-1 text-helper text-destructive">
                   Over limit by {money(Math.abs(credit.available))} — new credit sales need
                   approval.
                 </p>
@@ -194,7 +194,7 @@ export function CustomerDetailSheet({
           {/* Aging */}
           <section>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Aging</h3>
+              <h3 className="text-td font-semibold">Aging</h3>
               {canExport && (
                 <Button variant="outline" size="sm" onClick={exportStatement}>
                   <Download className="size-3.5" />
@@ -207,7 +207,7 @@ export function CustomerDetailSheet({
             ) : (
               <div className="card-surface p-3">
                 <AgingBar summary={aging} />
-                <p className="mt-2 text-[11px] text-muted-foreground">
+                <p className="mt-2 text-helper text-muted-foreground">
                   By days past due, not document age. Unposted and settled invoices are excluded.
                 </p>
               </div>
@@ -244,8 +244,8 @@ export function CustomerDetailSheet({
                           className="flex items-start justify-between gap-3 py-2.5"
                         >
                           <div className="min-w-0">
-                            <p className="num text-xs font-medium">{invoice.invoice_no}</p>
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="num text-helper font-medium">{invoice.invoice_no}</p>
+                            <p className="text-helper text-muted-foreground">
                               {format(new Date(invoice.invoice_date), "dd MMM yyyy")}
                               {invoice.due_date
                                 ? ` · due ${format(new Date(invoice.due_date), "dd MMM")}`
@@ -253,13 +253,13 @@ export function CustomerDetailSheet({
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="num text-sm font-medium">{money(invoice.total)}</p>
+                            <p className="num text-td font-medium">{money(invoice.total)}</p>
                             {outstanding > 0 && !SETTLED.has(invoice.status) ? (
-                              <p className="num text-[11px] text-destructive">
+                              <p className="num text-helper text-destructive">
                                 {money(outstanding)} owing
                               </p>
                             ) : (
-                              <Badge variant="secondary" className="mt-0.5 text-[10px]">
+                              <Badge variant="secondary" className="mt-0.5 text-helper">
                                 {invoice.status}
                               </Badge>
                             )}
@@ -288,13 +288,13 @@ export function CustomerDetailSheet({
                         className="flex items-center justify-between gap-3 py-2.5"
                       >
                         <div className="min-w-0">
-                          <p className="num text-xs font-medium">{receipt.receipt_no}</p>
-                          <p className="text-[11px] capitalize text-muted-foreground">
+                          <p className="num text-helper font-medium">{receipt.receipt_no}</p>
+                          <p className="text-helper capitalize text-muted-foreground">
                             {format(new Date(receipt.receipt_date), "dd MMM yyyy")} ·{" "}
                             {receipt.payment_method.replace(/_/g, " ")}
                           </p>
                         </div>
-                        <span className="num text-sm font-medium text-success">
+                        <span className="num text-td font-medium text-success">
                           {money(receipt.amount)}
                         </span>
                       </li>
@@ -317,12 +317,12 @@ export function CustomerDetailSheet({
                     {activity.data?.creditNotes.map((credit) => (
                       <li key={credit.id} className="flex items-start justify-between gap-3 py-2.5">
                         <div className="min-w-0">
-                          <p className="num text-xs font-medium">{credit.return_no}</p>
-                          <p className="truncate text-[11px] text-muted-foreground">
+                          <p className="num text-helper font-medium">{credit.return_no}</p>
+                          <p className="truncate text-helper text-muted-foreground">
                             {format(new Date(credit.return_date), "dd MMM yyyy")} · {credit.reason}
                           </p>
                         </div>
-                        <span className="num text-sm font-medium">−{money(credit.total)}</span>
+                        <span className="num text-td font-medium">−{money(credit.total)}</span>
                       </li>
                     ))}
                   </ul>

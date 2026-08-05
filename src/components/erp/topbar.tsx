@@ -87,11 +87,11 @@ export function Topbar() {
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
-        className="hidden h-9 min-w-0 max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
+        className="hidden h-9 min-w-0 max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 text-td text-muted-foreground transition-colors hover:bg-muted md:flex"
       >
         <Search className="size-4 shrink-0" aria-hidden />
         <span className="truncate">Search branches, warehouses, people…</span>
-        <kbd className="ml-auto hidden rounded border border-border bg-card px-1.5 py-0.5 text-[10px] font-medium lg:inline">
+        <kbd className="ml-auto hidden rounded border border-border bg-card px-1.5 py-0.5 text-helper font-medium lg:inline">
           ⌘K
         </kbd>
       </button>
@@ -112,7 +112,7 @@ export function Topbar() {
         {/* Live connection state — reflects the browser, not a decoration */}
         <span
           className={cn(
-            "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium 2xl:inline-flex",
+            "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-helper font-medium 2xl:inline-flex",
             online
               ? "border-success/30 bg-success/10 text-success"
               : "border-destructive/30 bg-destructive/10 text-destructive",
@@ -155,7 +155,7 @@ export function Topbar() {
                 className={cn(branch.id === activeBranchId && "bg-accent text-accent-foreground")}
               >
                 <span className="truncate">{branch.name}</span>
-                <span className="ml-auto text-xs text-muted-foreground">{branch.code}</span>
+                <span className="ml-auto text-helper text-muted-foreground">{branch.code}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -188,7 +188,9 @@ export function Topbar() {
                   )}
                 >
                   <span className="truncate">{warehouse.name}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">{warehouse.code}</span>
+                  <span className="ml-auto text-helper text-muted-foreground">
+                    {warehouse.code}
+                  </span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -203,7 +205,7 @@ export function Topbar() {
         >
           <Bell className="size-4" />
           {unread > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+            <span className="absolute -right-0.5 -top-0.5 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-helper font-semibold text-primary-foreground">
               {unread > 9 ? "9+" : unread}
             </span>
           )}
@@ -212,14 +214,14 @@ export function Topbar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex shrink-0 items-center gap-2 rounded-lg py-1 pl-1 pr-2 transition-colors hover:bg-muted">
-              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-xs font-semibold text-secondary-foreground">
+              <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-helper font-semibold text-secondary-foreground">
                 {profile ? initialsOf(profile.full_name) : "…"}
               </span>
               <span className="hidden text-left leading-tight sm:block">
-                <span className="block max-w-32 truncate text-xs font-semibold">
+                <span className="block max-w-32 truncate text-helper font-semibold">
                   {profile?.full_name ?? "Signed in"}
                 </span>
-                <span className="block max-w-32 truncate text-[11px] text-muted-foreground">
+                <span className="block max-w-32 truncate text-helper text-muted-foreground">
                   {primaryRole?.name ?? "No role"}
                 </span>
               </span>
@@ -228,14 +230,14 @@ export function Topbar() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="flex flex-col gap-0.5">
               <span className="truncate">{profile?.full_name}</span>
-              <span className="truncate text-xs font-normal text-muted-foreground">
+              <span className="truncate text-helper font-normal text-muted-foreground">
                 {profile?.email}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="flex flex-wrap gap-1 px-2 py-1.5">
               {roles.map((role) => (
-                <Badge key={role.code} variant="secondary" className="text-[10px]">
+                <Badge key={role.code} variant="secondary" className="text-helper">
                   {role.name}
                 </Badge>
               ))}
@@ -283,7 +285,7 @@ export function PageHeader({
     <div className="flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="text-module-title font-semibold tracking-tight">{title}</h1>
           {badge && (
             <Badge variant="outline" className="border-primary/25 bg-primary/10 text-primary">
               {badge}
@@ -291,7 +293,7 @@ export function PageHeader({
           )}
         </div>
         {description && (
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>
+          <p className="mt-1 max-w-2xl text-td text-muted-foreground">{description}</p>
         )}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}

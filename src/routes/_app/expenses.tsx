@@ -149,8 +149,8 @@ function ExpensesScreen() {
         header: "Expense",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.expense_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.expense_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.expense_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -162,8 +162,8 @@ function ExpensesScreen() {
         accessorFn: (row) => row.description,
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="truncate text-sm">{row.original.description}</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-td">{row.original.description}</p>
+            <p className="truncate text-helper text-muted-foreground">
               {row.original.category?.name}
               {row.original.supplier ? ` · ${row.original.supplier.name}` : ""}
             </p>
@@ -176,9 +176,9 @@ function ExpensesScreen() {
         accessorFn: (row) => row.payment_method,
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="text-sm">{PAYMENT_METHOD_LABELS[row.original.payment_method]}</p>
+            <p className="text-td">{PAYMENT_METHOD_LABELS[row.original.payment_method]}</p>
             {row.original.bank_account && (
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="truncate text-helper text-muted-foreground">
                 {row.original.bank_account.name}
               </p>
             )}
@@ -192,7 +192,7 @@ function ExpensesScreen() {
           <div className="text-right">
             <p className="num font-medium">{money(row.original.total)}</p>
             {Number(row.original.tax_amount) > 0 && (
-              <p className="num text-[11px] text-muted-foreground">
+              <p className="num text-helper text-muted-foreground">
                 incl. {money(row.original.tax_amount)} tax
               </p>
             )}
@@ -204,7 +204,7 @@ function ExpensesScreen() {
         header: "Status",
         cell: ({ row }) => (
           <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
               TONE[row.original.status] ?? "bg-muted text-muted-foreground"
             }`}
           >
@@ -220,7 +220,7 @@ function ExpensesScreen() {
           const expense = row.original;
           if (["posted", "cancelled"].includes(expense.status)) {
             return (
-              <span className="flex justify-end pr-2 text-[11px] text-muted-foreground">
+              <span className="flex justify-end pr-2 text-helper text-muted-foreground">
                 {expense.status === "posted" ? "Posted" : "—"}
               </span>
             );
@@ -318,7 +318,7 @@ function ExpensesScreen() {
       />
 
       {(expenses.data?.length ?? 0) > 0 && (
-        <p className="mb-4 text-sm text-muted-foreground">
+        <p className="mb-4 text-td text-muted-foreground">
           <span className="num font-semibold text-foreground">{money(totals.posted)}</span> posted
           {totals.awaiting > 0 && (
             <>
@@ -400,7 +400,7 @@ function ExpensesScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <Receipt className="size-3.5" aria-hidden />
         Each category maps to a ledger account, so the income statement adds up without anyone
         choosing an account by hand.
@@ -495,7 +495,7 @@ function ExpenseFormDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>

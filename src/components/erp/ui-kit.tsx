@@ -29,17 +29,17 @@ export function StatCard({
   return (
     <div className="card-surface group p-5 transition-shadow duration-300 hover:shadow-raised">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[13px] font-medium text-muted-foreground">{label}</p>
+        <p className="text-card-title text-muted-foreground">{label}</p>
         {icon && (
           <span className={cn("grid size-9 place-items-center rounded-lg", toneRing)}>{icon}</span>
         )}
       </div>
-      <p className="num mt-3 text-[26px] font-semibold leading-none">{value}</p>
+      <p className="num mt-kpi-gap text-kpi">{value}</p>
       <div className="mt-2.5 flex items-center gap-2">
         {typeof delta === "number" && (
           <span
             className={cn(
-              "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[11px] font-semibold",
+              "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-badge",
               delta >= 0 ? "bg-success/12 text-success" : "bg-destructive/12 text-destructive",
             )}
           >
@@ -51,7 +51,7 @@ export function StatCard({
             {Math.abs(delta).toFixed(1)}%
           </span>
         )}
-        {sub && <span className="truncate text-xs text-muted-foreground">{sub}</span>}
+        {sub && <span className="truncate text-helper text-muted-foreground">{sub}</span>}
       </div>
     </div>
   );
@@ -76,8 +76,8 @@ export function SectionCard({
     <section className={cn("card-surface flex flex-col", className)}>
       <header className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold">{title}</h2>
-          {description && <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>}
+          <h2 className="text-section">{title}</h2>
+          {description && <p className="mt-0.5 text-helper text-muted-foreground">{description}</p>}
         </div>
         {actions}
       </header>
@@ -106,7 +106,7 @@ export function StatusPill({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold",
+        "inline-flex items-center rounded-md px-2 py-0.5 text-badge",
         map[status] ?? "bg-muted text-muted-foreground",
       )}
     >

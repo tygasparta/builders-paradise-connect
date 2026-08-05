@@ -51,12 +51,12 @@ export function AgingBar({ summary, className }: { summary: AgingSummary; classN
       <dl className="grid grid-cols-5 gap-1 text-center">
         {AGING_BUCKETS.map((bucket) => (
           <div key={bucket}>
-            <dt className="text-[10px] leading-tight text-muted-foreground">
+            <dt className="text-helper leading-tight text-muted-foreground">
               {AGING_LABELS[bucket]}
             </dt>
             <dd
               className={cn(
-                "num mt-0.5 text-xs font-semibold",
+                "num mt-0.5 text-helper font-semibold",
                 summary[bucket] > 0 ? TONE[bucket]?.text : "text-muted-foreground/50",
               )}
             >

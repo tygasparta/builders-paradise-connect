@@ -135,7 +135,7 @@ function ApprovalsScreen() {
         </div>
       ) : (
         <>
-          <p className="mb-4 text-sm text-muted-foreground">
+          <p className="mb-4 text-td text-muted-foreground">
             <span className="font-semibold text-foreground">{plural(total, "item")}</span> waiting
             across {plural(groups.filter((g) => g.items.length > 0).length, "area")}.
           </p>
@@ -161,7 +161,7 @@ function ApprovalsScreen() {
                   }
                 >
                   {error ? (
-                    <p className="px-5 py-4 text-sm text-destructive">
+                    <p className="px-5 py-4 text-td text-destructive">
                       {error instanceof Error ? error.message : "Could not load these."}
                     </p>
                   ) : (
@@ -170,7 +170,7 @@ function ApprovalsScreen() {
                         <li key={item.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
                           <span
                             className={cn(
-                              "hidden rounded-full px-2 py-0.5 text-[10px] font-semibold sm:inline-flex",
+                              "hidden rounded-full px-2 py-0.5 text-helper font-semibold sm:inline-flex",
                               KIND_TONE[item.kind] ?? "bg-muted text-muted-foreground",
                             )}
                           >
@@ -178,15 +178,15 @@ function ApprovalsScreen() {
                           </span>
 
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium">{item.title}</p>
-                            <p className="num truncate text-[11px] text-muted-foreground">
+                            <p className="truncate text-td font-medium">{item.title}</p>
+                            <p className="num truncate text-helper text-muted-foreground">
                               {item.reference} · {item.subtitle}
                               {item.date ? ` · ${format(new Date(item.date), "dd MMM yyyy")}` : ""}
                             </p>
                           </div>
 
                           {item.amount !== null && (
-                            <span className="num text-sm font-semibold">
+                            <span className="num text-td font-semibold">
                               {money(item.amount, item.currency)}
                             </span>
                           )}
@@ -255,7 +255,7 @@ function ApprovalsScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-start gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-start gap-1.5 text-helper text-muted-foreground">
         <ClipboardCheck className="mt-0.5 size-3.5 shrink-0" aria-hidden />
         <span>
           This inbox reads each module rather than keeping its own copy of what is pending, so it

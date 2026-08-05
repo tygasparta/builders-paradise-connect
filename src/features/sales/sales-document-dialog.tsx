@@ -152,7 +152,7 @@ export function SalesDocumentDialog({
           {serverError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{serverError}</span>
@@ -277,7 +277,7 @@ export function SalesDocumentDialog({
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Lines</h3>
+              <h3 className="text-td font-semibold">Lines</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -290,13 +290,13 @@ export function SalesDocumentDialog({
             </div>
 
             {errors.lines?.message && (
-              <p className="mb-2 text-xs text-destructive">{errors.lines.message}</p>
+              <p className="mb-2 text-helper text-destructive">{errors.lines.message}</p>
             )}
 
             <div className="table-scroll rounded-lg border border-border">
-              <table className="w-full text-sm">
+              <table className="w-full text-td">
                 <thead>
-                  <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                     <th className="p-2 text-left font-semibold">Product</th>
                     <th className="w-24 p-2 text-right font-semibold">Qty</th>
                     <th className="w-28 p-2 text-right font-semibold">Price</th>
@@ -340,7 +340,7 @@ export function SalesDocumentDialog({
                             </SelectContent>
                           </Select>
                           {short && (
-                            <p className="mt-1 flex items-center gap-1 text-[11px] text-warning-foreground">
+                            <p className="mt-1 flex items-center gap-1 text-helper text-warning-foreground">
                               <AlertTriangle className="size-3" aria-hidden />
                               Only {available} in this warehouse
                             </p>
@@ -411,7 +411,7 @@ export function SalesDocumentDialog({
             </div>
 
             <div className="mt-3 flex justify-end">
-              <dl className="w-64 space-y-1 text-sm">
+              <dl className="w-64 space-y-1 text-td">
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
                   <dd className="num">{money(totals.subtotal)}</dd>

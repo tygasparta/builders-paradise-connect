@@ -184,7 +184,7 @@ export function ReceiveGoodsDialog({
           {serverError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{serverError}</span>
@@ -211,9 +211,9 @@ export function ReceiveGoodsDialog({
           </div>
 
           <div className="table-scroll rounded-lg border border-border">
-            <table className="w-full text-sm">
+            <table className="w-full text-td">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                   <th className="p-2 text-left font-semibold">Product</th>
                   <th className="w-20 p-2 text-right font-semibold">Outstanding</th>
                   <th className="w-24 p-2 text-right font-semibold">Delivered</th>
@@ -254,11 +254,11 @@ export function ReceiveGoodsDialog({
                     <tr key={line.id} className="border-b border-border align-top last:border-0">
                       <td className="p-2">
                         <p className="font-medium">{line.product?.name}</p>
-                        <p className="num text-[11px] text-muted-foreground">
+                        <p className="num text-helper text-muted-foreground">
                           {line.product?.sku} · {line.product?.uom?.code}
                         </p>
                         {canSeeCost && costMoved && (
-                          <p className="mt-1 text-[11px] text-muted-foreground">
+                          <p className="mt-1 text-helper text-muted-foreground">
                             Average cost {money(before.averageCost, 4)} →{" "}
                             <span className="font-medium text-foreground">
                               {money(after.averageCost, 4)}
@@ -267,7 +267,7 @@ export function ReceiveGoodsDialog({
                         )}
                         {needsReason && (
                           <Input
-                            className="mt-1.5 h-8 text-xs"
+                            className="mt-1.5 h-8 text-helper"
                             placeholder="Why was it rejected?"
                             aria-label={`Rejection reason for ${line.product?.name}`}
                             value={entry.rejectionReason}
@@ -356,12 +356,12 @@ export function ReceiveGoodsDialog({
 
           {canSeeCost && (
             <div className="flex justify-end">
-              <dl className="w-64 text-sm">
+              <dl className="w-64 text-td">
                 <div className="flex justify-between border-t border-border pt-2 font-semibold">
                   <dt>Value to be received</dt>
                   <dd className="num">{money(summary.acceptedValue)}</dd>
                 </div>
-                <p className="mt-1 text-right text-[11px] font-normal text-muted-foreground">
+                <p className="mt-1 text-right text-helper font-normal text-muted-foreground">
                   Accepted quantities only
                 </p>
               </dl>
@@ -418,11 +418,11 @@ export function ChooseOrderDialog({
         </DialogHeader>
 
         {orders.isLoading ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Loading orders…</p>
+          <p className="py-8 text-center text-td text-muted-foreground">Loading orders…</p>
         ) : receivable.length === 0 ? (
           <div className="py-8 text-center">
-            <p className="text-sm font-medium">No orders are awaiting delivery</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="text-td font-medium">No orders are awaiting delivery</p>
+            <p className="mt-1 text-helper text-muted-foreground">
               An order must be approved before goods can be received against it.
             </p>
           </div>
@@ -445,13 +445,13 @@ export function ChooseOrderDialog({
                     }}
                   >
                     <div className="min-w-0">
-                      <p className="num text-xs font-medium">{order.po_no}</p>
-                      <p className="truncate text-sm">{order.supplier?.name}</p>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="num text-helper font-medium">{order.po_no}</p>
+                      <p className="truncate text-td">{order.supplier?.name}</p>
+                      <p className="text-helper text-muted-foreground">
                         {order.warehouse?.name} · {outstanding} outstanding
                       </p>
                     </div>
-                    <span className="num text-sm font-medium">
+                    <span className="num text-td font-medium">
                       {order.currency_code} {money(Number(order.total))}
                     </span>
                   </button>

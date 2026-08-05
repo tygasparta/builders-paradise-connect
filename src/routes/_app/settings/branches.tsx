@@ -70,7 +70,7 @@ function BranchesScreen() {
           <div className="flex items-center gap-2">
             <span className="font-medium">{row.original.name}</span>
             {row.original.is_head_office && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-helper">
                 Head office
               </Badge>
             )}
@@ -86,7 +86,7 @@ function BranchesScreen() {
         accessorKey: "phone",
         header: "Phone",
         cell: ({ row }) => (
-          <span className="num text-xs">
+          <span className="num text-helper">
             {row.original.phone ?? <span className="text-muted-foreground">—</span>}
           </span>
         ),
@@ -207,7 +207,10 @@ function BranchesScreen() {
               checked={includeInactive}
               onCheckedChange={setIncludeInactive}
             />
-            <Label htmlFor="include-inactive" className="text-xs font-normal text-muted-foreground">
+            <Label
+              htmlFor="include-inactive"
+              className="text-helper font-normal text-muted-foreground"
+            >
               Show inactive
             </Label>
           </div>
@@ -245,7 +248,7 @@ function BranchesScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <Building2 className="size-3.5" aria-hidden />
         Branches are never deleted. Deactivate instead, so history stays intact.
       </p>

@@ -150,7 +150,7 @@ function InventoryScreen() {
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.product?.name ?? "—"}</p>
-            <p className="num truncate text-xs text-muted-foreground">
+            <p className="num truncate text-helper text-muted-foreground">
               {row.original.product?.sku}
             </p>
           </div>
@@ -161,7 +161,7 @@ function InventoryScreen() {
         header: "Warehouse",
         accessorFn: (row) => row.warehouse?.name ?? "",
         cell: ({ row }) => (
-          <span className="text-sm text-muted-foreground">{row.original.warehouse?.name}</span>
+          <span className="text-td text-muted-foreground">{row.original.warehouse?.name}</span>
         ),
       },
       {
@@ -183,16 +183,16 @@ function InventoryScreen() {
               >
                 {num(quantity)}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-helper text-muted-foreground">
                 {row.original.product?.uom?.code}
               </span>
               {quantity < 0 && (
-                <Badge className="border-0 bg-destructive/12 text-[10px] text-destructive">
+                <Badge className="border-0 bg-destructive/12 text-helper text-destructive">
                   Negative
                 </Badge>
               )}
               {low && quantity >= 0 && (
-                <Badge className="border-0 bg-warning/20 text-[10px] text-warning-foreground">
+                <Badge className="border-0 bg-warning/20 text-helper text-warning-foreground">
                   Reorder
                 </Badge>
               )}
@@ -333,13 +333,16 @@ function InventoryScreen() {
                 toolbar={
                   <div className="flex items-center gap-2">
                     <Switch id="low-only" checked={lowOnly} onCheckedChange={setLowOnly} />
-                    <Label htmlFor="low-only" className="text-xs font-normal text-muted-foreground">
+                    <Label
+                      htmlFor="low-only"
+                      className="text-helper font-normal text-muted-foreground"
+                    >
                       Below reorder only
                     </Label>
                   </div>
                 }
               />
-              <p className="mt-3 text-xs text-muted-foreground">
+              <p className="mt-3 text-helper text-muted-foreground">
                 Showing{" "}
                 {activeWarehouseId
                   ? "the selected warehouse"
@@ -524,34 +527,34 @@ function MovementLedger({ canSeeCost, canExport }: { canSeeCost: boolean; canExp
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="h-10 text-[11px] uppercase tracking-wider">Date</TableHead>
-                <TableHead className="h-10 text-[11px] uppercase tracking-wider">Type</TableHead>
-                <TableHead className="h-10 text-[11px] uppercase tracking-wider">Product</TableHead>
-                <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                <TableHead className="h-10 text-helper uppercase tracking-wider">Date</TableHead>
+                <TableHead className="h-10 text-helper uppercase tracking-wider">Type</TableHead>
+                <TableHead className="h-10 text-helper uppercase tracking-wider">Product</TableHead>
+                <TableHead className="h-10 text-helper uppercase tracking-wider">
                   Warehouse
                 </TableHead>
-                <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+                <TableHead className="h-10 text-right text-helper uppercase tracking-wider">
                   Qty
                 </TableHead>
                 {canSeeCost && (
-                  <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+                  <TableHead className="h-10 text-right text-helper uppercase tracking-wider">
                     Cost
                   </TableHead>
                 )}
-                <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+                <TableHead className="h-10 text-right text-helper uppercase tracking-wider">
                   Balance
                 </TableHead>
-                <TableHead className="h-10 text-[11px] uppercase tracking-wider">By</TableHead>
+                <TableHead className="h-10 text-helper uppercase tracking-wider">By</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {movements.data?.rows.map((movement) => (
                 <TableRow key={movement.id}>
-                  <TableCell className="num whitespace-nowrap py-2.5 text-xs text-muted-foreground">
+                  <TableCell className="num whitespace-nowrap py-2.5 text-helper text-muted-foreground">
                     {format(new Date(movement.movement_date), "dd MMM yyyy")}
                   </TableCell>
                   <TableCell className="py-2.5">
-                    <span className="inline-flex items-center gap-1.5 text-sm">
+                    <span className="inline-flex items-center gap-1.5 text-td">
                       {movement.direction === 1 ? (
                         <ArrowUpRight className="size-3.5 text-success" aria-hidden />
                       ) : (
@@ -560,21 +563,21 @@ function MovementLedger({ canSeeCost, canExport }: { canSeeCost: boolean; canExp
                       {MOVEMENT_TYPE_LABELS[movement.movement_type]}
                     </span>
                     {movement.source_document_number && (
-                      <span className="num mt-0.5 block text-[11px] text-muted-foreground">
+                      <span className="num mt-0.5 block text-helper text-muted-foreground">
                         {movement.source_document_number}
                       </span>
                     )}
                   </TableCell>
                   <TableCell className="py-2.5">
-                    <span className="block text-sm">{movement.product?.name}</span>
-                    <span className="num block text-[11px] text-muted-foreground">
+                    <span className="block text-td">{movement.product?.name}</span>
+                    <span className="num block text-helper text-muted-foreground">
                       {movement.product?.sku}
                     </span>
                   </TableCell>
-                  <TableCell className="py-2.5 text-sm text-muted-foreground">
+                  <TableCell className="py-2.5 text-td text-muted-foreground">
                     {movement.warehouse?.code}
                   </TableCell>
-                  <TableCell className="num py-2.5 text-right text-sm">
+                  <TableCell className="num py-2.5 text-right text-td">
                     <span
                       className={movement.direction === 1 ? "text-success" : "text-destructive"}
                     >
@@ -583,14 +586,14 @@ function MovementLedger({ canSeeCost, canExport }: { canSeeCost: boolean; canExp
                     </span>
                   </TableCell>
                   {canSeeCost && (
-                    <TableCell className="num py-2.5 text-right text-sm">
+                    <TableCell className="num py-2.5 text-right text-td">
                       {num(movement.unit_cost, 4)}
                     </TableCell>
                   )}
-                  <TableCell className="num py-2.5 text-right text-sm font-medium">
+                  <TableCell className="num py-2.5 text-right text-td font-medium">
                     {num(movement.balance_quantity)}
                   </TableCell>
-                  <TableCell className="py-2.5 text-xs text-muted-foreground">
+                  <TableCell className="py-2.5 text-helper text-muted-foreground">
                     {movement.user?.full_name ?? "System"}
                   </TableCell>
                 </TableRow>
@@ -602,7 +605,7 @@ function MovementLedger({ canSeeCost, canExport }: { canSeeCost: boolean; canExp
 
       {!movements.isLoading && !movements.isError && total > PAGE_SIZE && (
         <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2.5">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-helper text-muted-foreground">
             Page <span className="num">{page + 1}</span> of <span className="num">{pageCount}</span>{" "}
             · {plural(total, "movement")}
           </p>

@@ -83,7 +83,7 @@ export function GlobalSearch({
                 >
                   <Building2 className="size-4" />
                   <span>{branch.name}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">{branch.code}</span>
+                  <span className="ml-auto text-helper text-muted-foreground">{branch.code}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -102,7 +102,9 @@ export function GlobalSearch({
                 >
                   <Warehouse className="size-4" />
                   <span>{warehouse.name}</span>
-                  <span className="ml-auto text-xs text-muted-foreground">{warehouse.code}</span>
+                  <span className="ml-auto text-helper text-muted-foreground">
+                    {warehouse.code}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -121,7 +123,7 @@ export function GlobalSearch({
                 >
                   <User className="size-4" />
                   <span>{user.full_name}</span>
-                  <span className="ml-auto truncate text-xs text-muted-foreground">
+                  <span className="ml-auto truncate text-helper text-muted-foreground">
                     {user.email}
                   </span>
                 </CommandItem>

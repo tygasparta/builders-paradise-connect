@@ -64,7 +64,7 @@ function ReportsScreen() {
               className="h-9 w-40"
               aria-label="Report from date"
             />
-            <span className="text-sm text-muted-foreground">to</span>
+            <span className="text-td text-muted-foreground">to</span>
             <Input
               type="date"
               value={range.to}
@@ -120,7 +120,7 @@ function BreakdownBars({
   emptyLabel: string;
 }) {
   if (rows.length === 0) {
-    return <p className="px-5 py-6 text-center text-sm text-muted-foreground">{emptyLabel}</p>;
+    return <p className="px-5 py-6 text-center text-td text-muted-foreground">{emptyLabel}</p>;
   }
 
   return (
@@ -129,7 +129,7 @@ function BreakdownBars({
         const share = total > 0 ? (row.value / total) * 100 : 0;
         return (
           <li key={row.key}>
-            <div className="flex items-baseline justify-between gap-3 text-sm">
+            <div className="flex items-baseline justify-between gap-3 text-td">
               <span className="min-w-0 truncate">{row.key}</span>
               <span className="num shrink-0 font-medium">{money(row.value)}</span>
             </div>
@@ -137,7 +137,7 @@ function BreakdownBars({
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div className="h-full bg-primary" style={{ width: `${Math.max(1, share)}%` }} />
               </div>
-              <span className="num w-20 shrink-0 text-right text-[11px] text-muted-foreground">
+              <span className="num w-20 shrink-0 text-right text-helper text-muted-foreground">
                 {share.toFixed(1)}% · {row.count}
               </span>
             </div>
@@ -157,8 +157,8 @@ function Totals({
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
         <div key={item.label} className="card-surface p-4">
-          <p className="text-xs text-muted-foreground">{item.label}</p>
-          <p className={cn("num mt-1 text-xl font-semibold", item.tone)}>{item.value}</p>
+          <p className="text-helper text-muted-foreground">{item.label}</p>
+          <p className={cn("num mt-1 text-section font-semibold", item.tone)}>{item.value}</p>
         </div>
       ))}
     </section>
@@ -470,12 +470,12 @@ function StockReport() {
                   className="flex items-center justify-between gap-3 px-5 py-2.5"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm">{item.name}</p>
-                    <p className="num truncate text-[11px] text-muted-foreground">
+                    <p className="truncate text-td">{item.name}</p>
+                    <p className="num truncate text-helper text-muted-foreground">
                       {item.sku} · {item.quantity} @ {money(item.average_cost)}
                     </p>
                   </div>
-                  <span className="num text-sm font-medium">{money(item.total_value)}</span>
+                  <span className="num text-td font-medium">{money(item.total_value)}</span>
                 </li>
               ))}
             </ul>
@@ -637,14 +637,14 @@ function PayrollReport() {
             {rows.map((run) => (
               <li key={run.run_no} className="flex items-center justify-between gap-3 px-5 py-2.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{run.period_name}</p>
-                  <p className="num truncate text-[11px] text-muted-foreground">
+                  <p className="truncate text-td font-medium">{run.period_name}</p>
+                  <p className="num truncate text-helper text-muted-foreground">
                     {run.run_no} · {plural(run.employee_count, "employee")}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="num text-sm font-medium">{money(run.total_net)}</p>
-                  <p className="num text-[11px] text-muted-foreground">
+                  <p className="num text-td font-medium">{money(run.total_net)}</p>
+                  <p className="num text-helper text-muted-foreground">
                     gross {money(run.total_gross)}
                   </p>
                 </div>

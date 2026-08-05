@@ -59,9 +59,9 @@ function Field({
       </Label>
       {children}
       {error ? (
-        <p className="text-xs text-destructive">{error}</p>
+        <p className="text-helper text-destructive">{error}</p>
       ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p className="text-helper text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   );
@@ -220,8 +220,8 @@ export function BranchFormDialog({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-lg border border-border p-3">
                 <div className="pr-3">
-                  <p className="text-sm font-medium">Head office</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-td font-medium">Head office</p>
+                  <p className="text-helper text-muted-foreground">
                     Only one branch can be head office.
                   </p>
                 </div>

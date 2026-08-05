@@ -274,7 +274,7 @@ export function PurchaseOrderFormDialog({
             {/* Lines */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Order lines</h3>
+                <h3 className="text-td font-semibold">Order lines</h3>
                 <Button
                   type="button"
                   variant="outline"
@@ -287,13 +287,13 @@ export function PurchaseOrderFormDialog({
               </div>
 
               {errors.lines?.message && (
-                <p className="mb-2 text-xs text-destructive">{errors.lines.message}</p>
+                <p className="mb-2 text-helper text-destructive">{errors.lines.message}</p>
               )}
 
               <div className="table-scroll rounded-lg border border-border">
-                <table className="w-full text-sm">
+                <table className="w-full text-td">
                   <thead>
-                    <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                       <th className="p-2 text-left font-semibold">Product</th>
                       <th className="w-24 p-2 text-right font-semibold">Qty</th>
                       <th className="w-28 p-2 text-right font-semibold">Unit price</th>
@@ -333,7 +333,7 @@ export function PurchaseOrderFormDialog({
                               </SelectContent>
                             </Select>
                             {lineErrors?.product_id && (
-                              <p className="mt-1 text-xs text-destructive">
+                              <p className="mt-1 text-helper text-destructive">
                                 {lineErrors.product_id.message}
                               </p>
                             )}
@@ -405,7 +405,7 @@ export function PurchaseOrderFormDialog({
               </div>
 
               <div className="mt-3 flex justify-end">
-                <dl className="w-64 space-y-1 text-sm">
+                <dl className="w-64 space-y-1 text-td">
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Subtotal</dt>
                     <dd className="num">{money(totals.subtotal)}</dd>

@@ -207,24 +207,24 @@ function ProfilePage() {
 
         <div className="space-y-4">
           <SectionCard title="Access" description="What your account can reach">
-            <dl className="space-y-3 text-sm">
+            <dl className="space-y-3 text-td">
               <div>
-                <dt className="text-xs text-muted-foreground">Employee number</dt>
+                <dt className="text-helper text-muted-foreground">Employee number</dt>
                 <dd className="num mt-0.5">{profile?.employee_code ?? "—"}</dd>
               </div>
               <div>
-                <dt className="text-xs text-muted-foreground">Roles</dt>
+                <dt className="text-helper text-muted-foreground">Roles</dt>
                 <dd className="mt-1 flex flex-wrap gap-1">
                   {roles.map((role) => (
-                    <Badge key={role.code} variant="secondary" className="text-[10px]">
+                    <Badge key={role.code} variant="secondary" className="text-helper">
                       {role.name}
                     </Badge>
                   ))}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-muted-foreground">Last sign-in</dt>
-                <dd className="num mt-0.5 text-xs">
+                <dt className="text-helper text-muted-foreground">Last sign-in</dt>
+                <dd className="num mt-0.5 text-helper">
                   {profile?.last_login_at
                     ? format(new Date(profile.last_login_at), "dd MMM yyyy HH:mm")
                     : "—"}
@@ -235,7 +235,7 @@ function ProfilePage() {
 
           <SectionCard title="Password" description="Sent to your email as a secure link">
             {resetSent ? (
-              <div className="flex items-start gap-2 text-sm">
+              <div className="flex items-start gap-2 text-td">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
                 <p className="text-muted-foreground">
                   A reset link is on its way to {profile?.email}. It expires in one hour.

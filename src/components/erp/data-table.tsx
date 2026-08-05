@@ -132,7 +132,7 @@ export function DataTable<TData>({
                     return (
                       <TableHead
                         key={header.id}
-                        className="h-10 whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+                        className="h-10 whitespace-nowrap text-helper font-semibold uppercase tracking-wider text-muted-foreground"
                         aria-sort={
                           sorted === "asc"
                             ? "ascending"
@@ -171,7 +171,7 @@ export function DataTable<TData>({
               {rows.map((row) => (
                 <TableRow key={row.id} className="border-border">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-2.5 text-sm">
+                    <TableCell key={cell.id} className="py-2.5 text-td">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -184,7 +184,7 @@ export function DataTable<TData>({
 
       {!error && !isLoading && table.getPageCount() > 1 && (
         <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2.5">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-helper text-muted-foreground">
             Page <span className="num">{table.getState().pagination.pageIndex + 1}</span> of{" "}
             <span className="num">{table.getPageCount()}</span> ·{" "}
             <span className="num">{table.getFilteredRowModel().rows.length}</span> records
@@ -226,7 +226,7 @@ export function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        "inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold",
         tone[status] ?? "bg-muted text-muted-foreground",
       )}
     >

@@ -35,12 +35,14 @@ export function HeroBanner({
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-white/75">
+          <p className="flex items-center gap-1.5 text-helper font-semibold uppercase tracking-widest text-white/75">
             <ShieldCheck className="size-3.5" aria-hidden />
             {eyebrow}
           </p>
-          <h1 className="mt-2 text-xl font-semibold tracking-tight md:text-2xl">{title}</h1>
-          {shown.length > 0 && <p className="mt-1.5 text-sm text-white/85">{shown.join(" · ")}</p>}
+          <h1 className="mt-2 text-section font-semibold tracking-tight md:text-module-title">
+            {title}
+          </h1>
+          {shown.length > 0 && <p className="mt-1.5 text-td text-white/85">{shown.join(" · ")}</p>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>

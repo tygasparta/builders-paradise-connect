@@ -13,7 +13,7 @@ export function DemoDataNotice({ phase, module }: { phase: number; module: strin
   return (
     <div
       role="note"
-      className="mb-5 flex items-start gap-2.5 rounded-lg border border-warning/35 bg-warning/10 px-3.5 py-3 text-sm text-warning-foreground"
+      className="mb-5 flex items-start gap-2.5 rounded-lg border border-warning/35 bg-warning/10 px-3.5 py-3 text-td text-warning-foreground"
     >
       <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden />
       <p>

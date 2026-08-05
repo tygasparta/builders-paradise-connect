@@ -29,11 +29,11 @@ export function Field({
       </Label>
       {children}
       {error ? (
-        <p className="text-xs text-destructive" role="alert">
+        <p className="mt-helper-gap text-helper text-destructive" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p className="mt-helper-gap text-helper text-muted-foreground">{hint}</p>
       ) : null}
     </div>
   );

@@ -129,7 +129,7 @@ function ProductsScreen() {
       {
         accessorKey: "sku",
         header: "SKU",
-        cell: ({ row }) => <span className="num text-xs font-medium">{row.original.sku}</span>,
+        cell: ({ row }) => <span className="num text-helper font-medium">{row.original.sku}</span>,
       },
       {
         accessorKey: "name",
@@ -137,7 +137,7 @@ function ProductsScreen() {
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.name}</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-helper text-muted-foreground">
               {row.original.category?.name ?? "Uncategorised"}
               {row.original.brand ? ` · ${row.original.brand.name}` : ""}
             </p>
@@ -149,7 +149,7 @@ function ProductsScreen() {
         header: "Unit",
         accessorFn: (row) => row.uom?.code ?? "",
         cell: ({ row }) => (
-          <span className="text-xs text-muted-foreground">{row.original.uom?.code ?? "—"}</span>
+          <span className="text-helper text-muted-foreground">{row.original.uom?.code ?? "—"}</span>
         ),
       },
     ];
@@ -177,17 +177,17 @@ function ProductsScreen() {
         cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
             {!row.original.track_stock && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-helper">
                 Not stocked
               </Badge>
             )}
             {row.original.track_expiry && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-helper">
                 Expiry
               </Badge>
             )}
             {row.original.product_barcodes.length > 0 && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-helper">
                 {row.original.product_barcodes.length} code
                 {row.original.product_barcodes.length === 1 ? "" : "s"}
               </Badge>
@@ -341,7 +341,7 @@ function ProductsScreen() {
               />
               <Label
                 htmlFor="include-inactive-products"
-                className="text-xs font-normal text-muted-foreground"
+                className="text-helper font-normal text-muted-foreground"
               >
                 Show inactive
               </Label>
@@ -376,7 +376,7 @@ function ProductsScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <Package className="size-3.5" aria-hidden />
         {canSeeCost
           ? "Cost shown here is the catalogue standard. Stock is valued at weighted average per warehouse."

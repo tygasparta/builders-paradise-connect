@@ -338,7 +338,7 @@ export function SupplierFormDialog({
               <TabsContent value="banking" className="mt-4 space-y-4">
                 {canSeeBank ? (
                   <>
-                    <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
+                    <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-helper text-muted-foreground">
                       <Landmark className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                       <span>
                         Payments are prepared against these details. Changes are recorded in the
@@ -393,14 +393,14 @@ export function SupplierFormDialog({
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-3 py-4 text-sm">
+                  <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-3 py-4 text-td">
                     <ShieldAlert
                       className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                       aria-hidden
                     />
                     <div>
                       <p className="font-medium">Banking details are hidden for your role</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="mt-1 text-helper text-muted-foreground">
                         They are visible to users who can create or approve supplier payments. The
                         database returns them as empty for everyone else, so they are not simply
                         hidden on screen.

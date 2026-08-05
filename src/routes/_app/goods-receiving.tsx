@@ -137,8 +137,8 @@ function GoodsReceivingScreen() {
         header: "GRN",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.grn_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.grn_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.received_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -151,7 +151,7 @@ function GoodsReceivingScreen() {
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.supplier?.name ?? "—"}</p>
-            <p className="num truncate text-xs text-muted-foreground">
+            <p className="num truncate text-helper text-muted-foreground">
               {row.original.purchase_order?.po_no ?? "Direct receipt"}
             </p>
           </div>
@@ -168,11 +168,11 @@ function GoodsReceivingScreen() {
           const rejected = lines.reduce((s, l) => s + Number(l.quantity_rejected), 0);
           return (
             <div className="min-w-0">
-              <p className="num text-sm">
+              <p className="num text-td">
                 {delivered} / {accepted}
               </p>
               {rejected > 0 && (
-                <Badge className="mt-0.5 border-0 bg-destructive/12 text-[10px] text-destructive">
+                <Badge className="mt-0.5 border-0 bg-destructive/12 text-helper text-destructive">
                   {rejected} rejected
                 </Badge>
               )}
@@ -190,7 +190,7 @@ function GoodsReceivingScreen() {
           Number(row.original.total_cost) > 0 ? (
             <span className="num font-medium">{money(row.original.total_cost)}</span>
           ) : (
-            <span className="text-xs text-muted-foreground">—</span>
+            <span className="text-helper text-muted-foreground">—</span>
           ),
       });
     }
@@ -200,7 +200,7 @@ function GoodsReceivingScreen() {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
             TONE[row.original.status] ?? "bg-muted text-muted-foreground"
           }`}
         >
@@ -217,7 +217,7 @@ function GoodsReceivingScreen() {
         const grn = row.original;
         if (grn.status === "posted") {
           return (
-            <span className="flex justify-end pr-2 text-[11px] text-muted-foreground">Posted</span>
+            <span className="flex justify-end pr-2 text-helper text-muted-foreground">Posted</span>
           );
         }
         return (
@@ -376,7 +376,7 @@ function GoodsReceivingScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <PackageCheck className="size-3.5" aria-hidden />
         Only accepted quantities become stock. Rejected goods stay off the books and need a reason
         recorded on the note.

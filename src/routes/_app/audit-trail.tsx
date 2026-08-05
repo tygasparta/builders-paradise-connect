@@ -172,15 +172,15 @@ function AuditTrailScreen() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">When</TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">Who</TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                  <TableHead className="h-10 text-helper uppercase tracking-wider">When</TableHead>
+                  <TableHead className="h-10 text-helper uppercase tracking-wider">Who</TableHead>
+                  <TableHead className="h-10 text-helper uppercase tracking-wider">
                     Action
                   </TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                  <TableHead className="h-10 text-helper uppercase tracking-wider">
                     Module
                   </TableHead>
-                  <TableHead className="h-10 text-[11px] uppercase tracking-wider">
+                  <TableHead className="h-10 text-helper uppercase tracking-wider">
                     Record
                   </TableHead>
                   <TableHead className="h-10" />
@@ -189,21 +189,21 @@ function AuditTrailScreen() {
               <TableBody>
                 {logs.data?.rows.map((entry) => (
                   <TableRow key={entry.id}>
-                    <TableCell className="num whitespace-nowrap py-2.5 text-xs text-muted-foreground">
+                    <TableCell className="num whitespace-nowrap py-2.5 text-helper text-muted-foreground">
                       {format(new Date(entry.created_at), "dd MMM yyyy HH:mm:ss")}
                     </TableCell>
-                    <TableCell className="py-2.5 text-sm">
+                    <TableCell className="py-2.5 text-td">
                       {entry.user_email ?? <span className="text-muted-foreground">System</span>}
                     </TableCell>
                     <TableCell className="py-2.5">
                       <ActionBadge action={entry.action} />
                     </TableCell>
-                    <TableCell className="py-2.5 text-sm text-muted-foreground">
+                    <TableCell className="py-2.5 text-td text-muted-foreground">
                       {MODULE_LABELS[entry.module] ?? entry.module}
                     </TableCell>
-                    <TableCell className="py-2.5 text-sm">
+                    <TableCell className="py-2.5 text-td">
                       {entry.table_name ? (
-                        <span className="font-mono text-xs">{entry.table_name}</span>
+                        <span className="num text-helper">{entry.table_name}</span>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
@@ -224,7 +224,7 @@ function AuditTrailScreen() {
 
         {!logs.isLoading && !logs.isError && total > PAGE_SIZE && (
           <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2.5">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-helper text-muted-foreground">
               Page <span className="num">{page + 1}</span> of{" "}
               <span className="num">{pageCount}</span> · <span className="num">{total}</span> events
             </p>
@@ -270,7 +270,7 @@ function ActionBadge({ action }: { action: string }) {
   };
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
         tone[action] ?? "bg-muted text-muted-foreground"
       }`}
     >
@@ -305,26 +305,26 @@ function ChangeDialog({
         </DialogHeader>
 
         {keys.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No field-level differences recorded.</p>
+          <p className="text-td text-muted-foreground">No field-level differences recorded.</p>
         ) : (
           <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-[11px] uppercase">Field</TableHead>
-                  <TableHead className="text-[11px] uppercase">Before</TableHead>
-                  <TableHead className="text-[11px] uppercase">After</TableHead>
+                  <TableHead className="text-helper uppercase">Field</TableHead>
+                  <TableHead className="text-helper uppercase">Before</TableHead>
+                  <TableHead className="text-helper uppercase">After</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {keys.map((key) => (
                   <TableRow key={key}>
-                    <TableCell className="py-2 font-mono text-xs">{key}</TableCell>
-                    <TableCell className="py-2 text-xs text-muted-foreground">
+                    <TableCell className="num py-2 text-helper">{key}</TableCell>
+                    <TableCell className="py-2 text-helper text-muted-foreground">
                       {formatValue(oldValue[key])}
                     </TableCell>
-                    <TableCell className="py-2 text-xs">
-                      <Badge variant="secondary" className="font-mono text-[10px]">
+                    <TableCell className="py-2 text-helper">
+                      <Badge variant="secondary" className="num text-helper">
                         {formatValue(newValue[key])}
                       </Badge>
                     </TableCell>

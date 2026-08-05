@@ -318,7 +318,7 @@ function CompanySettingsScreen() {
 
       {form.formState.isDirty && (
         <div className="sticky bottom-4 mt-4 flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 shadow-raised">
-          <p className="text-sm text-muted-foreground">You have unsaved changes.</p>
+          <p className="text-td text-muted-foreground">You have unsaved changes.</p>
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => form.reset()}>
               Discard

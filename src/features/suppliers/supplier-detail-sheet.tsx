@@ -84,7 +84,7 @@ export function SupplierDetailSheet({
           {supplier?.status === "blocked" && (
             <p
               role="status"
-              className="rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2 text-xs text-destructive"
+              className="rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2 text-helper text-destructive"
             >
               This supplier is blocked. New purchase orders are refused by the database, not just
               hidden here.
@@ -93,16 +93,16 @@ export function SupplierDetailSheet({
 
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">Open orders</p>
-              <p className="num mt-0.5 text-lg font-semibold">{openOrders.length}</p>
+              <p className="text-helper text-muted-foreground">Open orders</p>
+              <p className="num mt-0.5 text-section font-semibold">{openOrders.length}</p>
             </div>
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">Received to date</p>
-              <p className="num mt-0.5 text-lg font-semibold">{money(receivedValue)}</p>
+              <p className="text-helper text-muted-foreground">Received to date</p>
+              <p className="num mt-0.5 text-section font-semibold">{money(receivedValue)}</p>
             </div>
             <div className="card-surface p-3">
-              <p className="text-[11px] text-muted-foreground">Terms</p>
-              <p className="mt-0.5 text-lg font-semibold">
+              <p className="text-helper text-muted-foreground">Terms</p>
+              <p className="mt-0.5 text-section font-semibold">
                 {paymentTermsLabel(supplier?.payment_terms_days ?? 0)}
               </p>
             </div>
@@ -110,11 +110,11 @@ export function SupplierDetailSheet({
 
           {canSeeBank && supplier?.bank_name && (
             <section className="card-surface p-3">
-              <h3 className="flex items-center gap-1.5 text-xs font-semibold">
+              <h3 className="flex items-center gap-1.5 text-helper font-semibold">
                 <Landmark className="size-3.5" aria-hidden />
                 Payment details
               </h3>
-              <dl className="mt-2 grid gap-1.5 text-xs sm:grid-cols-2">
+              <dl className="mt-2 grid gap-1.5 text-helper sm:grid-cols-2">
                 <div className="flex justify-between gap-3">
                   <dt className="text-muted-foreground">Bank</dt>
                   <dd>{supplier.bank_name}</dd>
@@ -166,16 +166,16 @@ export function SupplierDetailSheet({
                     {orders.map((order) => (
                       <li key={order.id} className="flex items-start justify-between gap-3 py-2.5">
                         <div className="min-w-0">
-                          <p className="num text-xs font-medium">{order.po_no}</p>
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="num text-helper font-medium">{order.po_no}</p>
+                          <p className="text-helper text-muted-foreground">
                             {format(new Date(order.order_date), "dd MMM yyyy")}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="num text-sm font-medium">
+                          <p className="num text-td font-medium">
                             {order.currency_code} {money(order.total)}
                           </p>
-                          <Badge variant="secondary" className="mt-0.5 text-[10px]">
+                          <Badge variant="secondary" className="mt-0.5 text-helper">
                             {order.status.replace(/_/g, " ")}
                           </Badge>
                         </div>
@@ -199,17 +199,17 @@ export function SupplierDetailSheet({
                     {grns.map((grn) => (
                       <li key={grn.id} className="flex items-start justify-between gap-3 py-2.5">
                         <div className="min-w-0">
-                          <p className="num text-xs font-medium">{grn.grn_no}</p>
-                          <p className="truncate text-[11px] text-muted-foreground">
+                          <p className="num text-helper font-medium">{grn.grn_no}</p>
+                          <p className="truncate text-helper text-muted-foreground">
                             {format(new Date(grn.received_date), "dd MMM yyyy")}
                             {grn.delivery_note_ref ? ` · ${grn.delivery_note_ref}` : ""}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="num text-sm font-medium">
+                          <p className="num text-td font-medium">
                             {Number(grn.total_cost) > 0 ? money(grn.total_cost) : "—"}
                           </p>
-                          <Badge variant="secondary" className="mt-0.5 text-[10px]">
+                          <Badge variant="secondary" className="mt-0.5 text-helper">
                             {grn.status}
                           </Badge>
                         </div>
@@ -221,7 +221,7 @@ export function SupplierDetailSheet({
             </Tabs>
           )}
 
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-helper text-muted-foreground">
             Supplier invoices and payments are not yet built, so payables aging is not shown here
             rather than being estimated from receipts.
           </p>

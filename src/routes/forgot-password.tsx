@@ -61,7 +61,7 @@ function ForgotPasswordPage() {
         <div className="rounded-lg border border-success/25 bg-success/8 p-4">
           <div className="flex items-start gap-2.5">
             <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
-            <div className="text-sm">
+            <div className="text-td">
               <p className="font-medium">Check your email</p>
               <p className="mt-1 text-muted-foreground">
                 If <span className="font-medium text-foreground">{form.getValues("email")}</span>{" "}
@@ -75,7 +75,7 @@ function ForgotPasswordPage() {
           {formError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{formError}</span>
@@ -95,7 +95,7 @@ function ForgotPasswordPage() {
               {...form.register("email")}
             />
             {form.formState.errors.email && (
-              <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
+              <p className="text-helper text-destructive">{form.formState.errors.email.message}</p>
             )}
           </div>
 

@@ -209,7 +209,7 @@ function EmployeesTab() {
             <p className="truncate font-medium">
               {row.original.first_name} {row.original.last_name}
             </p>
-            <p className="num truncate text-xs text-muted-foreground">
+            <p className="num truncate text-helper text-muted-foreground">
               {row.original.employee_no}
               {row.original.phone ? ` · ${row.original.phone}` : ""}
             </p>
@@ -222,8 +222,8 @@ function EmployeesTab() {
         accessorFn: (row) => row.position?.title ?? "",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="truncate text-sm">{row.original.position?.title ?? "—"}</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-td">{row.original.position?.title ?? "—"}</p>
+            <p className="truncate text-helper text-muted-foreground">
               {row.original.department?.name ?? "No department"}
             </p>
           </div>
@@ -235,8 +235,8 @@ function EmployeesTab() {
         accessorFn: (row) => row.employment_type,
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="text-sm">{EMPLOYMENT_TYPE_LABELS[row.original.employment_type]}</p>
-            <p className="num text-xs text-muted-foreground">
+            <p className="text-td">{EMPLOYMENT_TYPE_LABELS[row.original.employment_type]}</p>
+            <p className="num text-helper text-muted-foreground">
               since {format(new Date(row.original.hire_date), "MMM yyyy")}
             </p>
           </div>
@@ -252,7 +252,7 @@ function EmployeesTab() {
         cell: ({ row }) => (
           <div className="text-right">
             <span className="num font-medium">{money(row.original.basic_salary)}</span>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-helper text-muted-foreground">
               {row.original.currency_code} · {row.original.pay_frequency}
             </p>
           </div>
@@ -265,7 +265,7 @@ function EmployeesTab() {
       header: "Status",
       cell: ({ row }) => (
         <span
-          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
             EMPLOYEE_TONE[row.original.status] ?? "bg-muted text-muted-foreground"
           }`}
         >
@@ -397,7 +397,7 @@ function EmployeesTab() {
       <TerminateDialog employee={terminating} onOpenChange={() => setTerminating(null)} />
 
       {!canSeeSalary && (
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-3 text-helper text-muted-foreground">
           Pay and bank details are hidden. They need the &ldquo;View salaries&rdquo; permission, and
           the database returns them as empty rather than relying on this screen to hide them.
         </p>
@@ -538,7 +538,7 @@ function EmployeeFormDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -988,25 +988,25 @@ function LeaveRow({
   return (
     <li className="flex flex-wrap items-center gap-3 px-5 py-3">
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">
+        <p className="truncate text-td font-medium">
           {request.employee?.first_name} {request.employee?.last_name}
         </p>
-        <p className="num truncate text-[11px] text-muted-foreground">
+        <p className="num truncate text-helper text-muted-foreground">
           {request.request_no} · {format(new Date(request.start_date), "dd MMM")} –{" "}
           {format(new Date(request.end_date), "dd MMM yyyy")}
         </p>
       </div>
 
       <div className="text-right">
-        <p className="text-xs">{request.leave_type?.name}</p>
-        <p className="num text-[11px] text-muted-foreground">
+        <p className="text-helper">{request.leave_type?.name}</p>
+        <p className="num text-helper text-muted-foreground">
           {request.days} {request.days === 1 ? "day" : "days"}
           {request.leave_type?.is_paid === false && " · unpaid"}
         </p>
       </div>
 
       <span
-        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+        className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
           LEAVE_TONE[request.status] ?? "bg-muted text-muted-foreground"
         }`}
       >
@@ -1105,7 +1105,7 @@ function LeaveFormDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -1165,7 +1165,7 @@ function LeaveFormDialog({
             </Field>
           </div>
 
-          <p className="rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
+          <p className="rounded-lg bg-muted/60 px-3 py-2 text-helper text-muted-foreground">
             <span className="num font-semibold text-foreground">{days}</span> working{" "}
             {days === 1 ? "day" : "days"}, weekends excluded.
           </p>
@@ -1267,10 +1267,10 @@ function AttendanceTab() {
           {employees.data?.map((employee) => (
             <li key={employee.id} className="flex items-center gap-3 px-5 py-2.5">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">
+                <p className="truncate text-td">
                   {employee.first_name} {employee.last_name}
                 </p>
-                <p className="num text-[11px] text-muted-foreground">{employee.employee_no}</p>
+                <p className="num text-helper text-muted-foreground">{employee.employee_no}</p>
               </div>
               <Select
                 value={marks[employee.id] ?? ""}
@@ -1329,11 +1329,11 @@ function StructureTab() {
             {departments.data?.map((department) => (
               <li key={department.id} className="flex items-center justify-between px-5 py-2.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{department.name}</p>
-                  <p className="num text-[11px] text-muted-foreground">{department.code}</p>
+                  <p className="truncate text-td font-medium">{department.name}</p>
+                  <p className="num text-helper text-muted-foreground">{department.code}</p>
                 </div>
                 {department.status !== "active" && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     Inactive
                   </Badge>
                 )}
@@ -1363,8 +1363,8 @@ function StructureTab() {
             {positions.data?.map((position) => (
               <li key={position.id} className="flex items-center justify-between px-5 py-2.5">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{position.title}</p>
-                  <p className="num text-[11px] text-muted-foreground">
+                  <p className="truncate text-td font-medium">{position.title}</p>
+                  <p className="num text-helper text-muted-foreground">
                     {position.code}
                     {position.grade ? ` · grade ${position.grade}` : ""}
                   </p>

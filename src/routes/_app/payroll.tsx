@@ -114,7 +114,7 @@ function PayrollScreen() {
       {!taxBands.isLoading && !configured && (
         <div
           role="alert"
-          className="mb-4 flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm"
+          className="mb-4 flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-td"
         >
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning-foreground" aria-hidden />
           <div>
@@ -209,9 +209,9 @@ function RunsTab() {
                     className="min-w-0 flex-1 text-left"
                     onClick={() => setSelected(run)}
                   >
-                    <p className="num text-xs font-medium">{run.run_no}</p>
-                    <p className="truncate text-sm">{run.period?.name ?? "Period removed"}</p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="num text-helper font-medium">{run.run_no}</p>
+                    <p className="truncate text-td">{run.period?.name ?? "Period removed"}</p>
+                    <p className="text-helper text-muted-foreground">
                       {run.employee_count > 0
                         ? `${plural(run.employee_count, "employee")}`
                         : "Not yet calculated"}
@@ -223,15 +223,15 @@ function RunsTab() {
                   </button>
 
                   <div className="text-right">
-                    <p className="num text-sm font-semibold">{money(run.total_net)}</p>
-                    <p className="num text-[11px] text-muted-foreground">
+                    <p className="num text-td font-semibold">{money(run.total_net)}</p>
+                    <p className="num text-helper text-muted-foreground">
                       net of {money(run.total_deductions)}
                     </p>
                   </div>
 
                   <span
                     className={cn(
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold",
                       TONE[run.status] ?? "bg-muted text-muted-foreground",
                     )}
                   >
@@ -390,7 +390,7 @@ function NewRunDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -502,9 +502,9 @@ function PayslipsDialog({
         ) : (
           <>
             <div className="table-scroll rounded-lg border border-border">
-              <table className="w-full text-sm">
+              <table className="w-full text-td">
                 <thead>
-                  <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                     <th className="p-2 text-left font-semibold">Employee</th>
                     <th className="p-2 text-right font-semibold">Gross</th>
                     <th className="p-2 text-right font-semibold">PAYE</th>
@@ -516,10 +516,10 @@ function PayslipsDialog({
                   {payslips.data?.map((payslip) => (
                     <tr key={payslip.id} className="border-b border-border last:border-0">
                       <td className="p-2">
-                        <p className="text-sm">
+                        <p className="text-td">
                           {payslip.employee?.first_name} {payslip.employee?.last_name}
                         </p>
-                        <p className="num text-[11px] text-muted-foreground">
+                        <p className="num text-helper text-muted-foreground">
                           {payslip.employee?.employee_no} · {payslip.payslip_no}
                         </p>
                       </td>
@@ -623,8 +623,8 @@ function PeriodsTab() {
             {periods.data?.map((period) => (
               <li key={period.id} className="flex items-center justify-between px-5 py-2.5">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium">{period.name}</p>
-                  <p className="num text-[11px] text-muted-foreground">
+                  <p className="text-td font-medium">{period.name}</p>
+                  <p className="num text-helper text-muted-foreground">
                     {format(new Date(period.start_date), "dd MMM")} –{" "}
                     {format(new Date(period.end_date), "dd MMM yyyy")} · pay{" "}
                     {format(new Date(period.pay_date), "dd MMM")}
@@ -632,7 +632,7 @@ function PeriodsTab() {
                 </div>
                 <Badge
                   variant={period.status === "open" ? "default" : "secondary"}
-                  className="text-[10px]"
+                  className="text-helper"
                 >
                   {period.status}
                 </Badge>
@@ -773,7 +773,7 @@ function TaxBandsTab() {
                 ) : undefined
               }
             />
-            <p className="mx-auto mt-4 max-w-xl rounded-lg bg-muted/60 px-4 py-3 text-xs text-muted-foreground">
+            <p className="mx-auto mt-4 max-w-xl rounded-lg bg-muted/60 px-4 py-3 text-helper text-muted-foreground">
               Each band needs a lower limit, an optional upper limit, a rate as a decimal (0.20 for
               20%), and the cumulative tax carried from the bands below it. The top band has no
               upper limit. Bands are per currency and pay frequency, effective from a date — adding
@@ -782,9 +782,9 @@ function TaxBandsTab() {
           </div>
         ) : (
           <div className="table-scroll">
-            <table className="w-full text-sm">
+            <table className="w-full text-td">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                   <th className="p-2 text-left font-semibold">Effective</th>
                   <th className="p-2 text-right font-semibold">From</th>
                   <th className="p-2 text-right font-semibold">To</th>
@@ -796,10 +796,10 @@ function TaxBandsTab() {
                 {bands.data?.map((band) => (
                   <tr key={band.id} className="border-b border-border last:border-0">
                     <td className="p-2">
-                      <span className="num text-xs">
+                      <span className="num text-helper">
                         {format(new Date(band.effective_from), "dd MMM yyyy")}
                       </span>
-                      <span className="ml-2 text-[11px] text-muted-foreground">
+                      <span className="ml-2 text-helper text-muted-foreground">
                         {band.currency_code} · {band.pay_frequency}
                       </span>
                     </td>
@@ -844,8 +844,8 @@ function ComponentsTab() {
           {components.data?.map((component) => (
             <li key={component.id} className="flex items-center gap-3 px-5 py-2.5">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{component.name}</p>
-                <p className="num text-[11px] text-muted-foreground">
+                <p className="truncate text-td font-medium">{component.name}</p>
+                <p className="num text-helper text-muted-foreground">
                   {component.code} · {component.calculation.replace(/_/g, " ")}
                 </p>
               </div>
@@ -853,7 +853,7 @@ function ComponentsTab() {
                 <Badge
                   variant="secondary"
                   className={cn(
-                    "text-[10px]",
+                    "text-helper",
                     component.component_type === "earning"
                       ? "bg-success/12 text-success"
                       : "bg-destructive/12 text-destructive",
@@ -862,22 +862,22 @@ function ComponentsTab() {
                   {component.component_type}
                 </Badge>
                 {component.is_statutory && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     statutory
                   </Badge>
                 )}
                 {component.is_employer_contribution && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     employer
                   </Badge>
                 )}
                 {!component.is_taxable && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     pre-tax
                   </Badge>
                 )}
               </div>
-              <span className="num w-20 text-right text-xs text-muted-foreground">
+              <span className="num w-20 text-right text-helper text-muted-foreground">
                 {component.calculation === "fixed"
                   ? Number(component.default_amount) > 0
                     ? money(component.default_amount)

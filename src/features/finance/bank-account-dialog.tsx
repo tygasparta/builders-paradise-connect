@@ -157,7 +157,7 @@ export function BankAccountDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -271,8 +271,8 @@ export function BankAccountDialog({
               aria-describedby="bank_default_hint"
             />
             <span>
-              <span className="text-sm font-medium">Use as the default account</span>
-              <span id="bank_default_hint" className="block text-xs text-muted-foreground">
+              <span className="text-td font-medium">Use as the default account</span>
+              <span id="bank_default_hint" className="block text-helper text-muted-foreground">
                 Preselected when paying an expense. Only one account can be the default — setting
                 this stands the current one down.
               </span>

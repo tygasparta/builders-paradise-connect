@@ -115,7 +115,7 @@ export function CreditNoteDialog({
           {serverError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{serverError}</span>
@@ -123,9 +123,9 @@ export function CreditNoteDialog({
           )}
 
           <div className="table-scroll rounded-lg border border-border">
-            <table className="w-full text-sm">
+            <table className="w-full text-td">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                   <th className="p-2 text-left font-semibold">Product</th>
                   <th className="w-24 p-2 text-right font-semibold">Sold</th>
                   <th className="w-28 p-2 text-right font-semibold">Returning</th>
@@ -142,7 +142,7 @@ export function CreditNoteDialog({
                     <tr key={line.id} className="border-b border-border last:border-0">
                       <td className="p-2">
                         <p className="font-medium">{line.product?.name}</p>
-                        <p className="num text-[11px] text-muted-foreground">{line.product?.sku}</p>
+                        <p className="num text-helper text-muted-foreground">{line.product?.sku}</p>
                       </td>
                       <td className="num p-2 text-right">{Number(line.quantity)}</td>
                       <td className="p-2">
@@ -162,7 +162,7 @@ export function CreditNoteDialog({
                           }
                         />
                         {over && (
-                          <p className="mt-1 text-[11px] text-destructive">
+                          <p className="mt-1 text-helper text-destructive">
                             More than was sold on this line
                           </p>
                         )}
@@ -193,8 +193,8 @@ export function CreditNoteDialog({
 
             <div className="flex items-center justify-between rounded-lg border border-border p-3">
               <div className="pr-3">
-                <p className="text-sm font-medium">Put back into stock</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-td font-medium">Put back into stock</p>
+                <p className="text-helper text-muted-foreground">
                   Off for damaged goods: the customer is still credited, but nothing returns to the
                   shelf.
                 </p>
@@ -213,7 +213,7 @@ export function CreditNoteDialog({
           </Field>
 
           <div className="flex justify-end">
-            <dl className="w-56 text-sm">
+            <dl className="w-56 text-td">
               <div className="flex justify-between border-t border-border pt-2 font-semibold">
                 <dt>Credit total</dt>
                 <dd className="num">

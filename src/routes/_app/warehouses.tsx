@@ -79,12 +79,12 @@ function WarehousesScreen() {
           <div className="flex items-center gap-2">
             <span className="font-medium">{row.original.name}</span>
             {row.original.is_default && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" className="text-helper">
                 Default
               </Badge>
             )}
             {row.original.allow_negative_stock && (
-              <Badge className="border-0 bg-warning/20 text-[10px] text-warning-foreground">
+              <Badge className="border-0 bg-warning/20 text-helper text-warning-foreground">
                 Negative allowed
               </Badge>
             )}
@@ -228,7 +228,7 @@ function WarehousesScreen() {
             />
             <Label
               htmlFor="include-inactive-wh"
-              className="text-xs font-normal text-muted-foreground"
+              className="text-helper font-normal text-muted-foreground"
             >
               Show inactive
             </Label>
@@ -269,7 +269,7 @@ function WarehousesScreen() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <WarehouseIcon className="size-3.5" aria-hidden />
         Showing {activeBranchId ? "the selected branch only" : "all branches"} — change the scope in
         the top bar.

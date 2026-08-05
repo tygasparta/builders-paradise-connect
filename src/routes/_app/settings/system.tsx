@@ -102,7 +102,7 @@ function NumberingTab() {
     <>
       <div
         role="note"
-        className="mb-4 flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-sm"
+        className="mb-4 flex items-start gap-2.5 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-td"
       >
         <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning-foreground" aria-hidden />
         <div>
@@ -128,9 +128,9 @@ function NumberingTab() {
           <ErrorState error={sequences.error} onRetry={() => void sequences.refetch()} />
         ) : (
           <div className="table-scroll">
-            <table className="w-full text-sm">
+            <table className="w-full text-td">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                   <th className="p-2 text-left font-semibold">Document</th>
                   <th className="p-2 text-left font-semibold">Prefix</th>
                   <th className="p-2 text-right font-semibold">Next</th>
@@ -142,10 +142,10 @@ function NumberingTab() {
                 {sequences.data?.map((sequence) => (
                   <tr key={sequence.doc_type} className="border-b border-border last:border-0">
                     <td className="p-2">
-                      <p className="text-sm">
+                      <p className="text-td">
                         {DOC_TYPE_LABELS[sequence.doc_type] ?? sequence.doc_type}
                       </p>
-                      <p className="num text-[11px] text-muted-foreground">{sequence.doc_type}</p>
+                      <p className="num text-helper text-muted-foreground">{sequence.doc_type}</p>
                     </td>
                     <td className="num p-2">{sequence.prefix}</td>
                     <td className="num p-2 text-right">{sequence.next_number}</td>
@@ -237,7 +237,7 @@ function SequenceDialog({
           {error && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {error}
             </p>
@@ -275,13 +275,13 @@ function SequenceDialog({
             </Field>
           </div>
 
-          <p className="rounded-lg bg-muted/60 px-3 py-2 text-sm">
+          <p className="rounded-lg bg-muted/60 px-3 py-2 text-td">
             Next document will be{" "}
             <span className="num font-semibold">{previewNumber(prefix, padding, next)}</span>
           </p>
 
           {goesBackwards && (
-            <p className="flex items-start gap-1.5 text-xs text-destructive">
+            <p className="flex items-start gap-1.5 text-helper text-destructive">
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
               Below {sequence?.next_number}, which has already been issued. The database will refuse
               this.
@@ -383,16 +383,16 @@ function UnitsTab() {
             {units.data?.map((unit) => (
               <li key={unit.id} className="flex items-center gap-3 px-5 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{unit.name}</p>
-                  <p className="num text-[11px] text-muted-foreground">{unit.code}</p>
+                  <p className="truncate text-td font-medium">{unit.name}</p>
+                  <p className="num text-helper text-muted-foreground">{unit.code}</p>
                 </div>
                 {!unit.allow_decimal && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     whole numbers only
                   </Badge>
                 )}
                 {unit.status !== "active" && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     inactive
                   </Badge>
                 )}
@@ -446,7 +446,7 @@ function UnitsTab() {
             {error && (
               <p
                 role="alert"
-                className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+                className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
               >
                 {error}
               </p>
@@ -476,8 +476,8 @@ function UnitsTab() {
                 onCheckedChange={(checked) => setAllowDecimal(checked === true)}
               />
               <span>
-                <span className="text-sm font-medium">Allow decimal quantities</span>
-                <span className="block text-xs text-muted-foreground">
+                <span className="text-td font-medium">Allow decimal quantities</span>
+                <span className="block text-helper text-muted-foreground">
                   Off for things counted whole — a bag, a door, a window frame.
                 </span>
               </span>
@@ -579,14 +579,14 @@ function CategoriesTab() {
             {categories.data?.map((category) => (
               <li key={category.id} className="flex items-center gap-3 px-5 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{category.name}</p>
-                  <p className="num truncate text-[11px] text-muted-foreground">
+                  <p className="truncate text-td font-medium">{category.name}</p>
+                  <p className="num truncate text-helper text-muted-foreground">
                     {category.code}
                     {category.description ? ` · ${category.description}` : ""}
                   </p>
                 </div>
                 {category.status !== "active" && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     inactive
                   </Badge>
                 )}
@@ -638,7 +638,7 @@ function CategoriesTab() {
             {error && (
               <p
                 role="alert"
-                className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+                className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
               >
                 {error}
               </p>
@@ -760,11 +760,11 @@ function BrandsTab() {
             {brands.data?.map((brand) => (
               <li key={brand.id} className="flex items-center gap-3 px-5 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{brand.name}</p>
-                  <p className="num text-[11px] text-muted-foreground">{brand.code}</p>
+                  <p className="truncate text-td font-medium">{brand.name}</p>
+                  <p className="num text-helper text-muted-foreground">{brand.code}</p>
                 </div>
                 {brand.status !== "active" && (
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-helper">
                     inactive
                   </Badge>
                 )}
@@ -816,7 +816,7 @@ function BrandsTab() {
             {error && (
               <p
                 role="alert"
-                className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+                className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
               >
                 {error}
               </p>

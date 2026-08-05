@@ -248,8 +248,8 @@ export function WarehouseFormDialog({
             <div className="space-y-3 rounded-lg border border-border p-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium">Default for this branch</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-td font-medium">Default for this branch</p>
+                  <p className="text-helper text-muted-foreground">
                     Pre-selected on receipts, sales and transfers. One per branch.
                   </p>
                 </div>
@@ -264,8 +264,8 @@ export function WarehouseFormDialog({
 
               <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
                 <div>
-                  <p className="text-sm font-medium">Allow negative stock</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-td font-medium">Allow negative stock</p>
+                  <p className="text-helper text-muted-foreground">
                     Off by default. Even when on, the acting user still needs the &ldquo;Allow
                     negative stock&rdquo; permission.
                   </p>

@@ -374,7 +374,7 @@ export function ProductFormDialog({
                       value={`${margin.markupPercent.toFixed(2)}%`}
                       negative={margin.markupPercent < 0}
                     />
-                    <p className="text-xs text-muted-foreground sm:col-span-3">
+                    <p className="text-helper text-muted-foreground sm:col-span-3">
                       Indicative only. Realised margin uses the weighted average cost at the moment
                       of sale, not this figure.
                     </p>
@@ -440,8 +440,8 @@ export function ProductFormDialog({
                 <div className="space-y-3 rounded-lg border border-border p-3">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-medium">Track stock</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-td font-medium">Track stock</p>
+                      <p className="text-helper text-muted-foreground">
                         Off for services and labour, which have no quantity on hand.
                       </p>
                     </div>
@@ -455,8 +455,8 @@ export function ProductFormDialog({
                   </div>
                   <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
                     <div>
-                      <p className="text-sm font-medium">Track expiry</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-td font-medium">Track expiry</p>
+                      <p className="text-helper text-muted-foreground">
                         For cement, adhesives and paint with a shelf life.
                       </p>
                     </div>
@@ -491,7 +491,7 @@ export function ProductFormDialog({
                   />
                 </Field>
 
-                <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
+                <div className="rounded-lg border border-border bg-muted/40 p-3 text-helper">
                   {barcodeList.length === 0 ? (
                     <p className="text-muted-foreground">
                       No barcodes yet. The SKU and stock code are always scannable without one.
@@ -504,12 +504,12 @@ export function ProductFormDialog({
                           <li key={code} className="flex items-center gap-2">
                             <span className={bad ? "num text-destructive" : "num"}>{code}</span>
                             {index === 0 && !bad && (
-                              <span className="rounded-full bg-primary/12 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                              <span className="rounded-full bg-primary/12 px-1.5 py-0.5 text-helper font-semibold text-primary">
                                 Primary
                               </span>
                             )}
                             {bad && (
-                              <span className="text-[10px] text-destructive">
+                              <span className="text-helper text-destructive">
                                 letters, digits, dot, dash or underscore; 4–64 characters
                               </span>
                             )}
@@ -571,7 +571,7 @@ function MarginStat({
 }) {
   return (
     <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-helper text-muted-foreground">{label}</p>
       <p
         className={
           negative ? "num mt-0.5 font-semibold text-destructive" : "num mt-0.5 font-semibold"

@@ -119,10 +119,10 @@ function UsersTab() {
             <p className="truncate font-medium">
               {row.original.full_name}
               {row.original.id === profile?.id && (
-                <span className="ml-1.5 text-xs font-normal text-muted-foreground">(you)</span>
+                <span className="ml-1.5 text-helper font-normal text-muted-foreground">(you)</span>
               )}
             </p>
-            <p className="truncate text-xs text-muted-foreground">{row.original.email}</p>
+            <p className="truncate text-helper text-muted-foreground">{row.original.email}</p>
           </div>
         ),
       },
@@ -130,7 +130,7 @@ function UsersTab() {
         accessorKey: "employee_code",
         header: "Employee no.",
         cell: ({ row }) => (
-          <span className="num text-xs">
+          <span className="num text-helper">
             {row.original.employee_code ?? <span className="text-muted-foreground">—</span>}
           </span>
         ),
@@ -142,13 +142,13 @@ function UsersTab() {
         accessorFn: (row) => row.user_roles.map((r) => r.role?.name ?? "").join(" "),
         cell: ({ row }) =>
           row.original.user_roles.length === 0 ? (
-            <Badge className="border-0 bg-warning/20 text-[10px] text-warning-foreground">
+            <Badge className="border-0 bg-warning/20 text-helper text-warning-foreground">
               No role
             </Badge>
           ) : (
             <div className="flex flex-wrap gap-1">
               {row.original.user_roles.map((assignment) => (
-                <Badge key={assignment.id} variant="secondary" className="text-[10px]">
+                <Badge key={assignment.id} variant="secondary" className="text-helper">
                   {assignment.role?.name}
                   {assignment.branch && (
                     <span className="ml-1 opacity-70">· {assignment.branch.code}</span>
@@ -169,7 +169,7 @@ function UsersTab() {
         accessorKey: "last_login_at",
         header: "Last sign-in",
         cell: ({ row }) => (
-          <span className="num text-xs text-muted-foreground">
+          <span className="num text-helper text-muted-foreground">
             {row.original.last_login_at
               ? format(new Date(row.original.last_login_at), "dd MMM yyyy HH:mm")
               : "Never"}
@@ -213,7 +213,7 @@ function UsersTab() {
                   {canUpdate && (
                     <>
                       <DropdownMenuSeparator />
-                      <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                      <DropdownMenuLabel className="text-helper font-normal text-muted-foreground">
                         Account status
                       </DropdownMenuLabel>
                       {user.status !== "active" && (
@@ -259,7 +259,7 @@ function UsersTab() {
         emptyDescription="Users appear here once they have been created in Supabase Authentication."
       />
 
-      <p className="mt-3 text-xs text-muted-foreground">
+      <p className="mt-3 text-helper text-muted-foreground">
         New accounts are created in Supabase → Authentication → Users, or through the{" "}
         <code className="rounded bg-muted px-1 py-0.5">invite-user</code> Edge Function. A user
         cannot change their own status or grant themselves a role — the database refuses both.
@@ -300,11 +300,11 @@ function ManageRolesDialog({
 
         <div className="space-y-4">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="mb-2 text-helper font-semibold uppercase tracking-wider text-muted-foreground">
               Current roles
             </p>
             {user?.user_roles.length === 0 ? (
-              <p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-warning-foreground">
+              <p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-td text-warning-foreground">
                 This user has no role, so they cannot open anything after signing in.
               </p>
             ) : (
@@ -315,8 +315,8 @@ function ManageRolesDialog({
                     className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{assignment.role?.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="truncate text-td font-medium">{assignment.role?.name}</p>
+                      <p className="text-helper text-muted-foreground">
                         {assignment.branch ? `${assignment.branch.name} only` : "All branches"}
                       </p>
                     </div>
@@ -441,8 +441,10 @@ function RolesTab() {
                 }
                 aria-current={role.id === activeRoleId ? "true" : undefined}
               >
-                <span className="block text-sm font-medium">{role.name}</span>
-                <span className="block truncate text-xs text-muted-foreground">{role.code}</span>
+                <span className="block text-td font-medium">{role.name}</span>
+                <span className="block truncate text-helper text-muted-foreground">
+                  {role.code}
+                </span>
               </button>
             </li>
           ))}
@@ -451,8 +453,8 @@ function RolesTab() {
 
       <section className="card-surface overflow-hidden">
         <header className="border-b border-border px-5 py-4">
-          <h2 className="text-sm font-semibold">{activeRole?.name}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <h2 className="text-td font-semibold">{activeRole?.name}</h2>
+          <p className="mt-0.5 text-helper text-muted-foreground">
             {activeRole?.description}
             {activeRole?.is_system && " · System role"}
           </p>
@@ -474,10 +476,10 @@ function RolesTab() {
               return (
                 <div key={module} className="px-5 py-4">
                   <div className="mb-2.5 flex items-center justify-between gap-2">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <h3 className="text-helper font-semibold uppercase tracking-wider text-muted-foreground">
                       {MODULE_LABELS[module] ?? module}
                     </h3>
-                    <span className="num text-xs text-muted-foreground">
+                    <span className="num text-helper text-muted-foreground">
                       {grantedCount}/{items?.length ?? 0}
                     </span>
                   </div>
@@ -489,8 +491,8 @@ function RolesTab() {
                           key={permission.id}
                           className={
                             has
-                              ? "flex items-start gap-2 text-sm"
-                              : "flex items-start gap-2 text-sm text-muted-foreground/60"
+                              ? "flex items-start gap-2 text-td"
+                              : "flex items-start gap-2 text-td text-muted-foreground/60"
                           }
                         >
                           <span
@@ -503,7 +505,7 @@ function RolesTab() {
                           />
                           <span className="min-w-0">
                             <span className="block truncate">{permission.name}</span>
-                            <span className="block truncate font-mono text-[10px] opacity-60">
+                            <span className="num block truncate text-helper opacity-60">
                               {permission.code}
                             </span>
                           </span>

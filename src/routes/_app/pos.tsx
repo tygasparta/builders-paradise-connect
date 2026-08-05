@@ -151,8 +151,8 @@ function OpenTillPanel({
             <Banknote className="size-5" />
           </span>
           <div>
-            <h1 className="text-lg font-semibold">Open the till</h1>
-            <p className="text-xs text-muted-foreground">{cashierName}</p>
+            <h1 className="text-section font-semibold">Open the till</h1>
+            <p className="text-helper text-muted-foreground">{cashierName}</p>
           </div>
         </div>
 
@@ -189,7 +189,7 @@ function OpenTillPanel({
           Open till
         </Button>
 
-        <p className="mt-3 text-center text-xs text-muted-foreground">
+        <p className="mt-3 text-center text-helper text-muted-foreground">
           Every sale is attached to this shift, and the drawer is reconciled against it at close.
         </p>
       </div>
@@ -359,7 +359,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
             </SelectContent>
           </Select>
 
-          <Badge variant="secondary" className="num text-[11px]">
+          <Badge variant="secondary" className="num text-helper">
             {sessionNo}
           </Badge>
         </div>
@@ -389,21 +389,21 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
                   className="card-surface p-4 text-left transition-shadow hover:shadow-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <span className="num rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    <span className="num rounded bg-muted px-1.5 py-0.5 text-helper font-medium text-muted-foreground">
                       {product.sku}
                     </span>
                     <span
                       className={
                         out
-                          ? "num text-[11px] font-semibold text-destructive"
-                          : "num text-[11px] text-muted-foreground"
+                          ? "num text-helper font-semibold text-destructive"
+                          : "num text-helper text-muted-foreground"
                       }
                     >
                       {available} {product.uom?.code}
                     </span>
                   </div>
-                  <p className="mt-2 line-clamp-2 text-sm font-medium">{product.name}</p>
-                  <p className="num mt-2 text-lg font-semibold text-primary">
+                  <p className="mt-2 line-clamp-2 text-td font-medium">{product.name}</p>
+                  <p className="num mt-2 text-section font-semibold text-primary">
                     {money(Number(product.selling_price))}
                   </p>
                 </button>
@@ -417,7 +417,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
       <div className="card-surface flex max-h-[calc(100vh-8rem)] flex-col lg:sticky lg:top-20">
         <div className="border-b border-border p-4">
           <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold">Current sale</h2>
+            <h2 className="text-td font-semibold">Current sale</h2>
             <Button variant="ghost" size="sm" onClick={() => setCloseOpen(true)}>
               <LockKeyhole className="size-3.5" />
               Close till
@@ -444,7 +444,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
             <div className="grid h-full min-h-40 place-items-center p-6 text-center">
               <div>
                 <Search className="mx-auto size-8 text-muted-foreground/40" aria-hidden />
-                <p className="mt-2 text-sm text-muted-foreground">Scan or tap products to begin</p>
+                <p className="mt-2 text-td text-muted-foreground">Scan or tap products to begin</p>
               </div>
             </div>
           ) : (
@@ -456,12 +456,12 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
                   <li key={line.product_id} className="p-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">{line.name}</p>
-                        <p className="num text-[11px] text-muted-foreground">
+                        <p className="truncate text-td font-medium">{line.name}</p>
+                        <p className="num text-helper text-muted-foreground">
                           {money(line.unit_price)} × {line.quantity} {line.uom}
                         </p>
                       </div>
-                      <span className="num text-sm font-semibold">
+                      <span className="num text-td font-semibold">
                         {money(lineTotals(line).total)}
                       </span>
                     </div>
@@ -514,7 +514,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
                               )
                             }
                           />
-                          <span className="text-[11px] text-muted-foreground">%</span>
+                          <span className="text-helper text-muted-foreground">%</span>
                         </div>
                       )}
 
@@ -530,7 +530,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
                     </div>
 
                     {short && (
-                      <p className="mt-1.5 flex items-center gap-1 text-[11px] text-warning-foreground">
+                      <p className="mt-1.5 flex items-center gap-1 text-helper text-warning-foreground">
                         <AlertTriangle className="size-3" aria-hidden />
                         Only {available} in stock
                       </p>
@@ -544,12 +544,12 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
 
         <div className="border-t border-border p-4">
           {!canDiscount && (
-            <p className="mb-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <p className="mb-2 flex items-center gap-1.5 text-helper text-muted-foreground">
               <LockKeyhole className="size-3" aria-hidden />
               Discounts need approval
             </p>
           )}
-          <dl className="space-y-1 text-sm">
+          <dl className="space-y-1 text-td">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
               <dd className="num">{money(totals.subtotal)}</dd>
@@ -564,7 +564,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
               <dt className="text-muted-foreground">Tax</dt>
               <dd className="num">{money(totals.tax_total)}</dd>
             </div>
-            <div className="flex justify-between border-t border-border pt-1.5 text-base font-semibold">
+            <div className="flex justify-between border-t border-border pt-1.5 text-td font-semibold">
               <dt>Total</dt>
               <dd className="num">{money(totals.total)}</dd>
             </div>
@@ -600,7 +600,7 @@ function Till({ sessionId, sessionNo }: { sessionId: string; sessionNo: string }
           </div>
 
           {(held.data?.length ?? 0) > 0 && (
-            <p className="mt-2 text-center text-[11px] text-muted-foreground">
+            <p className="mt-2 text-center text-helper text-muted-foreground">
               {plural(held.data?.length ?? 0, "held sale")} on this till
             </p>
           )}
@@ -703,7 +703,7 @@ function PaymentDialog({
           {oversold && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2.5 text-xs text-warning-foreground"
+              className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2.5 text-helper text-warning-foreground"
             >
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
               <span>
@@ -714,10 +714,10 @@ function PaymentDialog({
           )}
 
           <div className="rounded-xl bg-primary px-4 py-3 text-primary-foreground">
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-white/75">
+            <p className="text-helper font-semibold uppercase tracking-widest text-white/75">
               Amount due
             </p>
-            <p className="num mt-1 text-3xl font-semibold">{money(total)}</p>
+            <p className="num mt-1 text-page-title font-semibold">{money(total)}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -747,7 +747,7 @@ function PaymentDialog({
                   type="number"
                   step="0.01"
                   min="0"
-                  className="num text-lg"
+                  className="num text-section"
                   value={tendered}
                   onChange={(e) => setTendered(e.target.value)}
                   autoFocus
@@ -770,12 +770,12 @@ function PaymentDialog({
               </div>
 
               <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2.5">
-                <span className="text-sm text-muted-foreground">Change</span>
+                <span className="text-td text-muted-foreground">Change</span>
                 <span
                   className={
                     change < 0
-                      ? "num text-lg font-semibold text-destructive"
-                      : "num text-lg font-semibold"
+                      ? "num text-section font-semibold text-destructive"
+                      : "num text-section font-semibold"
                   }
                 >
                   {money(Math.max(0, change))}
@@ -822,19 +822,21 @@ function SaleCompleteDialog({
         </DialogHeader>
 
         <dl className="space-y-2">
-          <div className="flex justify-between text-sm">
+          <div className="flex justify-between text-td">
             <dt className="text-muted-foreground">Total</dt>
             <dd className="num font-medium">{money(sale?.total ?? 0)}</dd>
           </div>
           {(sale?.change ?? 0) > 0 && (
             <div className="flex justify-between rounded-lg bg-success/10 px-3 py-2">
-              <dt className="text-sm font-medium text-success">Change due</dt>
-              <dd className="num text-lg font-semibold text-success">{money(sale?.change ?? 0)}</dd>
+              <dt className="text-td font-medium text-success">Change due</dt>
+              <dd className="num text-section font-semibold text-success">
+                {money(sale?.change ?? 0)}
+              </dd>
             </div>
           )}
         </dl>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-helper text-muted-foreground">
           Stock has been deducted and the sale recorded in the ledger.
         </p>
 
@@ -887,7 +889,7 @@ function CloseTillDialog({
         </DialogHeader>
 
         <div className="space-y-3">
-          <dl className="space-y-1.5 rounded-lg border border-border p-3 text-sm">
+          <dl className="space-y-1.5 rounded-lg border border-border p-3 text-td">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Cash sales</dt>
               <dd className="num">{money(takings?.cash ?? 0)}</dd>
@@ -913,7 +915,7 @@ function CloseTillDialog({
               type="number"
               step="0.01"
               min="0"
-              className="num text-lg"
+              className="num text-section"
               value={counted}
               onChange={(e) => setCounted(e.target.value)}
               autoFocus

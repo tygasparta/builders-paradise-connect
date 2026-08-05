@@ -67,12 +67,10 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="truncate text-[13.5px] font-semibold leading-tight text-sidebar-accent-foreground">
+              <p className="truncate text-nav font-semibold text-sidebar-accent-foreground">
                 {settings?.company_name ?? "Builders Paradise"}
               </p>
-              <p className="truncate text-[11px] leading-tight text-sidebar-muted">
-                Enterprise ERP
-              </p>
+              <p className="truncate text-helper text-sidebar-muted">Enterprise ERP</p>
             </div>
           )}
         </div>
@@ -86,7 +84,7 @@ export function AppSidebar({ badges = {} }: { badges?: SidebarBadges }) {
           return (
             <SidebarGroup key={section.label} className="px-3 py-0 pt-4 first:pt-2">
               {!collapsed && (
-                <SidebarGroupLabel className="h-auto px-0 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted/80">
+                <SidebarGroupLabel className="h-auto px-0 pb-1.5 text-eyebrow uppercase tracking-[0.1em] text-sidebar-muted/80">
                   {section.label}
                 </SidebarGroupLabel>
               )}
@@ -137,7 +135,7 @@ function ActiveMark({ short = false }: { short?: boolean }) {
 
 function CountBadge({ count }: { count: number }) {
   return (
-    <span className="num ml-auto shrink-0 rounded-full bg-sidebar-primary px-1.5 py-px text-[10px] font-semibold leading-4 text-sidebar-primary-foreground">
+    <span className="num ml-auto shrink-0 rounded-full bg-sidebar-primary px-1.5 py-px text-badge text-sidebar-primary-foreground">
       {count > 99 ? "99+" : count}
     </span>
   );
@@ -173,7 +171,7 @@ function NavEntry({
    * in two places at once.
    */
   const rowClass = cn(
-    "group/row relative h-8 rounded-md text-[13.5px] font-medium transition-colors motion-reduce:transition-none",
+    "group/row relative h-8 rounded-md text-nav transition-colors motion-reduce:transition-none",
     collapsed ? "justify-center px-0" : "pl-[26px] pr-2",
     active
       ? "bg-sidebar-accent/60 text-sidebar-accent-foreground hover:bg-sidebar-accent/60"
@@ -230,7 +228,7 @@ function NavEntry({
                       isActive={childIsActive}
                       aria-disabled={childLinkable ? undefined : "true"}
                       className={cn(
-                        "relative h-7 rounded-md pl-[42px] pr-2 text-[13px] transition-colors motion-reduce:transition-none",
+                        "relative h-8 rounded-md pl-[42px] pr-2 text-nav transition-colors motion-reduce:transition-none",
                         childIsActive
                           ? "bg-sidebar-accent/60 font-medium text-sidebar-accent-foreground hover:bg-sidebar-accent/60"
                           : "text-sidebar-muted hover:bg-sidebar-accent/35 hover:text-sidebar-foreground",

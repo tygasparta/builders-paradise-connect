@@ -57,9 +57,9 @@ export function EmptyState({
       <span className="grid size-11 place-items-center rounded-lg bg-muted text-muted-foreground">
         {icon ?? <Inbox className="size-5" />}
       </span>
-      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
+      <h3 className="mt-4 text-td font-semibold">{title}</h3>
       {description && (
-        <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">{description}</p>
+        <p className="mt-1.5 max-w-sm text-td text-muted-foreground">{description}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>
@@ -83,8 +83,8 @@ export function ErrorState({
       <span className="grid size-11 place-items-center rounded-lg bg-destructive/10 text-destructive">
         <AlertCircle className="size-5" />
       </span>
-      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
-      {message && <p className="mt-1.5 max-w-md text-sm text-muted-foreground">{message}</p>}
+      <h3 className="mt-4 text-td font-semibold">{title}</h3>
+      {message && <p className="mt-1.5 max-w-md text-td text-muted-foreground">{message}</p>}
       {onRetry && (
         <Button variant="outline" size="sm" className="mt-5" onClick={onRetry}>
           <RefreshCw className="size-3.5" />
@@ -102,8 +102,8 @@ export function NoAccessState({ what = "this screen" }: { what?: string | undefi
       <span className="grid size-11 place-items-center rounded-lg bg-muted text-muted-foreground">
         <Lock className="size-5" />
       </span>
-      <h3 className="mt-4 text-sm font-semibold">You do not have access to {what}</h3>
-      <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
+      <h3 className="mt-4 text-td font-semibold">You do not have access to {what}</h3>
+      <p className="mt-1.5 max-w-sm text-td text-muted-foreground">
         Your role does not include this permission. Ask an administrator if you need it.
       </p>
     </div>

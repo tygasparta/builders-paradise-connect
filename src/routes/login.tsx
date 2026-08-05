@@ -78,7 +78,7 @@ function LoginPage() {
         {formError && (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+            className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
           >
             <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
             <span>{formError}</span>
@@ -100,7 +100,7 @@ function LoginPage() {
             {...form.register("email")}
           />
           {form.formState.errors.email && (
-            <p id="email-error" className="text-xs text-destructive">
+            <p id="email-error" className="text-helper text-destructive">
               {form.formState.errors.email.message}
             </p>
           )}
@@ -113,7 +113,7 @@ function LoginPage() {
             </Label>
             <Link
               to="/forgot-password"
-              className="text-xs text-muted-foreground hover:text-primary"
+              className="text-helper text-muted-foreground hover:text-primary"
             >
               Forgot?
             </Link>
@@ -138,7 +138,7 @@ function LoginPage() {
             </button>
           </div>
           {form.formState.errors.password && (
-            <p id="password-error" className="text-xs text-destructive">
+            <p id="password-error" className="text-helper text-destructive">
               {form.formState.errors.password.message}
             </p>
           )}
@@ -149,7 +149,7 @@ function LoginPage() {
           {submitting ? "Signing in…" : "Sign in"}
         </Button>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-helper text-muted-foreground">
           Five failed attempts lock the account for 15 minutes.
         </p>
       </form>

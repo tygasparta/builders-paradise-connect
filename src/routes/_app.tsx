@@ -72,7 +72,7 @@ function BootScreen() {
     >
       <div className="flex flex-col items-center gap-3">
         <span className="size-8 animate-spin rounded-full border-2 border-border border-t-primary" />
-        <p className="text-sm text-muted-foreground">Loading your workspace…</p>
+        <p className="text-td text-muted-foreground">Loading your workspace…</p>
       </div>
     </div>
   );

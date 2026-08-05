@@ -126,8 +126,8 @@ function RequisitionsScreen() {
         header: "Requisition",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.requisition_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.requisition_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.created_at), "dd MMM yyyy")}
             </p>
           </div>
@@ -139,8 +139,8 @@ function RequisitionsScreen() {
         accessorFn: (row) => row.requester?.full_name ?? "",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="truncate text-sm">{row.original.requester?.full_name ?? "—"}</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-td">{row.original.requester?.full_name ?? "—"}</p>
+            <p className="truncate text-helper text-muted-foreground">
               {row.original.department ?? row.original.warehouse?.name ?? ""}
             </p>
           </div>
@@ -151,7 +151,7 @@ function RequisitionsScreen() {
         header: "Needed by",
         accessorFn: (row) => row.required_date ?? "",
         cell: ({ row }) => (
-          <span className="num text-xs text-muted-foreground">
+          <span className="num text-helper text-muted-foreground">
             {row.original.required_date
               ? format(new Date(row.original.required_date), "dd MMM yyyy")
               : "—"}
@@ -163,7 +163,7 @@ function RequisitionsScreen() {
         header: "Lines",
         accessorFn: (row) => row.purchase_requisition_lines.length,
         cell: ({ row }) => (
-          <span className="num text-sm">{row.original.purchase_requisition_lines.length}</span>
+          <span className="num text-td">{row.original.purchase_requisition_lines.length}</span>
         ),
       },
       {
@@ -173,7 +173,7 @@ function RequisitionsScreen() {
         cell: ({ row }) => (
           <div>
             <span className="num font-medium">{money(estimated(row.original))}</span>
-            <p className="text-[11px] text-muted-foreground">Indicative</p>
+            <p className="text-helper text-muted-foreground">Indicative</p>
           </div>
         ),
       },
@@ -182,7 +182,7 @@ function RequisitionsScreen() {
         header: "Status",
         cell: ({ row }) => (
           <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+            className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
               TONE[row.original.status] ?? "bg-muted text-muted-foreground"
             }`}
           >
@@ -340,7 +340,7 @@ function RequisitionsScreen() {
 
       <RequisitionFormDialog open={formOpen} onOpenChange={setFormOpen} />
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <ClipboardList className="size-3.5" aria-hidden />
         Prices here are estimates for approval only. The real cost is set on the purchase order and
         again on the goods received note.
@@ -451,7 +451,7 @@ function RequisitionFormDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -501,7 +501,7 @@ function RequisitionFormDialog({
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Items</h3>
+              <h3 className="text-td font-semibold">Items</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -519,9 +519,9 @@ function RequisitionFormDialog({
             </div>
 
             <div className="table-scroll rounded-lg border border-border">
-              <table className="w-full text-sm">
+              <table className="w-full text-td">
                 <thead>
-                  <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                     <th className="p-2 text-left font-semibold">Product</th>
                     <th className="w-24 p-2 text-right font-semibold">Qty</th>
                     <th className="w-28 p-2 text-right font-semibold">Est. price</th>
@@ -603,7 +603,7 @@ function RequisitionFormDialog({
             </div>
 
             <div className="mt-3 flex justify-end">
-              <dl className="w-56 text-sm">
+              <dl className="w-56 text-td">
                 <div className="flex justify-between border-t border-border pt-2 font-semibold">
                   <dt>Estimated total</dt>
                   <dd className="num">{money(total)}</dd>

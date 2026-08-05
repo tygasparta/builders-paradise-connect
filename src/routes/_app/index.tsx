@@ -430,13 +430,13 @@ function DashboardPage() {
                       aria-hidden
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm">
+                      <p className="text-td">
                         <span className="font-medium">{entry.user_email ?? "System"}</span>{" "}
                         <span className="text-muted-foreground">
                           {actionVerb(entry.action)} {readableRecord(entry.table_name)}
                         </span>
                       </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
+                      <p className="mt-0.5 text-helper text-muted-foreground">
                         {entry.module} ·{" "}
                         {formatDistanceToNow(new Date(entry.created_at), { addSuffix: true })}
                       </p>
@@ -468,9 +468,9 @@ function DashboardPage() {
               <ul className="divide-y divide-border">
                 {notifications.data?.rows.map((note) => (
                   <li key={note.id} className="px-5 py-3">
-                    <p className="text-sm font-medium">{note.title}</p>
+                    <p className="text-td font-medium">{note.title}</p>
                     {note.body && (
-                      <p className="mt-0.5 text-xs text-muted-foreground">{note.body}</p>
+                      <p className="mt-0.5 text-helper text-muted-foreground">{note.body}</p>
                     )}
                   </li>
                 ))}
@@ -483,7 +483,7 @@ function DashboardPage() {
             description="What is live, and what comes next"
             bodyClassName="p-0"
           >
-            <ul className="divide-y divide-border text-sm">
+            <ul className="divide-y divide-border text-td">
               {[
                 { phase: 1, label: "Foundation, access control, organisation", done: true },
                 { phase: 2, label: "Products, stock, purchasing and GRNs", done: false },
@@ -496,8 +496,8 @@ function DashboardPage() {
                   <span
                     className={
                       row.done
-                        ? "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-success text-[10px] font-bold text-success-foreground"
-                        : "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-border text-[10px] font-semibold text-muted-foreground"
+                        ? "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-success text-helper font-bold text-success-foreground"
+                        : "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border border-border text-helper font-semibold text-muted-foreground"
                     }
                     aria-hidden
                   >
@@ -507,7 +507,7 @@ function DashboardPage() {
                     <p className={row.done ? "font-medium" : "text-muted-foreground"}>
                       {row.label}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-helper text-muted-foreground">
                       {row.done ? "Live" : `Phase ${row.phase}`}
                     </p>
                   </div>
@@ -518,7 +518,7 @@ function DashboardPage() {
         </div>
       </div>
 
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="mt-4 text-helper text-muted-foreground">
         Trading figures — sales, purchases, gross profit, cash and bank balances — appear here once
         Phase 2 and Phase 3 put real transactions in the database. Nothing on this dashboard is a
         placeholder number.

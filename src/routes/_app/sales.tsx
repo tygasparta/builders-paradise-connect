@@ -99,7 +99,7 @@ const TONE: Record<string, string> = {
 function StatusChip({ status, labels }: { status: string; labels: Record<string, string> }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-helper font-semibold ${
         TONE[status] ?? "bg-muted text-muted-foreground"
       }`}
     >
@@ -243,8 +243,8 @@ function InvoicesTab() {
         header: "Invoice",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.invoice_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.invoice_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.invoice_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -259,7 +259,9 @@ function InvoicesTab() {
             <p className="truncate font-medium">
               {row.original.customer?.name ?? row.original.customer_name ?? "Walk-in"}
             </p>
-            <p className="text-xs capitalize text-muted-foreground">{row.original.payment_type}</p>
+            <p className="text-helper capitalize text-muted-foreground">
+              {row.original.payment_type}
+            </p>
           </div>
         ),
       },
@@ -268,7 +270,7 @@ function InvoicesTab() {
         header: "Lines",
         accessorFn: (row) => row.sales_invoice_lines.length,
         cell: ({ row }) => (
-          <span className="num text-sm">{row.original.sales_invoice_lines.length}</span>
+          <span className="num text-td">{row.original.sales_invoice_lines.length}</span>
         ),
       },
       {
@@ -290,7 +292,7 @@ function InvoicesTab() {
         cell: ({ row }) => {
           const invoice = row.original;
           if (Number(invoice.cost_of_sales) === 0) {
-            return <span className="text-xs text-muted-foreground">—</span>;
+            return <span className="text-helper text-muted-foreground">—</span>;
           }
           const net = Number(invoice.total) - Number(invoice.tax_total);
           const profit = net - Number(invoice.cost_of_sales);
@@ -300,7 +302,7 @@ function InvoicesTab() {
               <p className={profit < 0 ? "num font-medium text-destructive" : "num font-medium"}>
                 {money(profit)}
               </p>
-              <p className="text-[11px] text-muted-foreground">{percent.toFixed(1)}%</p>
+              <p className="text-helper text-muted-foreground">{percent.toFixed(1)}%</p>
             </div>
           );
         },
@@ -486,8 +488,8 @@ function QuotationsTab() {
         header: "Quotation",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.quotation_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.quotation_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.quotation_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -508,7 +510,7 @@ function QuotationsTab() {
         header: "Valid until",
         accessorFn: (row) => row.valid_until ?? "",
         cell: ({ row }) => (
-          <span className="num text-xs text-muted-foreground">
+          <span className="num text-helper text-muted-foreground">
             {row.original.valid_until
               ? format(new Date(row.original.valid_until), "dd MMM yyyy")
               : "—"}
@@ -640,8 +642,8 @@ function ReturnsTab() {
         header: "Credit note",
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="num text-xs font-medium">{row.original.return_no}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="num text-helper font-medium">{row.original.return_no}</p>
+            <p className="text-helper text-muted-foreground">
               {format(new Date(row.original.return_date), "dd MMM yyyy")}
             </p>
           </div>
@@ -652,7 +654,7 @@ function ReturnsTab() {
         header: "Against",
         accessorFn: (row) => row.invoice?.invoice_no ?? "",
         cell: ({ row }) => (
-          <span className="num text-xs">{row.original.invoice?.invoice_no ?? "—"}</span>
+          <span className="num text-helper">{row.original.invoice?.invoice_no ?? "—"}</span>
         ),
       },
       {
@@ -671,8 +673,8 @@ function ReturnsTab() {
         accessorFn: (row) => row.reason,
         cell: ({ row }) => (
           <div className="min-w-0">
-            <p className="truncate text-sm">{row.original.reason}</p>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="truncate text-td">{row.original.reason}</p>
+            <p className="text-helper text-muted-foreground">
               {row.original.restock ? "Restocked" : "Not restocked"}
             </p>
           </div>

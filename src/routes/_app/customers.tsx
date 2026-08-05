@@ -116,7 +116,7 @@ function CustomersScreen() {
       {
         accessorKey: "code",
         header: "Code",
-        cell: ({ row }) => <span className="num text-xs font-medium">{row.original.code}</span>,
+        cell: ({ row }) => <span className="num text-helper font-medium">{row.original.code}</span>,
       },
       {
         accessorKey: "name",
@@ -124,7 +124,7 @@ function CustomersScreen() {
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.name}</p>
-            <p className="truncate text-xs text-muted-foreground">
+            <p className="truncate text-helper text-muted-foreground">
               {typeLabel(row.original.customer_type)}
               {row.original.city ? ` · ${row.original.city}` : ""}
             </p>
@@ -136,7 +136,7 @@ function CustomersScreen() {
         header: "Contact",
         accessorFn: (row) => `${row.contact_person ?? ""} ${row.phone ?? ""} ${row.email ?? ""}`,
         cell: ({ row }) => (
-          <div className="min-w-0 text-xs">
+          <div className="min-w-0 text-helper">
             <p className="truncate">{row.original.contact_person ?? "—"}</p>
             <p className="num truncate text-muted-foreground">{row.original.phone ?? ""}</p>
           </div>
@@ -147,7 +147,7 @@ function CustomersScreen() {
         header: "Terms",
         accessorFn: (row) => row.payment_terms_days,
         cell: ({ row }) => (
-          <span className="text-xs text-muted-foreground">
+          <span className="text-helper text-muted-foreground">
             {row.original.payment_terms_days === 0
               ? "On delivery"
               : `${row.original.payment_terms_days} days`}
@@ -169,7 +169,7 @@ function CustomersScreen() {
               <p className={credit.overLimit ? "num font-semibold text-destructive" : "num"}>
                 {money(balance)}
               </p>
-              <p className="truncate text-[11px] text-muted-foreground">
+              <p className="truncate text-helper text-muted-foreground">
                 {!credit.limited
                   ? "Cash only"
                   : credit.overLimit
@@ -185,7 +185,7 @@ function CustomersScreen() {
         header: "Status",
         cell: ({ row }) =>
           row.original.status === "on_hold" ? (
-            <Badge className="border-0 bg-warning/20 text-[11px] font-semibold text-warning-foreground">
+            <Badge className="border-0 bg-warning/20 text-helper font-semibold text-warning-foreground">
               On hold
             </Badge>
           ) : (
@@ -325,7 +325,7 @@ function CustomersScreen() {
             />
             <Label
               htmlFor="include-inactive-customers"
-              className="text-xs font-normal text-muted-foreground"
+              className="text-helper font-normal text-muted-foreground"
             >
               Show archived and on hold
             </Label>
@@ -341,7 +341,7 @@ function CustomersScreen() {
         onOpenChange={(open) => !open && setViewing(null)}
       />
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-4 flex items-center gap-1.5 text-helper text-muted-foreground">
         <Users className="size-3.5" aria-hidden />A blank credit limit means cash only. On hold
         blocks new credit sales without hiding history or stopping settlement of what is already
         owed.

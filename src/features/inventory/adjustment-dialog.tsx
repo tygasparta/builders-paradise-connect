@@ -180,7 +180,7 @@ export function AdjustmentDialog({
           {serverError && (
             <div
               role="alert"
-              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+              className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-td text-destructive"
             >
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               <span>{serverError}</span>
@@ -322,7 +322,7 @@ export function AdjustmentDialog({
 
           {preview && (
             <div className="rounded-lg border border-border bg-muted/40 p-3">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="mb-2 text-helper font-semibold uppercase tracking-wider text-muted-foreground">
                 Effect of this posting
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
@@ -348,7 +348,7 @@ export function AdjustmentDialog({
                 )}
               </div>
               {preview.blocked && (
-                <p className="mt-2.5 flex items-start gap-1.5 text-xs text-destructive">
+                <p className="mt-2.5 flex items-start gap-1.5 text-helper text-destructive">
                   <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
                   {preview.blocked}
                 </p>
@@ -385,8 +385,8 @@ function PreviewStat({
   const changed = before !== after;
   return (
     <div>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="num mt-0.5 text-sm">
+      <p className="text-helper text-muted-foreground">{label}</p>
+      <p className="num mt-0.5 text-td">
         <span className="text-muted-foreground">{before.toFixed(decimals)}</span>
         <span className="mx-1.5 text-muted-foreground">→</span>
         <span className={changed ? "font-semibold text-foreground" : "text-muted-foreground"}>

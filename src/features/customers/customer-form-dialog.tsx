@@ -259,12 +259,12 @@ export function CustomerFormDialog({
 
               <TabsContent value="credit" className="mt-4 space-y-4">
                 {!canSetCredit && (
-                  <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-3 py-3 text-sm">
+                  <div className="flex items-start gap-2.5 rounded-lg border border-border bg-muted/40 px-3 py-3 text-td">
                     <ShieldAlert
                       className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                       aria-hidden
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-helper text-muted-foreground">
                       Credit limit and payment terms need the &ldquo;Manage credit limits&rdquo;
                       permission. The database refuses the change as well, so these are disabled
                       rather than silently discarded.

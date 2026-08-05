@@ -108,7 +108,7 @@ export function TaxBandsDialog({
           {serverError && (
             <p
               role="alert"
-              className="rounded-lg bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="rounded-lg bg-destructive/8 px-3 py-2 text-td text-destructive"
             >
               {serverError}
             </p>
@@ -160,7 +160,7 @@ export function TaxBandsDialog({
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Bands</h3>
+              <h3 className="text-td font-semibold">Bands</h3>
               <Button
                 type="button"
                 variant="outline"
@@ -184,9 +184,9 @@ export function TaxBandsDialog({
             </div>
 
             <div className="table-scroll rounded-lg border border-border">
-              <table className="w-full text-sm">
+              <table className="w-full text-td">
                 <thead>
-                  <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr className="border-b border-border bg-muted/40 text-helper uppercase tracking-wider text-muted-foreground">
                     <th className="p-2 text-right font-semibold">From</th>
                     <th className="w-32 p-2 text-right font-semibold">Up to</th>
                     <th className="w-24 p-2 text-right font-semibold">Rate %</th>
@@ -219,7 +219,7 @@ export function TaxBandsDialog({
                             }
                           />
                           {problem && (
-                            <p className="mt-1 text-[11px] text-destructive">{problem}</p>
+                            <p className="mt-1 text-helper text-destructive">{problem}</p>
                           )}
                         </td>
                         <td className="p-2">
@@ -272,7 +272,7 @@ export function TaxBandsDialog({
             </div>
 
             {problems.some((p) => p.index === -1) && (
-              <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive">
+              <p className="mt-2 flex items-center gap-1.5 text-helper text-destructive">
                 <AlertTriangle className="size-3.5" aria-hidden />
                 {problems.find((p) => p.index === -1)?.message}
               </p>
@@ -283,7 +283,7 @@ export function TaxBandsDialog({
               than reading the table does. */}
           <div className="rounded-lg bg-muted/60 px-4 py-3">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs text-muted-foreground">Someone earning</span>
+              <span className="text-helper text-muted-foreground">Someone earning</span>
               <Input
                 type="number"
                 min="0"
@@ -293,12 +293,12 @@ export function TaxBandsDialog({
                 value={preview}
                 onChange={(e) => setPreview(Number(e.target.value || 0))}
               />
-              <span className="text-xs text-muted-foreground">would pay</span>
-              <span className="num text-sm font-semibold">
+              <span className="text-helper text-muted-foreground">would pay</span>
+              <span className="num text-td font-semibold">
                 {built.length > 0 ? money(previewTax(built, preview)) : "—"}
               </span>
               {built.length > 0 && preview > 0 && (
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-helper text-muted-foreground">
                   ({((previewTax(built, preview) / preview) * 100).toFixed(1)}% of pay)
                 </span>
               )}
