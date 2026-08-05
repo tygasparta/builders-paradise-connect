@@ -20,7 +20,9 @@ import { Route as AppBankingRouteImport } from './routes/_app/banking'
 import { Route as AppCustomersRouteImport } from './routes/_app/customers'
 import { Route as AppExpensesRouteImport } from './routes/_app/expenses'
 import { Route as AppGoodsReceivingRouteImport } from './routes/_app/goods-receiving'
+import { Route as AppHrRouteImport } from './routes/_app/hr'
 import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
+import { Route as AppPayrollRouteImport } from './routes/_app/payroll'
 import { Route as AppPosRouteImport } from './routes/_app/pos'
 import { Route as AppProductsRouteImport } from './routes/_app/products'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
@@ -87,9 +89,19 @@ const AppGoodsReceivingRoute = AppGoodsReceivingRouteImport.update({
   path: '/goods-receiving',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHrRoute = AppHrRouteImport.update({
+  id: '/hr',
+  path: '/hr',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInventoryRoute = AppInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPayrollRoute = AppPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPosRoute = AppPosRouteImport.update({
@@ -159,7 +171,9 @@ export interface FileRoutesByFullPath {
   '/customers': typeof AppCustomersRoute
   '/expenses': typeof AppExpensesRoute
   '/goods-receiving': typeof AppGoodsReceivingRoute
+  '/hr': typeof AppHrRoute
   '/inventory': typeof AppInventoryRoute
+  '/payroll': typeof AppPayrollRoute
   '/pos': typeof AppPosRoute
   '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
@@ -182,7 +196,9 @@ export interface FileRoutesByTo {
   '/customers': typeof AppCustomersRoute
   '/expenses': typeof AppExpensesRoute
   '/goods-receiving': typeof AppGoodsReceivingRoute
+  '/hr': typeof AppHrRoute
   '/inventory': typeof AppInventoryRoute
+  '/payroll': typeof AppPayrollRoute
   '/pos': typeof AppPosRoute
   '/products': typeof AppProductsRoute
   '/profile': typeof AppProfileRoute
@@ -208,7 +224,9 @@ export interface FileRoutesById {
   '/_app/customers': typeof AppCustomersRoute
   '/_app/expenses': typeof AppExpensesRoute
   '/_app/goods-receiving': typeof AppGoodsReceivingRoute
+  '/_app/hr': typeof AppHrRoute
   '/_app/inventory': typeof AppInventoryRoute
+  '/_app/payroll': typeof AppPayrollRoute
   '/_app/pos': typeof AppPosRoute
   '/_app/products': typeof AppProductsRoute
   '/_app/profile': typeof AppProfileRoute
@@ -235,7 +253,9 @@ export interface FileRouteTypes {
     | '/customers'
     | '/expenses'
     | '/goods-receiving'
+    | '/hr'
     | '/inventory'
+    | '/payroll'
     | '/pos'
     | '/products'
     | '/profile'
@@ -258,7 +278,9 @@ export interface FileRouteTypes {
     | '/customers'
     | '/expenses'
     | '/goods-receiving'
+    | '/hr'
     | '/inventory'
+    | '/payroll'
     | '/pos'
     | '/products'
     | '/profile'
@@ -283,7 +305,9 @@ export interface FileRouteTypes {
     | '/_app/customers'
     | '/_app/expenses'
     | '/_app/goods-receiving'
+    | '/_app/hr'
     | '/_app/inventory'
+    | '/_app/payroll'
     | '/_app/pos'
     | '/_app/products'
     | '/_app/profile'
@@ -384,11 +408,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGoodsReceivingRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/hr': {
+      id: '/_app/hr'
+      path: '/hr'
+      fullPath: '/hr'
+      preLoaderRoute: typeof AppHrRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/inventory': {
       id: '/_app/inventory'
       path: '/inventory'
       fullPath: '/inventory'
       preLoaderRoute: typeof AppInventoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/payroll': {
+      id: '/_app/payroll'
+      path: '/payroll'
+      fullPath: '/payroll'
+      preLoaderRoute: typeof AppPayrollRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/pos': {
@@ -478,7 +516,9 @@ interface AppRouteChildren {
   AppCustomersRoute: typeof AppCustomersRoute
   AppExpensesRoute: typeof AppExpensesRoute
   AppGoodsReceivingRoute: typeof AppGoodsReceivingRoute
+  AppHrRoute: typeof AppHrRoute
   AppInventoryRoute: typeof AppInventoryRoute
+  AppPayrollRoute: typeof AppPayrollRoute
   AppPosRoute: typeof AppPosRoute
   AppProductsRoute: typeof AppProductsRoute
   AppProfileRoute: typeof AppProfileRoute
@@ -500,7 +540,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppCustomersRoute: AppCustomersRoute,
   AppExpensesRoute: AppExpensesRoute,
   AppGoodsReceivingRoute: AppGoodsReceivingRoute,
+  AppHrRoute: AppHrRoute,
   AppInventoryRoute: AppInventoryRoute,
+  AppPayrollRoute: AppPayrollRoute,
   AppPosRoute: AppPosRoute,
   AppProductsRoute: AppProductsRoute,
   AppProfileRoute: AppProfileRoute,

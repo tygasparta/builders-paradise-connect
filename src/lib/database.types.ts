@@ -806,6 +806,237 @@ export type ExpenseRow = Timestamps & {
   notes: string | null;
 };
 
+// ---------------------------------------------------------------------
+// HR and payroll
+// ---------------------------------------------------------------------
+
+export type DepartmentRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  branch_id: string | null;
+  manager_id: string | null;
+  status: RecordStatus;
+};
+
+export type PositionRow = Timestamps & {
+  id: string;
+  code: string;
+  title: string;
+  department_id: string | null;
+  grade: string | null;
+  description: string | null;
+  status: RecordStatus;
+};
+
+export type EmploymentType = "permanent" | "contract" | "casual" | "intern" | "part_time";
+export type EmployeeStatus =
+  "active" | "probation" | "suspended" | "terminated" | "resigned" | "retired";
+export type PayFrequency = "monthly" | "fortnightly" | "weekly" | "daily";
+
+export type EmployeeRow = Timestamps & {
+  id: string;
+  employee_no: string;
+  profile_id: string | null;
+  first_name: string;
+  last_name: string;
+  other_names: string | null;
+  national_id: string | null;
+  date_of_birth: string | null;
+  gender: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  position_id: string | null;
+  department_id: string | null;
+  branch_id: string | null;
+  manager_id: string | null;
+  employment_type: EmploymentType;
+  hire_date: string;
+  probation_end: string | null;
+  contract_end: string | null;
+  basic_salary: number;
+  currency_code: string;
+  pay_frequency: PayFrequency;
+  bank_name: string | null;
+  bank_account_number: string | null;
+  bank_branch: string | null;
+  tax_number: string | null;
+  nssa_number: string | null;
+  status: EmployeeStatus;
+  termination_date: string | null;
+  termination_reason: string | null;
+  notes: string | null;
+};
+
+/** The salary-masking view. Pay columns are null without the permission. */
+export type EmployeeSecureRow = Omit<
+  EmployeeRow,
+  "basic_salary" | "bank_name" | "bank_account_number" | "bank_branch" | "created_by" | "updated_by"
+> & {
+  basic_salary: number | null;
+  bank_name: string | null;
+  bank_account_number: string | null;
+  bank_branch: string | null;
+};
+
+export type LeaveTypeRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  days_per_year: number;
+  is_paid: boolean;
+  carry_forward: boolean;
+  max_carry_days: number;
+  requires_document: boolean;
+  status: RecordStatus;
+};
+
+export type LeaveStatus = "draft" | "submitted" | "approved" | "rejected" | "cancelled" | "taken";
+
+export type LeaveRequestRow = Timestamps & {
+  id: string;
+  request_no: string;
+  employee_id: string;
+  leave_type_id: string;
+  start_date: string;
+  end_date: string;
+  days: number;
+  reason: string | null;
+  document_url: string | null;
+  status: LeaveStatus;
+  approved_by: string | null;
+  approved_at: string | null;
+  rejected_reason: string | null;
+};
+
+export type AttendanceStatus =
+  "present" | "absent" | "late" | "half_day" | "leave" | "holiday" | "sick";
+
+export type AttendanceRow = Timestamps & {
+  id: string;
+  employee_id: string;
+  attendance_date: string;
+  status: AttendanceStatus;
+  time_in: string | null;
+  time_out: string | null;
+  hours_worked: number | null;
+  overtime_hours: number;
+  notes: string | null;
+};
+
+export type PayrollComponentRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  component_type: "earning" | "deduction";
+  calculation: "fixed" | "percent_of_basic" | "percent_of_gross";
+  default_amount: number;
+  default_rate: number;
+  is_taxable: boolean;
+  is_statutory: boolean;
+  is_employer_contribution: boolean;
+  ceiling_amount: number | null;
+  account_id: string | null;
+  sort_order: number;
+  status: RecordStatus;
+};
+
+export type EmployeeComponentRow = Timestamps & {
+  id: string;
+  employee_id: string;
+  component_id: string;
+  amount: number | null;
+  rate: number | null;
+  effective_from: string;
+  effective_to: string | null;
+};
+
+export type PayrollTaxBandRow = Timestamps & {
+  id: string;
+  currency_code: string;
+  pay_frequency: PayFrequency;
+  effective_from: string;
+  lower_limit: number;
+  upper_limit: number | null;
+  rate: number;
+  cumulative_tax: number;
+  description: string | null;
+};
+
+export type PayrollPeriodRow = Timestamps & {
+  id: string;
+  name: string;
+  fiscal_year: number;
+  period_no: number;
+  start_date: string;
+  end_date: string;
+  pay_date: string;
+  pay_frequency: PayFrequency;
+  status: "open" | "closed";
+};
+
+export type PayrollRunStatus =
+  "draft" | "calculated" | "approved" | "posted" | "paid" | "cancelled";
+
+export type PayrollRunRow = Timestamps & {
+  id: string;
+  run_no: string;
+  period_id: string;
+  branch_id: string | null;
+  description: string | null;
+  status: PayrollRunStatus;
+  employee_count: number;
+  total_gross: number;
+  total_paye: number;
+  total_statutory: number;
+  total_deductions: number;
+  total_net: number;
+  total_employer_cost: number;
+  calculated_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  posted_at: string | null;
+  posted_by: string | null;
+  paid_at: string | null;
+  journal_entry_id: string | null;
+};
+
+export type PayslipRow = Timestamps & {
+  id: string;
+  payslip_no: string;
+  run_id: string;
+  employee_id: string;
+  basic_salary: number;
+  total_earnings: number;
+  taxable_income: number;
+  gross_pay: number;
+  paye: number;
+  statutory_deductions: number;
+  other_deductions: number;
+  total_deductions: number;
+  net_pay: number;
+  employer_contributions: number;
+  days_worked: number | null;
+  days_absent: number;
+  currency_code: string;
+};
+
+export type PayslipLineRow = {
+  id: string;
+  payslip_id: string;
+  component_id: string | null;
+  line_no: number;
+  line_type: "earning" | "deduction";
+  description: string;
+  amount: number;
+  is_employer_contribution: boolean;
+  created_at: string;
+};
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -892,6 +1123,20 @@ export type Database = {
       bank_reconciliations: TableDef<BankReconciliationRow>;
       expense_categories: TableDef<ExpenseCategoryRow>;
       expenses: TableDef<ExpenseRow>;
+      departments: TableDef<DepartmentRow>;
+      positions: TableDef<PositionRow>;
+      employees: TableDef<EmployeeRow>;
+      employees_secure: TableDef<EmployeeSecureRow, never, never>;
+      leave_types: TableDef<LeaveTypeRow>;
+      leave_requests: TableDef<LeaveRequestRow>;
+      attendance: TableDef<AttendanceRow>;
+      payroll_components: TableDef<PayrollComponentRow>;
+      employee_components: TableDef<EmployeeComponentRow>;
+      payroll_tax_bands: TableDef<PayrollTaxBandRow>;
+      payroll_periods: TableDef<PayrollPeriodRow>;
+      payroll_runs: TableDef<PayrollRunRow>;
+      payslips: TableDef<PayslipRow, never, never>;
+      payslip_lines: TableDef<PayslipLineRow, never, never>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
@@ -942,6 +1187,21 @@ export type Database = {
       };
       can_post_invoice: { Args: { p_invoice_id: string }; Returns: boolean };
       post_expense: { Args: { p_expense_id: string }; Returns: string };
+      calculate_payroll_run: { Args: { p_run_id: string }; Returns: number };
+      post_payroll_run: { Args: { p_run_id: string }; Returns: string };
+      leave_days_taken: {
+        Args: { p_employee_id: string; p_leave_type_id: string; p_year?: number };
+        Returns: number;
+      };
+      calculate_paye: {
+        Args: {
+          p_taxable: number;
+          p_currency?: string;
+          p_frequency?: PayFrequency;
+          p_as_at?: string;
+        };
+        Returns: number;
+      };
       bank_balance: { Args: { p_bank_account_id: string; p_as_at?: string }; Returns: number };
       post_bank_transaction: {
         Args: {
