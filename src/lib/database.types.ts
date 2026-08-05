@@ -619,6 +619,7 @@ export type SalesInvoiceRow = Timestamps & {
   journal_entry_id: string | null;
   cancelled_reason: string | null;
   notes: string | null;
+  pos_session_id: string | null;
 };
 
 export type SalesDocumentLineRow = {
@@ -693,6 +694,23 @@ export type CustomerReceiptRow = Timestamps & {
   status: "draft" | "posted" | "cancelled";
   posted_at: string | null;
   journal_entry_id: string | null;
+  notes: string | null;
+};
+
+export type PosSessionRow = Timestamps & {
+  id: string;
+  session_no: string;
+  branch_id: string | null;
+  warehouse_id: string;
+  opened_by: string | null;
+  opened_at: string;
+  opening_float: number;
+  closed_by: string | null;
+  closed_at: string | null;
+  counted_cash: number | null;
+  expected_cash: number | null;
+  variance: number | null;
+  status: "open" | "closed";
   notes: string | null;
 };
 
@@ -776,6 +794,7 @@ export type Database = {
       sales_returns: TableDef<SalesReturnRow>;
       sales_return_lines: TableDef<SalesReturnLineRow>;
       customer_receipts: TableDef<CustomerReceiptRow>;
+      pos_sessions: TableDef<PosSessionRow, never, never>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
@@ -816,6 +835,15 @@ export type Database = {
       };
       post_goods_received_note: { Args: { p_grn_id: string }; Returns: string };
       post_sales_invoice: { Args: { p_invoice_id: string }; Returns: string };
+      open_pos_session: {
+        Args: { p_warehouse_id: string; p_branch_id?: string | null; p_opening_float?: number };
+        Returns: string;
+      };
+      close_pos_session: {
+        Args: { p_session_id: string; p_counted_cash: number; p_notes?: string | null };
+        Returns: number;
+      };
+      can_post_invoice: { Args: { p_invoice_id: string }; Returns: boolean };
       post_sales_return: { Args: { p_return_id: string }; Returns: string };
       customer_balance: { Args: { p_customer_id: string }; Returns: number };
       next_document_number: { Args: { p_doc_type: string }; Returns: string };
