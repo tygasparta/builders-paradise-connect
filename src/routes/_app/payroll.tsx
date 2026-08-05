@@ -62,6 +62,7 @@ import {
   useTaxBands,
   type PayrollRunWithPeriod,
 } from "@/features/hr/payroll";
+import { TaxBandsDialog } from "@/features/hr/tax-bands-dialog";
 import { useBranches } from "@/features/branches/hooks";
 import { usePermissions } from "@/lib/auth/use-permission";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
@@ -733,72 +734,95 @@ function PeriodsTab() {
 }
 
 function TaxBandsTab() {
+  const { can } = usePermissions();
+  const canManage = can(PERMISSIONS.PAYROLL_COMPONENTS_MANAGE);
   const bands = useTaxBands();
+  const [open, setOpen] = useState(false);
 
   return (
-    <SectionCard
-      title="PAYE bands"
-      description="Cumulative marginal bands. Tax = (taxable − lower limit) × rate + cumulative tax."
-      bodyClassName="p-0"
-    >
-      {bands.isLoading ? (
-        <div className="p-4">
-          <TableSkeleton columns={4} rows={4} />
-        </div>
-      ) : (bands.data?.length ?? 0) === 0 ? (
-        <div className="px-5 py-8">
-          <EmptyState
-            icon={<AlertTriangle className="size-5" />}
-            title="No bands configured"
-            description="Payroll refuses to calculate without these. They ship empty on purpose — rates change, and a wrong rate silently understates every payslip. Enter the current schedule from ZIMRA."
-          />
-          <p className="mx-auto mt-4 max-w-xl rounded-lg bg-muted/60 px-4 py-3 text-xs text-muted-foreground">
-            Each band needs a lower limit, an optional upper limit, a rate as a decimal (0.20 for
-            20%), and the cumulative tax carried from the bands below it. The top band has no upper
-            limit. Bands are per currency and pay frequency, effective from a date — adding a new
-            set for a later date leaves history intact.
-          </p>
-        </div>
-      ) : (
-        <div className="table-scroll">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="p-2 text-left font-semibold">Effective</th>
-                <th className="p-2 text-right font-semibold">From</th>
-                <th className="p-2 text-right font-semibold">To</th>
-                <th className="p-2 text-right font-semibold">Rate</th>
-                <th className="p-2 text-right font-semibold">Cumulative</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bands.data?.map((band) => (
-                <tr key={band.id} className="border-b border-border last:border-0">
-                  <td className="p-2">
-                    <span className="num text-xs">
-                      {format(new Date(band.effective_from), "dd MMM yyyy")}
-                    </span>
-                    <span className="ml-2 text-[11px] text-muted-foreground">
-                      {band.currency_code} · {band.pay_frequency}
-                    </span>
-                  </td>
-                  <td className="num p-2 text-right">{money(band.lower_limit)}</td>
-                  <td className="num p-2 text-right">
-                    {band.upper_limit === null ? "and above" : money(band.upper_limit)}
-                  </td>
-                  <td className="num p-2 text-right font-medium">
-                    {(Number(band.rate) * 100).toFixed(1)}%
-                  </td>
-                  <td className="num p-2 text-right text-muted-foreground">
-                    {money(band.cumulative_tax)}
-                  </td>
+    <>
+      <SectionCard
+        title="PAYE bands"
+        description="Cumulative marginal bands. Tax = (taxable − lower limit) × rate + cumulative tax."
+        bodyClassName="p-0"
+        actions={
+          canManage ? (
+            <Button size="sm" onClick={() => setOpen(true)}>
+              <Plus className="size-3.5" />
+              Set bands
+            </Button>
+          ) : undefined
+        }
+      >
+        {bands.isLoading ? (
+          <div className="p-4">
+            <TableSkeleton columns={4} rows={4} />
+          </div>
+        ) : (bands.data?.length ?? 0) === 0 ? (
+          <div className="px-5 py-8">
+            <EmptyState
+              icon={<AlertTriangle className="size-5" />}
+              title="No bands configured"
+              description="Payroll refuses to calculate without these. They ship empty on purpose — rates change, and a wrong rate silently understates every payslip. Enter the current schedule from ZIMRA."
+              action={
+                canManage ? (
+                  <Button onClick={() => setOpen(true)}>
+                    <Plus className="size-4" />
+                    Set bands
+                  </Button>
+                ) : undefined
+              }
+            />
+            <p className="mx-auto mt-4 max-w-xl rounded-lg bg-muted/60 px-4 py-3 text-xs text-muted-foreground">
+              Each band needs a lower limit, an optional upper limit, a rate as a decimal (0.20 for
+              20%), and the cumulative tax carried from the bands below it. The top band has no
+              upper limit. Bands are per currency and pay frequency, effective from a date — adding
+              a new set for a later date leaves history intact.
+            </p>
+          </div>
+        ) : (
+          <div className="table-scroll">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="p-2 text-left font-semibold">Effective</th>
+                  <th className="p-2 text-right font-semibold">From</th>
+                  <th className="p-2 text-right font-semibold">To</th>
+                  <th className="p-2 text-right font-semibold">Rate</th>
+                  <th className="p-2 text-right font-semibold">Cumulative</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </SectionCard>
+              </thead>
+              <tbody>
+                {bands.data?.map((band) => (
+                  <tr key={band.id} className="border-b border-border last:border-0">
+                    <td className="p-2">
+                      <span className="num text-xs">
+                        {format(new Date(band.effective_from), "dd MMM yyyy")}
+                      </span>
+                      <span className="ml-2 text-[11px] text-muted-foreground">
+                        {band.currency_code} · {band.pay_frequency}
+                      </span>
+                    </td>
+                    <td className="num p-2 text-right">{money(band.lower_limit)}</td>
+                    <td className="num p-2 text-right">
+                      {band.upper_limit === null ? "and above" : money(band.upper_limit)}
+                    </td>
+                    <td className="num p-2 text-right font-medium">
+                      {(Number(band.rate) * 100).toFixed(1)}%
+                    </td>
+                    <td className="num p-2 text-right text-muted-foreground">
+                      {money(band.cumulative_tax)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
+
+      <TaxBandsDialog open={open} onOpenChange={setOpen} />
+    </>
   );
 }
 
