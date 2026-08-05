@@ -81,13 +81,13 @@ export function Topbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b border-border bg-card/85 px-3 backdrop-blur md:px-6">
+    <header className="sticky top-0 z-30 flex h-16 min-w-0 items-center gap-2 border-b border-border bg-card/85 px-3 backdrop-blur md:px-6">
       <SidebarTrigger className="text-muted-foreground" />
 
       <button
         type="button"
         onClick={() => setSearchOpen(true)}
-        className="hidden h-9 max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
+        className="hidden h-9 min-w-0 max-w-md flex-1 items-center gap-2 rounded-lg border border-border bg-muted/60 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted md:flex"
       >
         <Search className="size-4 shrink-0" aria-hidden />
         <span className="truncate">Search branches, warehouses, people…</span>
@@ -108,11 +108,11 @@ export function Topbar() {
 
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
 
-      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         {/* Live connection state — reflects the browser, not a decoration */}
         <span
           className={cn(
-            "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium xl:inline-flex",
+            "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium 2xl:inline-flex",
             online
               ? "border-success/30 bg-success/10 text-success"
               : "border-destructive/30 bg-destructive/10 text-destructive",
@@ -128,6 +128,8 @@ export function Topbar() {
         </span>
 
         <QuickActions can={can} />
+
+        <span className="mx-0.5 hidden h-6 w-px bg-border sm:block" aria-hidden />
 
         {/* Branch scope */}
         <DropdownMenu>
@@ -209,7 +211,7 @@ export function Topbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-lg py-1 pl-1 pr-2 transition-colors hover:bg-muted">
+            <button className="flex shrink-0 items-center gap-2 rounded-lg py-1 pl-1 pr-2 transition-colors hover:bg-muted">
               <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-xs font-semibold text-secondary-foreground">
                 {profile ? initialsOf(profile.full_name) : "…"}
               </span>
@@ -344,7 +346,7 @@ function QuickActions({ can }: { can: (code: PermissionCode) => boolean }) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="hidden h-9 gap-2 md:flex">
           <Zap className="size-4 text-primary" aria-hidden />
-          <span className="hidden lg:inline">Quick actions</span>
+          <span className="hidden xl:inline">Quick actions</span>
           <ChevronDown className="size-3.5 opacity-60" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
