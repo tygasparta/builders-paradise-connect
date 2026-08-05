@@ -714,6 +714,98 @@ export type PosSessionRow = Timestamps & {
   notes: string | null;
 };
 
+// ---------------------------------------------------------------------
+// Banking and expenses
+// ---------------------------------------------------------------------
+
+export type BankAccountRow = Timestamps & {
+  id: string;
+  name: string;
+  bank_name: string;
+  account_number: string | null;
+  branch_name: string | null;
+  swift_code: string | null;
+  currency_code: string;
+  ledger_account_id: string;
+  branch_id: string | null;
+  opening_balance: number;
+  is_default: boolean;
+  status: RecordStatus;
+  notes: string | null;
+};
+
+export type BankTransactionType =
+  "deposit" | "withdrawal" | "charge" | "interest" | "transfer" | "other";
+
+export type BankTransactionRow = {
+  id: string;
+  reference_no: string;
+  bank_account_id: string;
+  transaction_date: string;
+  description: string;
+  reference: string | null;
+  amount: number;
+  transaction_type: BankTransactionType;
+  journal_entry_id: string | null;
+  source_module: string | null;
+  source_document_type: string | null;
+  source_document_id: string | null;
+  reconciliation_id: string | null;
+  reconciled: boolean;
+  created_at: string;
+  created_by: string | null;
+};
+
+export type BankReconciliationRow = Timestamps & {
+  id: string;
+  reference_no: string;
+  bank_account_id: string;
+  statement_date: string;
+  statement_balance: number;
+  book_balance: number;
+  difference: number;
+  status: "draft" | "finalised";
+  finalised_at: string | null;
+  finalised_by: string | null;
+  notes: string | null;
+};
+
+export type ExpenseCategoryRow = Timestamps & {
+  id: string;
+  code: string;
+  name: string;
+  account_id: string;
+  status: RecordStatus;
+};
+
+export type ExpenseStatus =
+  "draft" | "submitted" | "approved" | "posted" | "rejected" | "cancelled";
+
+export type ExpenseRow = Timestamps & {
+  id: string;
+  expense_no: string;
+  category_id: string;
+  branch_id: string | null;
+  supplier_id: string | null;
+  expense_date: string;
+  description: string;
+  reference: string | null;
+  amount: number;
+  tax_amount: number;
+  total: number;
+  payment_method: "cash" | "bank" | "petty_cash" | "card" | "mobile_money";
+  bank_account_id: string | null;
+  status: ExpenseStatus;
+  submitted_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  posted_at: string | null;
+  posted_by: string | null;
+  journal_entry_id: string | null;
+  attachment_url: string | null;
+  notes: string | null;
+};
+
 /** Columns the client is allowed to send; the rest are stamped by triggers. */
 type Writable<T> = Partial<Omit<T, keyof Timestamps | "id">>;
 
@@ -795,6 +887,11 @@ export type Database = {
       sales_return_lines: TableDef<SalesReturnLineRow>;
       customer_receipts: TableDef<CustomerReceiptRow>;
       pos_sessions: TableDef<PosSessionRow, never, never>;
+      bank_accounts: TableDef<BankAccountRow>;
+      bank_transactions: TableDef<BankTransactionRow>;
+      bank_reconciliations: TableDef<BankReconciliationRow>;
+      expense_categories: TableDef<ExpenseCategoryRow>;
+      expenses: TableDef<ExpenseRow>;
     };
     Views: {
       products_catalogue: { Row: ProductCatalogueRow; Relationships: [] };
@@ -844,6 +941,20 @@ export type Database = {
         Returns: number;
       };
       can_post_invoice: { Args: { p_invoice_id: string }; Returns: boolean };
+      post_expense: { Args: { p_expense_id: string }; Returns: string };
+      bank_balance: { Args: { p_bank_account_id: string; p_as_at?: string }; Returns: number };
+      post_bank_transaction: {
+        Args: {
+          p_bank_account_id: string;
+          p_date: string;
+          p_description: string;
+          p_amount: number;
+          p_type: BankTransactionType;
+          p_contra_account: string;
+          p_reference?: string | null;
+        };
+        Returns: string;
+      };
       post_sales_return: { Args: { p_return_id: string }; Returns: string };
       customer_balance: { Args: { p_customer_id: string }; Returns: number };
       next_document_number: { Args: { p_doc_type: string }; Returns: string };

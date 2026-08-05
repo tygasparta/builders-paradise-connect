@@ -16,7 +16,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAccountingRouteImport } from './routes/_app/accounting'
 import { Route as AppAuditTrailRouteImport } from './routes/_app/audit-trail'
+import { Route as AppBankingRouteImport } from './routes/_app/banking'
 import { Route as AppCustomersRouteImport } from './routes/_app/customers'
+import { Route as AppExpensesRouteImport } from './routes/_app/expenses'
 import { Route as AppGoodsReceivingRouteImport } from './routes/_app/goods-receiving'
 import { Route as AppInventoryRouteImport } from './routes/_app/inventory'
 import { Route as AppPosRouteImport } from './routes/_app/pos'
@@ -65,9 +67,19 @@ const AppAuditTrailRoute = AppAuditTrailRouteImport.update({
   path: '/audit-trail',
   getParentRoute: () => AppRoute,
 } as any)
+const AppBankingRoute = AppBankingRouteImport.update({
+  id: '/banking',
+  path: '/banking',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCustomersRoute = AppCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppExpensesRoute = AppExpensesRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
   getParentRoute: () => AppRoute,
 } as any)
 const AppGoodsReceivingRoute = AppGoodsReceivingRouteImport.update({
@@ -143,7 +155,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/accounting': typeof AppAccountingRoute
   '/audit-trail': typeof AppAuditTrailRoute
+  '/banking': typeof AppBankingRoute
   '/customers': typeof AppCustomersRoute
+  '/expenses': typeof AppExpensesRoute
   '/goods-receiving': typeof AppGoodsReceivingRoute
   '/inventory': typeof AppInventoryRoute
   '/pos': typeof AppPosRoute
@@ -164,7 +178,9 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/accounting': typeof AppAccountingRoute
   '/audit-trail': typeof AppAuditTrailRoute
+  '/banking': typeof AppBankingRoute
   '/customers': typeof AppCustomersRoute
+  '/expenses': typeof AppExpensesRoute
   '/goods-receiving': typeof AppGoodsReceivingRoute
   '/inventory': typeof AppInventoryRoute
   '/pos': typeof AppPosRoute
@@ -188,7 +204,9 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_app/accounting': typeof AppAccountingRoute
   '/_app/audit-trail': typeof AppAuditTrailRoute
+  '/_app/banking': typeof AppBankingRoute
   '/_app/customers': typeof AppCustomersRoute
+  '/_app/expenses': typeof AppExpensesRoute
   '/_app/goods-receiving': typeof AppGoodsReceivingRoute
   '/_app/inventory': typeof AppInventoryRoute
   '/_app/pos': typeof AppPosRoute
@@ -213,7 +231,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/accounting'
     | '/audit-trail'
+    | '/banking'
     | '/customers'
+    | '/expenses'
     | '/goods-receiving'
     | '/inventory'
     | '/pos'
@@ -234,7 +254,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/accounting'
     | '/audit-trail'
+    | '/banking'
     | '/customers'
+    | '/expenses'
     | '/goods-receiving'
     | '/inventory'
     | '/pos'
@@ -257,7 +279,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_app/accounting'
     | '/_app/audit-trail'
+    | '/_app/banking'
     | '/_app/customers'
+    | '/_app/expenses'
     | '/_app/goods-receiving'
     | '/_app/inventory'
     | '/_app/pos'
@@ -332,11 +356,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuditTrailRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/banking': {
+      id: '/_app/banking'
+      path: '/banking'
+      fullPath: '/banking'
+      preLoaderRoute: typeof AppBankingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/customers': {
       id: '/_app/customers'
       path: '/customers'
       fullPath: '/customers'
       preLoaderRoute: typeof AppCustomersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/expenses': {
+      id: '/_app/expenses'
+      path: '/expenses'
+      fullPath: '/expenses'
+      preLoaderRoute: typeof AppExpensesRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/goods-receiving': {
@@ -436,7 +474,9 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAccountingRoute: typeof AppAccountingRoute
   AppAuditTrailRoute: typeof AppAuditTrailRoute
+  AppBankingRoute: typeof AppBankingRoute
   AppCustomersRoute: typeof AppCustomersRoute
+  AppExpensesRoute: typeof AppExpensesRoute
   AppGoodsReceivingRoute: typeof AppGoodsReceivingRoute
   AppInventoryRoute: typeof AppInventoryRoute
   AppPosRoute: typeof AppPosRoute
@@ -456,7 +496,9 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAccountingRoute: AppAccountingRoute,
   AppAuditTrailRoute: AppAuditTrailRoute,
+  AppBankingRoute: AppBankingRoute,
   AppCustomersRoute: AppCustomersRoute,
+  AppExpensesRoute: AppExpensesRoute,
   AppGoodsReceivingRoute: AppGoodsReceivingRoute,
   AppInventoryRoute: AppInventoryRoute,
   AppPosRoute: AppPosRoute,

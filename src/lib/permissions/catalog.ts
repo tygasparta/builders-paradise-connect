@@ -126,6 +126,9 @@ export const PERMISSIONS = {
 
   // Banking
   BANKING_VIEW: "banking.view",
+  BANKING_ACCOUNTS_MANAGE: "banking.accounts.manage",
+  BANKING_TRANSACTIONS_CREATE: "banking.transactions.create",
+  BANKING_RECONCILE: "banking.reconcile",
   BANK_ACCOUNTS_MANAGE: "bank_accounts.manage",
   BANK_TRANSACTIONS_CREATE: "bank_transactions.create",
   BANK_RECONCILIATION_PERFORM: "bank_reconciliation.perform",
@@ -133,6 +136,7 @@ export const PERMISSIONS = {
 
   // Expenses
   EXPENSES_VIEW: "expenses.view",
+  EXPENSES_CATEGORIES_MANAGE: "expenses.categories.manage",
   EXPENSES_CREATE: "expenses.create",
   EXPENSES_APPROVE: "expenses.approve",
   EXPENSES_PAY: "expenses.pay",

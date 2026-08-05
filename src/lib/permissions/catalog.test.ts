@@ -15,6 +15,12 @@ const coreMigration = readFileSync(
   resolve(here, "../../../supabase/migrations/20260804090000_phase1_core.sql"),
   "utf8",
 );
+// Later migrations add permissions of their own. The catalogue must match
+// the union of them all, not just the original seed.
+const financeMigration = readFileSync(
+  resolve(here, "../../../supabase/migrations/20260805120000_phase5_banking_expenses.sql"),
+  "utf8",
+);
 
 /** Pulls the first column out of a `values (...)` block following a marker. */
 function firstColumnOf(sql: string, marker: string): string[] {
@@ -26,10 +32,11 @@ function firstColumnOf(sql: string, marker: string): string[] {
 }
 
 describe("permission catalogue", () => {
-  const sqlPermissions = firstColumnOf(
-    migration,
-    "insert into public.permissions (code, module, name, description) values",
-  );
+  const marker = "insert into public.permissions (code, module, name, description) values";
+  const sqlPermissions = [
+    ...firstColumnOf(migration, marker),
+    ...firstColumnOf(financeMigration, marker),
+  ];
 
   it("parses a non-trivial number of permissions from the migration", () => {
     // Guards the parser itself: a broken regex would silently pass every

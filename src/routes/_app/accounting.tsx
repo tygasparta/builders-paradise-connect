@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpenCheck, Landmark, Scale, ShieldCheck } from "lucide-react";
+import { format } from "date-fns";
+import { AlertTriangle, BookOpen, Download, Landmark, Lock, ScrollText } from "lucide-react";
+import { toast } from "sonner";
 
-import { PageHeader } from "@/components/erp/topbar";
-import { SectionCard, StatCard } from "@/components/erp/ui-kit";
+import { PageHeader } from "@/components/erp/page-header";
+import { RequirePermission } from "@/components/erp/permission-gate";
+import { CardsSkeleton, EmptyState, ErrorState, TableSkeleton } from "@/components/erp/states";
+import { StatCard, SectionCard } from "@/components/erp/ui-kit";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -14,296 +20,571 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CHART_OF_ACCOUNTS, JOURNALS, KPIS, money } from "@/lib/erp-data";
-import { DemoDataNotice } from "@/components/erp/demo-data-notice";
+import {
+  ACCOUNT_TYPE_LABELS,
+  buildStatements,
+  useAccounts,
+  useJournals,
+  usePeriods,
+  useTrialBalance,
+} from "@/features/accounting/api";
+import { usePermissions } from "@/lib/auth/use-permission";
+import { PERMISSIONS } from "@/lib/permissions/catalog";
+import { downloadCsv } from "@/lib/export";
+import { plural } from "@/lib/format";
 
 export const Route = createFileRoute("/_app/accounting")({
-  head: () => ({
-    meta: [
-      { title: "Accounting — Builders Paradise ERP" },
-      {
-        name: "description",
-        content:
-          "Chart of accounts, trial balance, income statement, balance sheet and system-generated journals for Builders Paradise Hardware.",
-      },
-      { property: "og:title", content: "Accounting — Builders Paradise ERP" },
-      {
-        property: "og:description",
-        content: "Trial balance, income statement, balance sheet and automated journal entries.",
-      },
-    ],
-  }),
-  component: Accounting,
+  component: AccountingPage,
 });
 
-const sum = (type: string, side: "debit" | "credit") =>
-  CHART_OF_ACCOUNTS.filter((a) => a.type === type).reduce((s, a) => s + a[side], 0);
+function money(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "—";
+  return Number(value).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
-function Accounting() {
-  const [selected, setSelected] = useState(JOURNALS[0]!);
+function AccountingPage() {
+  return (
+    <RequirePermission require={PERMISSIONS.ACCOUNTING_VIEW} what="accounting">
+      <AccountingScreen />
+    </RequirePermission>
+  );
+}
 
-  const totalDebit = CHART_OF_ACCOUNTS.reduce((s, a) => s + a.debit, 0);
-  const totalCredit = CHART_OF_ACCOUNTS.reduce((s, a) => s + a.credit, 0);
+function AccountingScreen() {
+  const { can } = usePermissions();
+  const canExport = can(PERMISSIONS.REPORTS_EXPORT);
 
-  const revenue = sum("Income", "credit");
-  const expenses = sum("Expense", "debit");
-  const netProfit = revenue - expenses;
-  const assets = sum("Asset", "debit");
-  const liabilities = sum("Liability", "credit");
-  const equity = sum("Equity", "credit");
+  const [asAt, setAsAt] = useState(new Date().toISOString().slice(0, 10));
+  const trialBalance = useTrialBalance(asAt);
+  const periods = usePeriods();
+
+  const statements = useMemo(() => buildStatements(trialBalance.data ?? []), [trialBalance.data]);
+
+  const totals = useMemo(() => {
+    const rows = trialBalance.data ?? [];
+    return {
+      debit: rows.reduce((sum, r) => sum + Number(r.total_debit), 0),
+      credit: rows.reduce((sum, r) => sum + Number(r.total_credit), 0),
+    };
+  }, [trialBalance.data]);
+
+  const balanced = Math.abs(totals.debit - totals.credit) < 0.005;
+  const openPeriod = periods.data?.find((p) => p.status === "open");
 
   return (
-    <div className="mx-auto max-w-[1560px]">
+    <>
       <PageHeader
         title="Accounting"
-        badge="Period: Aug 2026"
-        description="Double-entry ledger fed automatically by sales, POS, purchasing, inventory and payroll. Transaction-generated entries are locked from manual edits."
+        description="The general ledger. Every figure here is posted by a module — nothing is typed in twice."
+        breadcrumbs={[{ label: "Finance" }, { label: "Accounting" }]}
+        actions={
+          <Input
+            type="date"
+            value={asAt}
+            onChange={(e) => setAsAt(e.target.value)}
+            className="h-9 w-40"
+            aria-label="Report as at date"
+          />
+        }
       />
 
-      <DemoDataNotice phase={4} module="Accounting" />
+      {trialBalance.isLoading ? (
+        <CardsSkeleton count={4} />
+      ) : trialBalance.isError ? (
+        <div className="card-surface">
+          <ErrorState error={trialBalance.error} onRetry={() => void trialBalance.refetch()} />
+        </div>
+      ) : (
+        <section aria-label="Position" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard
+            label="Revenue"
+            value={money(statements.income)}
+            sub="Net of returns"
+            icon={<BookOpen className="size-4" />}
+            tone="primary"
+          />
+          <StatCard
+            label="Gross profit"
+            value={money(statements.grossProfit)}
+            sub={
+              statements.income === 0
+                ? "No sales yet"
+                : `${((statements.grossProfit / statements.income) * 100).toFixed(1)}% margin`
+            }
+            icon={<BookOpen className="size-4" />}
+            tone={statements.grossProfit >= 0 ? "success" : "danger"}
+          />
+          <StatCard
+            label="Net profit"
+            value={money(statements.netProfit)}
+            sub="After expenses"
+            icon={<BookOpen className="size-4" />}
+            tone={statements.netProfit >= 0 ? "success" : "danger"}
+          />
+          <StatCard
+            label="Trial balance"
+            value={balanced ? "Balanced" : "Out"}
+            sub={balanced ? `${money(totals.debit)} each side` : "Investigate immediately"}
+            icon={balanced ? <Landmark className="size-4" /> : <AlertTriangle className="size-4" />}
+            tone={balanced ? "success" : "danger"}
+          />
+        </section>
+      )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Revenue (YTD)"
-          value={money(revenue)}
-          delta={9.2}
-          tone="primary"
-          icon={<Landmark className="size-4" />}
-        />
-        <StatCard
-          label="Net profit (YTD)"
-          value={money(netProfit)}
-          sub={`${((netProfit / revenue) * 100).toFixed(1)}% net margin`}
-          tone="success"
-          icon={<Scale className="size-4" />}
-        />
-        <StatCard
-          label="Cash & bank"
-          value={money(KPIS.cashBalance + KPIS.bankBalance)}
-          sub="Across 1 bank, 4 tills"
-          icon={<Landmark className="size-4" />}
-        />
-        <StatCard
-          label="Trial balance"
-          value={totalDebit.toFixed(2) === totalCredit.toFixed(2) ? "Balanced" : "Out of balance"}
-          sub={`${money(totalDebit)} Dr / ${money(totalCredit)} Cr`}
-          tone={totalDebit.toFixed(2) === totalCredit.toFixed(2) ? "success" : "danger"}
-          icon={<ShieldCheck className="size-4" />}
-        />
+      {!balanced && !trialBalance.isLoading && (trialBalance.data?.length ?? 0) > 0 && (
+        <p
+          role="alert"
+          className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+        >
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
+          <span>
+            Debits and credits differ by {money(Math.abs(totals.debit - totals.credit))}. The
+            posting service refuses unbalanced journals, so this points at a direct database change
+            rather than an application posting.
+          </span>
+        </p>
+      )}
+
+      <div className="mt-4">
+        <Tabs defaultValue="trial-balance">
+          <TabsList>
+            <TabsTrigger value="trial-balance">Trial balance</TabsTrigger>
+            <TabsTrigger value="statements">Statements</TabsTrigger>
+            <TabsTrigger value="journals">Journals</TabsTrigger>
+            <TabsTrigger value="accounts">Chart of accounts</TabsTrigger>
+            <TabsTrigger value="periods">Periods</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="trial-balance" className="mt-4">
+            <TrialBalanceTab asAt={asAt} canExport={canExport} />
+          </TabsContent>
+          <TabsContent value="statements" className="mt-4">
+            <StatementsTab statements={statements} asAt={asAt} />
+          </TabsContent>
+          <TabsContent value="journals" className="mt-4">
+            <JournalsTab canExport={canExport} />
+          </TabsContent>
+          <TabsContent value="accounts" className="mt-4">
+            <AccountsTab canExport={canExport} />
+          </TabsContent>
+          <TabsContent value="periods" className="mt-4">
+            <PeriodsTab />
+          </TabsContent>
+        </Tabs>
       </div>
 
-      <Tabs defaultValue="trial" className="mt-6">
-        <TabsList className="rounded-lg">
-          <TabsTrigger value="trial">Trial balance</TabsTrigger>
-          <TabsTrigger value="pl">Income statement</TabsTrigger>
-          <TabsTrigger value="bs">Balance sheet</TabsTrigger>
-          <TabsTrigger value="journals">Journals</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="trial" className="mt-4">
-          <SectionCard
-            title="Trial balance"
-            description="All accounts as at 4 August 2026"
-            bodyClassName="p-0"
-          >
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="pl-5">Code</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Debit</TableHead>
-                  <TableHead className="pr-5 text-right">Credit</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {CHART_OF_ACCOUNTS.map((a) => (
-                  <TableRow key={a.code}>
-                    <TableCell className="num pl-5 text-muted-foreground">{a.code}</TableCell>
-                    <TableCell className="font-medium">{a.name}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="border-border text-[11px] text-muted-foreground"
-                      >
-                        {a.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="num text-right">
-                      {a.debit ? money(a.debit) : "—"}
-                    </TableCell>
-                    <TableCell className="num pr-5 text-right">
-                      {a.credit ? money(a.credit) : "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableCell colSpan={3} className="pl-5 font-semibold">
-                    Totals
-                  </TableCell>
-                  <TableCell className="num text-right font-semibold">
-                    {money(totalDebit)}
-                  </TableCell>
-                  <TableCell className="num pr-5 text-right font-semibold">
-                    {money(totalCredit)}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </SectionCard>
-        </TabsContent>
-
-        <TabsContent value="pl" className="mt-4">
-          <SectionCard
-            title="Income statement"
-            description="Year to date"
-            bodyClassName="max-w-2xl space-y-1"
-          >
-            <StatementHeading>Revenue</StatementHeading>
-            {CHART_OF_ACCOUNTS.filter((a) => a.type === "Income").map((a) => (
-              <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.credit} />
-            ))}
-            <StatementRow label="Total revenue" value={revenue} bold />
-
-            <StatementHeading>Expenses</StatementHeading>
-            {CHART_OF_ACCOUNTS.filter((a) => a.type === "Expense").map((a) => (
-              <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.debit} />
-            ))}
-            <StatementRow label="Total expenses" value={expenses} bold />
-
-            <div className="mt-4 flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3">
-              <span className="text-sm font-semibold text-primary">Net profit</span>
-              <span className="num text-lg font-bold text-primary">{money(netProfit)}</span>
-            </div>
-          </SectionCard>
-        </TabsContent>
-
-        <TabsContent value="bs" className="mt-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <SectionCard
-              title="Assets"
-              description="What the business owns"
-              bodyClassName="space-y-1"
-            >
-              {CHART_OF_ACCOUNTS.filter((a) => a.type === "Asset").map((a) => (
-                <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.debit} />
-              ))}
-              <StatementRow label="Total assets" value={assets} bold />
-            </SectionCard>
-            <SectionCard
-              title="Liabilities & equity"
-              description="What the business owes and retains"
-              bodyClassName="space-y-1"
-            >
-              {CHART_OF_ACCOUNTS.filter((a) => a.type === "Liability" || a.type === "Equity").map(
-                (a) => (
-                  <StatementRow key={a.code} label={`${a.code} ${a.name}`} value={a.credit} />
-                ),
-              )}
-              <StatementRow label="Retained profit (current)" value={netProfit} />
-              <StatementRow
-                label="Total liabilities & equity"
-                value={liabilities + equity + netProfit}
-                bold
-              />
-            </SectionCard>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="journals" className="mt-4">
-          <div className="grid gap-4 xl:grid-cols-3">
-            <SectionCard
-              title="Journal register"
-              description="System-generated entries"
-              className="xl:col-span-2"
-              bodyClassName="p-0"
-            >
-              <Table>
-                <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="pl-5">Entry</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Reference</TableHead>
-                    <TableHead className="pr-5 text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {JOURNALS.map((j) => (
-                    <TableRow
-                      key={j.id}
-                      onClick={() => setSelected(j)}
-                      className={`cursor-pointer ${selected.id === j.id ? "bg-primary/5" : ""}`}
-                    >
-                      <TableCell className="num pl-5 font-medium">{j.id}</TableCell>
-                      <TableCell className="num text-muted-foreground">{j.date}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="border-border text-[11px]">
-                          {j.source}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="num text-muted-foreground">{j.ref}</TableCell>
-                      <TableCell className="num pr-5 text-right font-medium">
-                        {money(j.lines.reduce((s, l) => s + l.debit, 0))}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </SectionCard>
-
-            <SectionCard
-              title={selected.id}
-              description={selected.memo}
-              bodyClassName="space-y-3"
-              actions={
-                <Badge className="border-0 bg-muted text-[11px] text-muted-foreground">
-                  <BookOpenCheck className="mr-1 size-3" /> Locked
-                </Badge>
-              }
-            >
-              <div className="num space-y-1.5 text-xs">
-                {selected.lines.map((l, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start justify-between gap-3 rounded-md bg-muted/50 px-3 py-2"
-                  >
-                    <span className={l.credit ? "pl-4 text-muted-foreground" : "font-medium"}>
-                      {l.credit ? "Cr" : "Dr"} {l.account}
-                    </span>
-                    <span className="shrink-0 font-semibold">{money(l.debit || l.credit)}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Generated automatically by the {selected.source} module. Transaction-sourced entries
-                cannot be edited — reverse the source document instead.
-              </p>
-            </SectionCard>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+      {openPeriod && (
+        <p className="mt-4 text-xs text-muted-foreground">
+          Posting into <span className="font-medium">{openPeriod.name}</span>. A closed period
+          cannot be reopened — corrections go into the current one.
+        </p>
+      )}
+    </>
   );
 }
 
-function StatementHeading({ children }: { children: string }) {
-  return (
-    <p className="pb-1 pt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-      {children}
-    </p>
-  );
-}
+// ---------------------------------------------------------------------
 
-function StatementRow({ label, value, bold }: { label: string; value: number; bold?: boolean }) {
+function TrialBalanceTab({ asAt, canExport }: { asAt: string; canExport: boolean }) {
+  const trialBalance = useTrialBalance(asAt);
+  const rows = trialBalance.data ?? [];
+
+  const exportRows = () => {
+    downloadCsv(`Trial balance ${asAt}`, rows, [
+      { header: "Account", value: (r) => r.account_code },
+      { header: "Name", value: (r) => r.account_name },
+      { header: "Type", value: (r) => ACCOUNT_TYPE_LABELS[r.account_type] ?? r.account_type },
+      { header: "Debit", value: (r) => Number(r.total_debit).toFixed(2) },
+      { header: "Credit", value: (r) => Number(r.total_credit).toFixed(2) },
+      { header: "Balance", value: (r) => Number(r.balance).toFixed(2) },
+    ]);
+    toast.success("Trial balance exported");
+  };
+
+  if (trialBalance.isLoading) return <TableSkeleton columns={5} rows={8} />;
+  if (rows.length === 0) {
+    return (
+      <div className="card-surface">
+        <EmptyState
+          icon={<ScrollText className="size-5" />}
+          title="Nothing posted yet"
+          description="Post a goods receipt, a sale or an expense and the ledger fills itself."
+        />
+      </div>
+    );
+  }
+
+  const totalDebit = rows.reduce((s, r) => s + Number(r.total_debit), 0);
+  const totalCredit = rows.reduce((s, r) => s + Number(r.total_credit), 0);
+
   return (
-    <div
-      className={`flex items-center justify-between border-b border-border/70 py-2 text-sm ${
-        bold ? "font-semibold" : "text-muted-foreground"
-      }`}
+    <SectionCard
+      title="Trial balance"
+      description={`As at ${format(new Date(asAt), "dd MMMM yyyy")}`}
+      bodyClassName="p-0"
+      actions={
+        canExport ? (
+          <Button variant="outline" size="sm" onClick={exportRows}>
+            <Download className="size-3.5" />
+            Export
+          </Button>
+        ) : undefined
+      }
     >
-      <span>{label}</span>
-      <span className="num text-foreground">{money(value)}</span>
+      <div className="table-scroll">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="h-10 text-[11px] uppercase tracking-wider">Account</TableHead>
+              <TableHead className="h-10 text-[11px] uppercase tracking-wider">Type</TableHead>
+              <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+                Debit
+              </TableHead>
+              <TableHead className="h-10 text-right text-[11px] uppercase tracking-wider">
+                Credit
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.account_code}>
+                <TableCell className="py-2.5">
+                  <span className="num text-xs text-muted-foreground">{row.account_code}</span>
+                  <span className="ml-2 text-sm">{row.account_name}</span>
+                </TableCell>
+                <TableCell className="py-2.5 text-xs text-muted-foreground">
+                  {ACCOUNT_TYPE_LABELS[row.account_type] ?? row.account_type}
+                </TableCell>
+                <TableCell className="num py-2.5 text-right text-sm">
+                  {Number(row.total_debit) === 0 ? "" : money(row.total_debit)}
+                </TableCell>
+                <TableCell className="num py-2.5 text-right text-sm">
+                  {Number(row.total_credit) === 0 ? "" : money(row.total_credit)}
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow className="border-t-2 border-border font-semibold hover:bg-transparent">
+              <TableCell className="py-2.5" colSpan={2}>
+                Total
+              </TableCell>
+              <TableCell className="num py-2.5 text-right">{money(totalDebit)}</TableCell>
+              <TableCell className="num py-2.5 text-right">{money(totalCredit)}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    </SectionCard>
+  );
+}
+
+function StatementsTab({
+  statements,
+  asAt,
+}: {
+  statements: ReturnType<typeof buildStatements>;
+  asAt: string;
+}) {
+  const line = (label: string, value: number, emphasis = false) => (
+    <div
+      className={
+        emphasis
+          ? "flex justify-between border-t border-border pt-2 text-sm font-semibold"
+          : "flex justify-between text-sm"
+      }
+    >
+      <dt className={emphasis ? "" : "text-muted-foreground"}>{label}</dt>
+      <dd className="num">{money(value)}</dd>
     </div>
+  );
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <SectionCard
+        title="Income statement"
+        description={`To ${format(new Date(asAt), "dd MMMM yyyy")}`}
+      >
+        <dl className="space-y-2">
+          {line("Revenue", statements.income)}
+          {line("Cost of sales", statements.costOfSales)}
+          {line("Gross profit", statements.grossProfit, true)}
+          {line("Expenses", statements.expenses)}
+          {line("Net profit", statements.netProfit, true)}
+        </dl>
+      </SectionCard>
+
+      <SectionCard
+        title="Statement of financial position"
+        description={`As at ${format(new Date(asAt), "dd MMMM yyyy")}`}
+      >
+        <dl className="space-y-2">
+          {line("Assets", statements.assets)}
+          {line("Liabilities", statements.liabilities)}
+          {line("Equity", statements.equity)}
+          {line("Profit for the period", statements.netProfit)}
+          {line(
+            "Liabilities + equity + profit",
+            statements.liabilities + statements.equity + statements.netProfit,
+            true,
+          )}
+        </dl>
+
+        {Math.abs(statements.balanceCheck) >= 0.005 && (
+          <p className="mt-3 flex items-start gap-1.5 text-xs text-destructive">
+            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+            Assets differ from liabilities, equity and profit by{" "}
+            {money(Math.abs(statements.balanceCheck))}.
+          </p>
+        )}
+      </SectionCard>
+    </div>
+  );
+}
+
+function JournalsTab({ canExport }: { canExport: boolean }) {
+  const journals = useJournals(50);
+  const rows = journals.data ?? [];
+
+  const exportRows = () => {
+    const flat = rows.flatMap((journal) =>
+      journal.journal_entry_lines.map((line) => ({
+        reference: journal.reference,
+        date: journal.journal_date,
+        description: journal.description,
+        module: journal.source_module ?? "",
+        account: line.account?.account_code ?? "",
+        accountName: line.account?.name ?? "",
+        debit: Number(line.debit),
+        credit: Number(line.credit),
+        status: journal.status,
+      })),
+    );
+    downloadCsv("Journal entries", flat, [
+      { header: "Journal", value: (r) => r.reference },
+      { header: "Date", value: (r) => r.date },
+      { header: "Description", value: (r) => r.description },
+      { header: "Module", value: (r) => r.module },
+      { header: "Account", value: (r) => r.account },
+      { header: "Account name", value: (r) => r.accountName },
+      { header: "Debit", value: (r) => (r.debit === 0 ? "" : r.debit.toFixed(2)) },
+      { header: "Credit", value: (r) => (r.credit === 0 ? "" : r.credit.toFixed(2)) },
+      { header: "Status", value: (r) => r.status },
+    ]);
+    toast.success(`${plural(rows.length, "journal")} exported`);
+  };
+
+  if (journals.isLoading) return <TableSkeleton columns={4} rows={6} />;
+  if (journals.isError) {
+    return <ErrorState error={journals.error} onRetry={() => void journals.refetch()} />;
+  }
+  if (rows.length === 0) {
+    return (
+      <div className="card-surface">
+        <EmptyState
+          icon={<ScrollText className="size-5" />}
+          title="No journals yet"
+          description="Every posting from stock, sales, purchasing and expenses lands here automatically."
+        />
+      </div>
+    );
+  }
+
+  return (
+    <SectionCard
+      title="Journal entries"
+      description="Most recent 50. Posted journals are immutable — corrections are reversals."
+      bodyClassName="p-0"
+      actions={
+        canExport ? (
+          <Button variant="outline" size="sm" onClick={exportRows}>
+            <Download className="size-3.5" />
+            Export
+          </Button>
+        ) : undefined
+      }
+    >
+      <ul className="divide-y divide-border">
+        {rows.map((journal) => (
+          <li key={journal.id} className="px-5 py-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="num text-xs font-medium">
+                  {journal.reference}
+                  {journal.status === "reversed" && (
+                    <Badge className="ml-2 border-0 bg-destructive/12 text-[10px] text-destructive">
+                      Reversed
+                    </Badge>
+                  )}
+                  {journal.is_system && (
+                    <Badge variant="secondary" className="ml-2 text-[10px]">
+                      {journal.source_module ?? "system"}
+                    </Badge>
+                  )}
+                </p>
+                <p className="truncate text-sm">{journal.description}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {format(new Date(journal.journal_date), "dd MMM yyyy")}
+                </p>
+              </div>
+              <span className="num text-sm font-medium">{money(journal.total_debit)}</span>
+            </div>
+
+            <ul className="mt-2 space-y-0.5">
+              {[...journal.journal_entry_lines]
+                .sort((a, b) => a.line_no - b.line_no)
+                .map((line) => (
+                  <li key={line.id} className="flex items-center gap-2 text-[11px]">
+                    <span className="num w-12 shrink-0 text-muted-foreground">
+                      {line.account?.account_code}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                      {line.account?.name}
+                    </span>
+                    <span className="num w-24 text-right">
+                      {Number(line.debit) > 0 ? money(line.debit) : ""}
+                    </span>
+                    <span className="num w-24 text-right text-muted-foreground">
+                      {Number(line.credit) > 0 ? money(line.credit) : ""}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </SectionCard>
+  );
+}
+
+function AccountsTab({ canExport }: { canExport: boolean }) {
+  const accounts = useAccounts();
+  const rows = useMemo(() => accounts.data ?? [], [accounts.data]);
+
+  const grouped = useMemo(() => {
+    const map = new Map<string, typeof rows>();
+    for (const account of rows) {
+      const list = map.get(account.account_type) ?? [];
+      list.push(account);
+      map.set(account.account_type, list);
+    }
+    return [...map.entries()];
+  }, [rows]);
+
+  if (accounts.isLoading) return <TableSkeleton columns={3} rows={8} />;
+  if (accounts.isError) {
+    return <ErrorState error={accounts.error} onRetry={() => void accounts.refetch()} />;
+  }
+
+  return (
+    <SectionCard
+      title="Chart of accounts"
+      description={`${plural(rows.length, "account")} · headings cannot be posted to`}
+      bodyClassName="p-0"
+      actions={
+        canExport ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              downloadCsv("Chart of accounts", rows, [
+                { header: "Code", value: (a) => a.account_code },
+                { header: "Name", value: (a) => a.name },
+                {
+                  header: "Type",
+                  value: (a) => ACCOUNT_TYPE_LABELS[a.account_type] ?? a.account_type,
+                },
+                { header: "Postable", value: (a) => (a.is_postable ? "Yes" : "Heading") },
+                { header: "System", value: (a) => (a.is_system ? "Yes" : "") },
+                { header: "Status", value: (a) => a.status },
+              ]);
+              toast.success("Chart of accounts exported");
+            }}
+          >
+            <Download className="size-3.5" />
+            Export
+          </Button>
+        ) : undefined
+      }
+    >
+      <div className="divide-y divide-border">
+        {grouped.map(([type, list]) => (
+          <div key={type} className="px-5 py-3">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              {ACCOUNT_TYPE_LABELS[type] ?? type}
+            </h4>
+            <ul className="mt-1.5 space-y-1">
+              {list.map((account) => (
+                <li key={account.id} className="flex items-center gap-2 text-sm">
+                  <span className="num w-12 shrink-0 text-xs text-muted-foreground">
+                    {account.account_code}
+                  </span>
+                  <span
+                    className={
+                      account.is_postable
+                        ? "min-w-0 flex-1 truncate"
+                        : "min-w-0 flex-1 truncate font-semibold"
+                    }
+                  >
+                    {account.name}
+                  </span>
+                  {!account.is_postable && (
+                    <Badge variant="secondary" className="text-[10px]">
+                      Heading
+                    </Badge>
+                  )}
+                  {account.is_system && (
+                    <Badge className="border-0 bg-primary/12 text-[10px] text-primary">
+                      System
+                    </Badge>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+}
+
+function PeriodsTab() {
+  const periods = usePeriods();
+  const rows = periods.data ?? [];
+
+  if (periods.isLoading) return <TableSkeleton columns={4} rows={6} />;
+  if (periods.isError) {
+    return <ErrorState error={periods.error} onRetry={() => void periods.refetch()} />;
+  }
+
+  return (
+    <SectionCard
+      title="Accounting periods"
+      description="Posting is refused outside an open period."
+      bodyClassName="p-0"
+    >
+      <ul className="divide-y divide-border">
+        {rows.map((period) => (
+          <li key={period.id} className="flex items-center justify-between gap-3 px-5 py-2.5">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{period.name}</p>
+              <p className="num text-[11px] text-muted-foreground">
+                {format(new Date(period.start_date), "dd MMM")} –{" "}
+                {format(new Date(period.end_date), "dd MMM yyyy")}
+              </p>
+            </div>
+            {period.status === "open" ? (
+              <Badge className="border-0 bg-success/12 text-[10px] text-success">Open</Badge>
+            ) : (
+              <Badge variant="secondary" className="gap-1 text-[10px]">
+                <Lock className="size-2.5" aria-hidden />
+                {period.status}
+              </Badge>
+            )}
+          </li>
+        ))}
+      </ul>
+    </SectionCard>
   );
 }
